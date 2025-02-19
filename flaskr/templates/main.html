@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema</title>
+
+    <link href="../static/css/main.css" rel="stylesheet">
+</head>
+<body>
+    <main class="blank-container">
+
+        <div class="table-container"t>
+            <form class="search-form">
+                <input class="search-bar" type="text" placeholder="Buscar">
+                <button class="search-bt" type="submit"><img src="../static/img/lupe.png"></button>
+                <button class="add-client-bt" type="button"><img src="../static/img/plus.png"></button>
+            </form>
+    
+            <table>
+                <thead>
+                    <tr>
+                        <th class="name-col">Nome</th>
+                        <th class="rg-col">RG</th>
+                        <th class="cpf-col">CPF</th>
+                        <th class="phone-col">Telefone</th>
+                        <th class="birth-col">Data de Nascimento</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                    <tr>
+                        <td>***REMOVED***</td>
+                        <td>***REMOVED***</td>
+                        <td>12345678911</td>
+                        <td>***REMOVED***</td>
+                        <td>***REMOVED***</td>
+                    </tr>
+                </tbody>
+    
+            </table>
+        </div>
+
+        <div class="overlay"></div>
+        <div class="popup">
+
+            <button type="button" class="close-popup-bt"><img src="../static/img/x.png"></button>
+            <h2 class="popup-msg">Registrar nova consulta</h2>
+
+            <form class="popup-form" method="post">
+                
+                <div class="input-container">
+                    <label for="name">Nome</label>
+                    <input type="text" id="name" name="name">
+                </div>
+
+                <div class="input-container">
+
+                    <div class="inner-input-container">
+                        <label for="rg">RG</label>
+                        <input type="text" id="rg" name="rg">
+                    </div>
+
+                    <div class="inner-input-container">
+                        <label for="cpf">CPF</label>
+                        <input type="text" id="cpf" name="cpf">
+                    </div>
+                </div>
+
+                <div class="input-container">
+
+                    <div class="inner-input-container">
+                        <label for="Telefone">Telefone</label>
+                        <input type="text" id="phone-number" name="phone">
+                    </div>
+
+                    <div class="inner-input-container">
+                        <label for="birth-date">Data de Nascimento</label>
+                        <input type="text" id="birth-date" name="birth-date">
+                    </div>
+                </div>
+
+                <button class="confirm-bt" type="button">OK</button>
+                
+            </form>
+        </div>
+    </main>
+
+    <script src="../static/js/main.js" type="text/javascript"></script>
+
+</body>
+</html>
