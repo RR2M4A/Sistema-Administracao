@@ -1,27 +1,42 @@
 from typing import List
-from sqlalchemy import String, Date, ForeignKey
-from sqlalchemy.orm import DeclarativeBase, relationship, Mapped, mapped_column
+from datetime import date
+from sqlalchemy import String, ForeignKey
+from sqlalchemy.orm import relationship, Mapped, mapped_column
+from database import db
 
 
-class Base(DeclarativeBase):
-    pass
+class User(db.Model):
 
-
-class Client(Base):
-
-    """Classe que representará a TABLE com todos os clientes, ou seja,
-    todas as pessoas que forem buscar os serviços da administração
-    regional do gama.
+    """Esta classe representa os usuários do sistema.
     
-    Suas colunas serão:
-    
-    .Id (chave única pra identificar a linha do banco de dados)
-    .Nome do cliente
-    .Registro geral (RG)
-    .Cadastro de pessoa física (CPF)
-    .Número de telefone
-    .Data de nascimento
-    .Entradas (lista de datas em que o cliente consultou a administração)
+    Colunas:
+    - id: Chave primária única para identificar a linha no banco de dados.
+    - username: Usuário de login do sistema.
+    - password: Senha de login.
+    """
+
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    username: Mapped[str] = mapped_column(nullable=False)
+    password: Mapped[str] = mapped_column(nullable=False)
+
+
+
+class Client(db.Model):
+
+    """Classe que representa a tabela de clientes. Cada instância da classe
+    corresponderá a um cliente que consultou a administração regional do Gama.
+
+    Colunas:
+    - id: Chave primária única para identificar a linha no banco de dados.
+    - name: Nome do cliente.
+    - rg: Registro Geral (RG) do cliente.
+    - cpf: Cadastro de Pessoa Física (CPF) do cliente.
+    - phone_number: Número de telefone do cliente.
+    - birth_date: Data de nascimento do cliente.
+    - entrances: Relacionamento com as entradas realizadas pelo cliente, onde
+    cada entrada é uma data em que o cliente consultou a administração.
     """
 
     __tablename__ = "clients"
@@ -31,27 +46,28 @@ class Client(Base):
     rg: Mapped[str] = mapped_column(nullable=False)
     cpf: Mapped[str] = mapped_column(String(11))
     phone_number: Mapped[str] = mapped_column()
-    birth_date: Mapped[Date] = mapped_column()
+    birth_date: Mapped[date] = mapped_column()
 
-    entrances: Mapped[List["Entrance"]] = relationship(back_populates='client') 
+    entrances: Mapped[List["Entrance"]] = relationship(back_populates='client')
 
 
-class Entrance(Base):
+class Entrance(db.Model):
 
-    """Classe que representará a TABLE com as entradas de cada pessoa
-    que consultou a administração regional do gama.
-    
-    Suas colunas serão:
-    
-    .Id (chave única pra identificar a linha do banco de dados)
-    .Cliente (chave que relaciona a data a algum cliente)
-    .Data de Entrada
+    """Classe que representa a tabela de entradas. Cada instância da classe
+    corresponde a uma entrada de um cliente na administração regional do Gama.
+
+    Colunas:
+    - id: Chave primária única para identificar a linha no banco de dados.
+    - entrance_date: Data da entrada.
+    - client_id: Chave estrangeira que relaciona esta entrada a um cliente.
+    - client: Relacionamento com a classe Client, indicando o cliente que fez
+    a entrada.
     """
 
     __tablename__ = "entrances"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    date: Mapped[Date] = mapped_column(nullable=False)
+    entrance_date: Mapped[date] = mapped_column(nullable=False)
     client_id: Mapped[int] = mapped_column(ForeignKey("clients.id"), nullable=False)
 
-    client: Mapped["Client"] = relationship(back_populates='entrances') 
+    client: Mapped["Client"] = relationship(back_populates='entrances')
