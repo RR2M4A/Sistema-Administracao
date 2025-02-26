@@ -68,3 +68,11 @@ body {
 .submit-bt:hover {
     background: #555;
 }
+
+.wrong-credentials {
+    display: none;
+    color: red;
+    text-align: right;
+    font-weight: bold;
+    font-size: 11px;
+}
