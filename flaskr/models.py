@@ -6,8 +6,7 @@ from database import db
 
 
 class User(db.Model):
-
-    """Esta classe representa os usuários do sistema.
+    """Representa a tablea de usuários do sistema.
     
     Colunas:
     - id: Chave primária única para identificar a linha no banco de dados.
@@ -24,9 +23,7 @@ class User(db.Model):
 
 
 class Client(db.Model):
-
-    """Classe que representa a tabela de clientes. Cada instância da classe
-    corresponderá a um cliente que consultou a administração regional do Gama.
+    """Representa a tabela de clientes do banco de dados.
 
     Colunas:
     - id: Chave primária única para identificar a linha no banco de dados.
@@ -52,9 +49,7 @@ class Client(db.Model):
 
 
 class Entrance(db.Model):
-
-    """Classe que representa a tabela de entradas. Cada instância da classe
-    corresponde a uma entrada de um cliente na administração regional do Gama.
+    """Representa a tabela de entradas no banco de dados.
 
     Colunas:
     - id: Chave primária única para identificar a linha no banco de dados.

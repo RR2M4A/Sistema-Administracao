@@ -1,21 +1,26 @@
-from flask import Blueprint, flash, redirect, render_template, request, session, url_for
-from werkzeug.security import check_password_hash, generate_password_hash
+from flask import Blueprint, render_template, request
+from utils import login_required
+
 
 main = Blueprint("main", __name__)
 
+
 @main.get("/system/")
+@login_required
 def system_get():
+    """Carrega a página principal do sistema."""
+
     return render_template("main.html")
 
 
 @main.post("/system/")
+@login_required
 def system_post():
+    """Lida com requisições do tipo POST na página principal do sistmea."""
     
     res = request.get_json()
     for i in res:
         print(i)
-
-    print("Passou aqui")
 
     return render_template("templates/main.html")
     

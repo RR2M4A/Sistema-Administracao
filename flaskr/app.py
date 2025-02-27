@@ -4,6 +4,7 @@ from database import db
 
 
 def create_app():
+    """Inicializa, configura e retorna o Flask WSGI."""
 
     app = Flask(__name__)
     app.secret_key = "Use a secret key here"
