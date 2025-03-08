@@ -4,17 +4,17 @@ from models import User
 from database import db
 
 
-auth = Blueprint("auth", __name__)
+signin = Blueprint("signin", __name__)
 
 
-@auth.get("/signin/")
+@signin.get("/signin/")
 def signin_get():
     """Carrega a páǵina de sign in."""
 
     return render_template("signin.html")
 
 
-@auth.post("/signin/")
+@signin.post("/signin/")
 def signin_post():
     """Lida com requisições do tipo POST na página de sign in."""
 
@@ -28,6 +28,6 @@ def signin_post():
 
     if db_user and check_password_hash(db_user.password, inputed_password):
         session["id"] = db_user.id
-        return {"authenticated": "true", "redirect": url_for("main.system_get")}
+        return {"authenticated": "true", "redirect": url_for("system.system_get")}
     
     return {"authenticated": "false"}

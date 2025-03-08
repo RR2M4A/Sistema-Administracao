@@ -10,7 +10,7 @@ body {
     position: relative;
     display: flex;
     height: 100vh;
-    background-color: #f5f5f5;
+    background-color: #e5e5e5;
 }
 
 main {
@@ -73,7 +73,7 @@ table tr:hover td {
 }
 
 .search-bar:focus {
-    border-color: #666;
+    border: 2px solid #666;
 }
 
 .table-container {
@@ -99,7 +99,7 @@ table tr:hover td {
     transform: translate(-50%, -50%);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     padding: 2rem;
-    background: white;
+    background-color: white;
     border-radius: 10px;
     width: 480px;
     display: none;
@@ -153,6 +153,7 @@ table tr:hover td {
     margin: 1rem 0;
 }
 
+
 .input-container:first-child {
     flex-flow: column nowrap;
 }
@@ -172,4 +173,9 @@ table tr:hover td {
     padding: 5px;
     font-size: 14px;
     outline: none;
+    border: 1px solid rgb(118, 118, 118);
+}
+
+.input-container input:focus {
+    border: 2px solid #666;
 }

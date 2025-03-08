@@ -12,11 +12,11 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.init_app(app)
 
-    from auth import auth
-    app.register_blueprint(auth)
+    from signin import signin
+    app.register_blueprint(signin)
 
-    from main import main
-    app.register_blueprint(main)
+    from system import system
+    app.register_blueprint(system)
 
     with app.app_context():
         db.create_all()

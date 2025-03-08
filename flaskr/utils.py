@@ -8,7 +8,7 @@ def login_required(f):
     def wrapper(*args, **kwargs):
 
         if "id" not in session:
-            return redirect(url_for("auth.signin_get"))
+            return redirect(url_for("signin.signin_get"))
         return f(*args, **kwargs)
 
     return wrapper
