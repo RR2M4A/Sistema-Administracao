@@ -1,4 +1,5 @@
 from validate_docbr import CPF
+import validate_docbr
 from utils import get_days_in_month
 from decorators import input_normalized
 from datetime import datetime
@@ -14,7 +15,7 @@ def validate_name(input) -> dict:
 
     found_chars = re.search(r"[^a-z\u00E0-\u00F6\u00F8-\u00FF\s]", input)
 
-    if found_chars:
+    if found_chars or not input:
         return {"is_valid": False, "input": "name"}
     
     return {"is_valid": True, "input": "name"}
@@ -23,6 +24,9 @@ def validate_name(input) -> dict:
 @input_normalized
 def validate_rg(input) -> dict:
     """Valida o rg."""
+
+    if not input:
+        return {"is_valid": False, "input": "rg"}
 
     return {"is_valid": True, "input": "rg"}
 
@@ -33,7 +37,7 @@ def validate_cpf(input) -> dict:
 
     is_valid = cpf.validate(input)
 
-    if not is_valid:
+    if not is_valid or not input:
         return {"is_valid": False, "input": "cpf"}
 
     return {"is_valid": True, "input": "cpf"}
@@ -45,7 +49,7 @@ def validate_phone_number(input) -> dict:
 
     is_valid = re.match(r"\([0-9]{2}\) 9?[0-9]{4}-[0-9]{4}", input)
 
-    if not is_valid:
+    if not is_valid or not input:
         return {"is_valid": False, "input": "phone-number"}
     
     return {"is_valid": True, "input": "phone-number"}
@@ -55,11 +59,11 @@ def validate_phone_number(input) -> dict:
 def validate_birth_date(input) -> dict:
     """Valida a data de nascimento."""
 
-    is_valid = re.match(r"[0-9]{2}\/[0-9]{2}\/[0-9]{4}", input)
+    is_valid = re.match(r"[0-9]{2}\/[0-9]{2}\/[0-9]{4}$", input)
 
-    if not is_valid:
+    if not is_valid or not input:
         return {"is_valid": False, "input": "birth-date"}
-    
+
     day, month, year = map(int, input.split("/"))
     
     if month < 1 or month > 12:
@@ -69,6 +73,12 @@ def validate_birth_date(input) -> dict:
         return {"is_valid": False, "input": "birth-date"}
 
     if year > int(datetime.today().year):
+        return {"is_valid": False, "input": "birth-date"}
+    
+    current_date = datetime.today()
+    inputed_date = datetime.strptime(input, "%d/%m/%Y")
+
+    if inputed_date > current_date:
         return {"is_valid": False, "input": "birth-date"}
 
     return {"is_valid": True, "input": "birth-date"}
@@ -91,3 +101,6 @@ def validate_all(inputs: dict) -> list[dict]:
 
     return [is_valid_name, is_valid_rg, is_valid_cpf, 
             is_valid_phone_number, is_valid_birth_date]
+
+
+print(validate_docbr.__file__)

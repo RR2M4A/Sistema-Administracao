@@ -1,3 +1,9 @@
+from datetime import datetime, timedelta, timezone
+
+
+BRAZIL_TZ = timezone(timedelta(hours=-3))
+
+
 def is_leap_year(year):
     """Verifica se um ano é bissexto."""
 

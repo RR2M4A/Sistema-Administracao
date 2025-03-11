@@ -1,5 +1,4 @@
-from typing import List
-from datetime import date
+from datetime import datetime, date
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from database import db
@@ -45,7 +44,7 @@ class Client(db.Model):
     phone_number: Mapped[str] = mapped_column()
     birth_date: Mapped[date] = mapped_column()
 
-    entrances: Mapped[List["Entrance"]] = relationship(back_populates='client')
+    entrances: Mapped[list["Entrance"]] = relationship(back_populates='client')
 
 
 class Entrance(db.Model):
@@ -62,7 +61,7 @@ class Entrance(db.Model):
     __tablename__ = "entrances"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    entrance_date: Mapped[date] = mapped_column(nullable=False)
+    entrance: Mapped[datetime] = mapped_column(nullable=False)
     client_id: Mapped[int] = mapped_column(ForeignKey("clients.id"), nullable=False)
 
     client: Mapped["Client"] = relationship(back_populates='entrances')
