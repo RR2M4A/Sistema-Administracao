@@ -1,5 +1,7 @@
 "use strict"
 
+import { make_request } from "../utils/fetch_utils.js";
+
 export function activate_popup(event, popup, overlay, focus_element) {
 
     event.preventDefault();
@@ -96,11 +98,11 @@ export function format_birth_date(event) {
     let value = input.value.replace(/\D/g, "");
 
     if (value.length > 2) {
-        value = value.slice(0, 2) + " / " + value.slice(2);
+        value = value.slice(0, 2) + "/" + value.slice(2);
     }
 
     if (value.length > 7) {
-        value = value.slice(0, 7) + " / " + value.slice(7);
+        value = value.slice(0, 7) + "/" + value.slice(7);
     }
 
     if (value.length > 14) {
@@ -108,4 +110,15 @@ export function format_birth_date(event) {
     }
 
     input.value = value;
+}
+
+
+export async function add_new_client(event, inputs) {
+
+    event.preventDefault();
+
+    data = await make_request(inputs);
+
+    
+
 }

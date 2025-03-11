@@ -7,8 +7,8 @@ const popup = document.querySelector('.popup');
 const overlay = document.querySelector('.overlay');
 const close_popup_bt = document.querySelector('.close-popup-bt');
 const confirm_client_bt = document.querySelector('.confirm-bt');
+const inputs = document.querySelectorAll('.popup input');
 const name_input = document.querySelector('#name');
-const rg_input = document.querySelector('#rg');
 const cpf_input = document.querySelector('#cpf');
 const phone_number_input = document.querySelector('#phone-number');
 const birth_date_input = document.querySelector('#birth-date');
@@ -21,4 +21,10 @@ cpf_input.addEventListener("input", pp.format_cpf);
 phone_number_input.addEventListener("input", pp.format_phone_number);
 birth_date_input.addEventListener("input", pp.format_birth_date);
 
-confirm_client_bt.addEventListener("click", add_new_client);
+confirm_client_bt.addEventListener("click", (event) => {pp.add_new_client(event, inputs)});
+
+popup.addEventListener("keydown", (event) => {
+    if (event.key == "Enter") {
+        pp.add_new_client(event, inputs);
+    }
+})
