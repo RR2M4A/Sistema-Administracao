@@ -179,3 +179,22 @@ table tr:hover td {
 .input-container input:focus {
     border: 2px solid #666;
 }
+
+.popup-side-msg {
+    display: none;
+    font-weight: bold;
+    text-align: center;
+    color: green;
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+.sucessful-registration {
+    display: block;
+    color: green;
+}
+
+.failed-registration {
+    display: block;
+    color: red;
+}
