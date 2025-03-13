@@ -17,8 +17,8 @@ def input_normalized(f):
     """Retorna o input como string, sem espaços extras e em minúsculo."""
 
     @wraps(f)
-    def wrapper(input):
+    def wrapper(self, input, *args, **kwargs):
         input = str(input).strip().lower()
-        return f(input)
+        return f(self, input, *args, **kwargs)
 
     return wrapper

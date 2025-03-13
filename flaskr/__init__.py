@@ -1,6 +1,6 @@
 from flask import Flask
 from models import *
-from database import db
+from extensions.database import db
 
 
 def create_app():
@@ -12,10 +12,10 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.init_app(app)
 
-    from signin import signin
+    from routes.signin import signin
     app.register_blueprint(signin)
 
-    from system import system
+    from routes.system import system
     app.register_blueprint(system)
 
     with app.app_context():

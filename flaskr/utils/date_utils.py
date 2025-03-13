@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta, timezone
 
 
 BRAZIL_TZ = timezone(timedelta(hours=-3))
