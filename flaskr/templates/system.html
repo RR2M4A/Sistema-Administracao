@@ -11,11 +11,26 @@
 <body>
     <main class="blank-container">
 
-        <div class="table-container"t>
-            <form class="search-form">
-                <input class="search-bar" type="text" placeholder="Buscar">
-                <button class="search-bt" type="submit"><img src="../static/img/lupe.png"></button>
-                <button class="add-client-bt" type="button"><img src="../static/img/plus.png"></button>
+        <div class="table-container">
+            
+            <form class="search-form" method="post" action="{{ url_for('system.system_search_client') }}">
+
+                <div class="radio-container">
+                    <input name="search" class="radio-bt" type="radio" value="CPF" checked>
+                    <label>CPF</label>
+
+                    <input name="search" class="radio-bt" type="radio" value="RG">
+                    <label>RG</label>
+
+                    <p class="search-msg"></p>
+                </div>
+
+                <div class="input-container">
+                    <input name="search" class="search-bar" type="text" placeholder="Buscar">
+
+                    <button class="search-client-bt" type="submit"><img src="../static/img/lupe.png"></button>
+                    <button class="add-client-bt" type="button"><img src="../static/img/plus.png"></button>
+                </div>
             </form>
     
             <table>
@@ -48,9 +63,8 @@
             <button type="button" class="close-popup-bt"><img src="../static/img/x.png"></button>
             <h2 class="popup-msg">Registrar nova consulta</h2>
 
-
             <p class="popup-side-msg"></p>
-            <form class="popup-form" method="post">
+            <form class="popup-form" method="post" action="{{ url_for('system.system_add_client') }}">
                 
                 <div class="input-container">
                     <label for="name">Nome</label>
