@@ -1,24 +1,31 @@
 from models.client import Client
 from models.entrance import Entrance
-from validation_service import ValidationService
+from extensions.database import db
+from sqlalchemy.exc import SQLAlchemyError
+
 
 class SystemService:
 
+
     @staticmethod
-    def find_or_create_client(data: dict):
-        
+    def create_client(data: dict):
+        try:
+            return Client.create(data)
+        except SQLAlchemyError:
+            db.rollback()
 
-        ValidationService.validate_all(data)
-        client = Client.find(data.get("cpf")).scalar_one_or_none()
 
-        if client:
-            Entrance.create(client)
-            is_new = False
-            operation = "updated"
-        else:
-            client = Client.create(data)
-            Entrance.create(client)
-            is_new = True
-            operation = "created"
+    @staticmethod
+    def find_client(cpf: str):
+        try:
+            return Client.find_one(cpf)
+        except SQLAlchemyError:
+            db.rollback()
 
-        return is_new, operation
+
+    @staticmethod
+    def create_entrance(client: Client):
+        try:
+            return Entrance.create(client)
+        except SQLAlchemyError:
+            db.rollback()

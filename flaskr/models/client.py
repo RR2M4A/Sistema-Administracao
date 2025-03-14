@@ -3,7 +3,6 @@ from datetime import datetime, date
 from sqlalchemy import String
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from extensions.database import db
-from models.entrance import Entrance
 
 
 class Client(db.Model):
@@ -48,5 +47,5 @@ class Client(db.Model):
         
 
     @classmethod
-    def find(cls, cpf: str):
-        return db.session.execute(db.select(cls).where(cls.cpf == cpf))
+    def find_one(cls, cpf: str):
+        return db.session.execute(db.select(cls).where(cls.cpf == cpf)).scalar_one_or_none()
