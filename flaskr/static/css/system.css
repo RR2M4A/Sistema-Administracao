@@ -48,34 +48,7 @@ table tr:hover td {
 
 .search-form {
     display: flex;
-    flex-flow: column nowrap;
-    margin-bottom: 5px;
 }
-
-.search-form .input-container {
-    display: flex;
-}
-
-.radio-container {
-    display: flex;
-    font-size: 12px;
-    margin-bottom: 5px;
-}
-
-.radio-container input:nth-of-type(2) {
-    margin-left: 10px;
-}
-
-.radio-container label {
-    margin-left: 2px;
-}
-
-.search-msg {
-    margin-left: 20px;
-    font-size: 12px;
-    font-style: italic;
-}
-
 
 .search-bar {
     flex-grow: 1;
@@ -83,8 +56,8 @@ table tr:hover td {
     outline: none;
 }
 
-.search-bar:focus {
-    border: 2px solid #666;
+.search-form {
+    margin-bottom: 5px;
 }
 
 .search-form button {
@@ -97,6 +70,10 @@ table tr:hover td {
     height: 25px;
     width: 25px;
     margin-left: 1px;
+}
+
+.search-bar:focus {
+    border: 2px solid #666;
 }
 
 .table-container {
@@ -171,13 +148,13 @@ table tr:hover td {
     background: rgb(26, 136, 26);
 }
 
-.popup .input-container {
+.input-container {
     display: flex;
     margin: 1rem 0;
 }
 
 
-.popup .input-container:first-child {
+.input-container:first-child {
     flex-flow: column nowrap;
 }
 
@@ -191,7 +168,7 @@ table tr:hover td {
     margin-left: 1rem;
 }
 
-.popup .input-container input {
+.input-container input {
     height: 35px;
     padding: 5px;
     font-size: 14px;
@@ -199,7 +176,7 @@ table tr:hover td {
     border: 1px solid rgb(118, 118, 118);
 }
 
-.popup .input-container input:focus {
+.input-container input:focus {
     border: 2px solid #666;
 }
 
