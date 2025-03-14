@@ -1,3 +1,4 @@
+from typing import List
 from validate_docbr import CPF
 from utils.date_utils import get_days_in_month
 from utils.decorators import input_normalized
@@ -7,102 +8,109 @@ import re
 
 class ValidationService:
 
-    def __init__(self):
-        self.cpf_validator = CPF()
+    CPF_VALIDATOR = CPF()
 
-        self.VALIDATORS = {
-            "name": self.validate_name,
-            "rg": self.validate_rg,
-            "cpf": self.validate_cpf,
-            "phone-number": self.validate_phone_number,
-            "birth-date": self.validate_birth_date
-        }
+    VALIDATORS = {
+        "name": "validate_name",
+        "rg": "validate_rg",
+        "cpf": "validate_cpf",
+        "phone-number": "validate_phone_number",
+        "birth-date": "validate_birth_date"
+    }
 
 
+    @classmethod
     @input_normalized
-    def validate_name(self, input) -> dict:
+    def validate_name(cls, input: str) -> tuple:
         """Valida o nome."""
 
         found_chars = re.search(r"[^a-z\u00E0-\u00F6\u00F8-\u00FF\s]", input, re.UNICODE)
 
         if found_chars or not input:
-            return (False, "Nome inválido.")
+            return ("name", False)
         
-        return (True, "")
+        return ("name", True)
 
 
+    @classmethod
     @input_normalized
-    def validate_rg(self, input) -> dict:
+    def validate_rg(cls, input: str) -> tuple:
         """Valida o rg."""
 
         if not input:
-            return (False, "Rg inválido.")
+            return ("rg", False)
 
-        return (True, "")
+        return ("rg", True)
 
 
+    @classmethod
     @input_normalized
-    def validate_cpf(self, input) -> dict:
+    def validate_cpf(cls, input: str) -> tuple:
         """Valida o cpf."""
 
-        is_valid = self.cpf_validator.validate(input)
+        is_valid = cls.CPF_VALIDATOR.validate(input)
 
         if not is_valid or not input:
-            return (False, "CPF inválido.")
+            return ("cpf", False)
 
-        return (True, "")
+        return ("cpf", True)
 
 
+    @classmethod
     @input_normalized
-    def validate_phone_number(self, input) -> dict:
+    def validate_phone_number(cls, input: str) -> tuple:
         """Valida o número de telefone."""
 
         is_valid = re.match(r"\([0-9]{2}\) 9?[0-9]{4}-[0-9]{4}", input)
 
         if not is_valid or not input:
-            return (False, "Telefone inválido.")
+            return ("phone-number", False)
         
-        return (True, "")
+        return ("phone-number", True)
 
 
+    @classmethod
     @input_normalized
-    def validate_birth_date(self, input) -> dict:
+    def validate_birth_date(cls, input: str) -> tuple:
         """Valida a data de nascimento."""
 
         is_valid = re.match(r"[0-9]{2}\/[0-9]{2}\/[0-9]{4}$", input)
 
         if not is_valid or not input:
-            return (False, "Data de nascimento inválida.")
+            return ("birth-date", False)
 
         day, month, year = map(int, input.split("/"))
         
         if month < 1 or month > 12:
-            return (False, "Data de nascimento inválida.")
+            return ("birth-date", False)
 
         if day < 1 or day > get_days_in_month(month, year):
-            return (False, "Data de nascimento inválida.")
+            return ("birth-date", False)
 
         if year > int(datetime.today().year):
-            return (False, "Data de nascimento inválida.")
+            return ("birth-date", False)
         
         current_date = datetime.today()
         inputed_date = datetime.strptime(input, "%d/%m/%Y")
 
         if inputed_date > current_date:
-            return (False, "Data de nascimento inválida.")
+            return ("birth-date", False)
 
-        return (True, "")
+        return ("birth-date", True)
 
 
-    def validate_all(self, inputs: dict) -> list[dict]:
+    @classmethod
+    def validate_all(cls, inputs: dict) -> list:
         """Valida todos os campos com as funções de validação."""
 
-        validation_result = {}
+        errors = []
 
-        for key, value in self.VALIDATORS.items():
-            is_valid, msg = value(inputs.get(key))
+        for key, value in cls.VALIDATORS.items():
+            function = getattr(cls, value)
+
+            input_name, is_valid = function(inputs.get(key))
 
             if not is_valid:
-                validation_result[key] = msg
+                errors.append(input_name)
 
-        return validation_result
+        return errors
