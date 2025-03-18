@@ -20,7 +20,7 @@ class User(db.Model):
 
 
     @classmethod
-    def find(cls, username: str):
+    def find_one(cls, username: str):
         return db.session.execute(db.select(cls).where(
             cls.username==username)).scalar_one_or_none()
 

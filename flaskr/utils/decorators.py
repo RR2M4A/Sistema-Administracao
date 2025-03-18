@@ -1,5 +1,6 @@
 from flask import session, redirect, url_for
 from functools import wraps
+from utils.sanitizers import sanitize
 
 def login_required(f):
     """Exige que o usuário esteja logado para acessar as rotas."""
@@ -13,12 +14,12 @@ def login_required(f):
     return wrapper
 
 
-def input_normalized(f):
-    """Retorna o input como string, sem espaços extras e em minúsculo."""
+def input_sanitized(f):
+    """Retorna o input sanitizado."""
 
     @wraps(f)
     def wrapper(self, input, *args, **kwargs):
-        input = str(input).strip().lower()
+        input = sanitize(str(input))
         return f(self, input, *args, **kwargs)
 
     return wrapper

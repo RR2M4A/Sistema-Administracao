@@ -1,13 +1,22 @@
-from datetime import timedelta, timezone
+from datetime import timedelta, timezone, datetime
 
 
 BRAZIL_TZ = timezone(timedelta(hours=-3))
+
+
+def to_datetime(date: str):
+    """Transforma a data DDMMYYYY para um objeto datetime e 
+    o retorna."""
+
+    day, month, year = date[:2], date[2:4], date[4:]
+    return datetime.strptime(f"{day}/{month}/{year}", "%d/%m/%Y")
 
 
 def is_leap_year(year):
     """Verifica se um ano é bissexto."""
 
     return (year % 4 == 0 and (year % 100 != 0 or year % 400 == 0))
+
 
 def get_days_in_month(month, year):
     """Retorna o número de dias de um mês, considerando ano bissexto para 
