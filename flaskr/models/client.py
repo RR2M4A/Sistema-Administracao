@@ -1,5 +1,5 @@
 from typing import List
-from datetime import datetime, date
+from datetime import date
 from sqlalchemy import String
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from extensions.database import db
@@ -28,17 +28,19 @@ class Client(db.Model):
     phone_number: Mapped[str] = mapped_column()
     birth_date: Mapped[date] = mapped_column()
 
-    entrances: Mapped[List["Entrance"]] = relationship(back_populates='client')
+    entrances: Mapped[List["Entrance"]] = relationship(back_populates='client', cascade="all, delete-orphan")
 
 
     @classmethod
     def create(cls, data: dict):
+        """Instancia um objeto cliente e o armazena no banco de dados."""
+
         client = Client(
             name=data["name"],
             rg=data["rg"],
             cpf=data["cpf"],
             phone_number=data["phone-number"],
-            birth_date=datetime.strptime(data["birth-date"], "%d/%m/%Y")
+            birth_date=data["birth-date"]
         )
 
         db.session.add(client)
@@ -47,5 +49,19 @@ class Client(db.Model):
         
 
     @classmethod
-    def find_one(cls, cpf: str):
-        return db.session.execute(db.select(cls).where(cls.cpf == cpf)).scalar_one_or_none()
+    def find_one(cls, value: str, allowed_columns = ["cpf", "rg"]):
+        """Busca e retorna um cliente do banco de dados."""
+
+        for column in allowed_columns:
+            client = db.session.execute(db.select(cls).where(
+                getattr(cls, column) == value)).scalar_one_or_none()
+
+            if client:
+                return client
+
+
+    @classmethod
+    def find_all(cls):
+        """Retorna todas as linhas da table."""
+
+        return db.session.execute(db.select(cls)).scalars().all()
