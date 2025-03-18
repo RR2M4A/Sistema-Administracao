@@ -6,7 +6,9 @@ export function make_entry(inputs) {
     const entry = {}
 
     for (let input of inputs) {
-        entry[input.name] = input.value;
+        if (input.type !== "radio" || input.checked) {
+            entry[input.name] = input.value;
+        }
     }
 
     return entry;
@@ -24,7 +26,7 @@ export async function make_request(inputs, url=window.location.href) {
         headers: {"content-type": "application/json"}
     });
 
-    return await response.json();
+    return response;
     
 }
 

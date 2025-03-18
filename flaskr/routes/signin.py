@@ -7,7 +7,7 @@ signin = Blueprint("signin", __name__)
 
 @signin.get("/signin/")
 def signin_get():
-    """Carrega a páǵina de sign in."""
+    """Carrega a página de sign in."""
 
     return render_template("signin.html")
 
@@ -21,6 +21,7 @@ def signin_post():
     password = req["password"]
 
     user = AuthService.authenticate_user(username, password)
+
     if user:
         session["id"] = user.id
         return {"authenticated": True, "redirect": url_for("system.system_get")}

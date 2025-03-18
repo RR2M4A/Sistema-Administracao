@@ -15,21 +15,23 @@
             
             <form class="search-form" method="post" action="{{ url_for('system.system_search_client') }}">
 
-                <div class="radio-container">
-                    <input name="search" class="radio-bt" type="radio" value="CPF" checked>
-                    <label>CPF</label>
+                <div class="input-container">
 
-                    <input name="search" class="radio-bt" type="radio" value="RG">
-                    <label>RG</label>
+                    <div class="radio-container">
+                        <input name="search" class="radio-bt" type="radio" value="cpf" checked>
+                        <label>CPF</label>
+    
+                        <input name="search" class="radio-bt" type="radio" value="rg">
+                        <label>RG</label>
+                    </div>
 
                     <p class="search-msg"></p>
+                    <input name="search-bar" class="search-bar" type="text" placeholder="Buscar">
                 </div>
 
                 <div class="input-container">
-                    <input name="search" class="search-bar" type="text" placeholder="Buscar">
-
                     <button class="search-client-bt" type="submit"><img src="../static/img/lupe.png"></button>
-                    <button class="add-client-bt" type="button"><img src="../static/img/plus.png"></button>
+                    <button class="add-client-bt" type="submit"><img src="../static/img/plus.png"></button>
                 </div>
             </form>
     
@@ -45,13 +47,15 @@
                 </thead>
                 
                 <tbody>
-                    <tr>
-                        <td>Nome</td>
-                        <td>RG</td>
-                        <td>CPF</td>
-                        <td>Telefone</td>
-                        <td>Data de nascimento</td>
-                    </tr>
+                    {% for client in clients %}
+                        <tr>
+                            <td>{{ client.name }}</td>
+                            <td>{{ client.rg }}</td>
+                            <td>{{ client.cpf }}</td>
+                            <td>{{ client.phone_number }}</td>
+                            <td>{{ client.birth_date }}</td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
     
             </table>
@@ -87,7 +91,7 @@
                 <div class="input-container">
 
                     <div class="inner-input-container">
-                        <label for="Telefone">Telefone</label>
+                        <label for="phone-number">Telefone</label>
                         <input type="text" id="phone-number" name="phone-number">
                     </div>
 
@@ -103,7 +107,7 @@
         </div>
     </main>
 
-    <script type="module" src="../static/js/system/main.js"></script>
+    <script type="module" src="../static/js/system/system_main.js"></script>
 
 </body>
 </html>
