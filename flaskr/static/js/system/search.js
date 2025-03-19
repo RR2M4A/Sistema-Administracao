@@ -68,7 +68,7 @@ export function show_client(client_info) {
 
     let row = document.createElement("tr");
 
-    let properties = ["name", "rg", "cpf", "phone-number", "birth-date"];
+    let properties = ["name", "rg", "cpf", "phone_number", "birth_date"];
 
     properties.forEach(property => {
         let cell = document.createElement("td");

@@ -4,6 +4,7 @@ from models.entrance import Entrance
 from extensions.database import db
 from sqlalchemy.exc import SQLAlchemyError
 from utils.masks import mask_cpf, mask_rg, mask_phone_number
+from utils.converters import model_to_dict
 
 
 class SystemService:
@@ -49,10 +50,9 @@ class SystemService:
     @staticmethod
     def mask_client_info(client: Union[Client, dict]) -> dict:
         """Retorna o cliente com suas informações sensíveis mascaradas."""
-        
-        if not isinstance(client, dict):
-            client = client.__dict__
 
+        client = model_to_dict(client)
+        
         client["cpf"] = mask_cpf(client.get("cpf"))
         client["rg"] = mask_rg(client.get("rg"))
         client["phone_number"] = mask_phone_number(client.get("phone_number"))

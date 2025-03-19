@@ -1,6 +1,6 @@
 def mask_cpf(cpf: str):
     """Retorna o cpf mascarado."""
-
+    
     return "{}.***.***-{}".format(cpf[:3], cpf[-2:])
 
 
