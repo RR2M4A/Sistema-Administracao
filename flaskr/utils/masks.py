@@ -18,5 +18,5 @@ def mask_phone_number(phone_number: str):
     """Retorna o número de telefone mascarado."""
 
     if len(phone_number) == 12:
-        return "{} *****-{}".format(phone_number[:2], phone_number[-4:])
-    return "{} ****-{}".format(phone_number[:2], phone_number[-4:])
+        return "({}) *****-{}".format(phone_number[:2], phone_number[-4:])
+    return "({}) ****-{}".format(phone_number[:2], phone_number[-4:])

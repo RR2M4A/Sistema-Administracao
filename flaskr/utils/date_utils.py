@@ -5,11 +5,10 @@ BRAZIL_TZ = timezone(timedelta(hours=-3))
 
 
 def to_datetime(date: str):
-    """Transforma a data DDMMYYYY para um objeto datetime e 
+    """Transforma a data DD/MM/YYYY para um objeto datetime e 
     o retorna."""
 
-    day, month, year = date[:2], date[2:4], date[4:]
-    return datetime.strptime(f"{day}/{month}/{year}", "%d/%m/%Y")
+    return datetime.strptime(date, "%d/%m/%Y")
 
 
 def is_leap_year(year):

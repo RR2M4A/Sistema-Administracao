@@ -73,12 +73,12 @@ class ValidationService:
     def validate_birth_date(cls, input: str) -> tuple:
         """Valida a data de nascimento."""
 
-        is_valid = re.match(r"(0[1-9]|[12][0-9]|3[01])(0[1-9]|1[0-2])(19[0-9]{2}|20[0-9]{2})$", input)
+        is_valid = re.match(r"(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19[0-9]{2}|20[0-9]{2})$", input)
 
         if not is_valid or not input:
             return ("birth-date", False)
 
-        day, month, year = map(int, [input[:2], input[2:4], input[4:]])
+        day, month, year = map(int, [input[:2], input[3:5], input[6:8]])
         
         if month < 1 or month > 12:
             return ("birth-date", False)

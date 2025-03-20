@@ -7,7 +7,7 @@ def sanitize(value):
     """
 
     value = str(value).strip().lower()
-    value = re.sub(r"[^\w\s\u00E0-\u00F6\u00F8-\u00FF]", "", value)
+    value = re.sub(r"[^\/\w\s\u00E0-\u00F6\u00F8-\u00FF]", "", value)
     return value
 
 

@@ -36,9 +36,6 @@ def system_add_client():
     
     if SystemService.find_client(req["cpf"], req["rg"]):
         return {"status": "error"}, HTTPStatus.CONFLICT
-        
-
-    req["birth-date"] = to_datetime(req["birth-date"])
 
     client = SystemService.create_client(req)
     SystemService.create_entrance(client)

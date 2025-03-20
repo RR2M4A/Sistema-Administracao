@@ -1,5 +1,4 @@
 from typing import List
-from datetime import date
 from sqlalchemy import String
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from extensions.database import db
@@ -26,7 +25,7 @@ class Client(db.Model):
     rg: Mapped[str] = mapped_column(nullable=False)
     cpf: Mapped[str] = mapped_column(String(11))
     phone_number: Mapped[str] = mapped_column()
-    birth_date: Mapped[date] = mapped_column()
+    birth_date: Mapped[str] = mapped_column()
 
     entrances: Mapped[List["Entrance"]] = relationship(back_populates='client', cascade="all, delete-orphan")
 
