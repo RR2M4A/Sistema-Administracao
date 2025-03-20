@@ -2,6 +2,7 @@
 
 import { make_request } from "../utils/fetch_utils.js";
 
+
 export function activate_popup(event, popup, overlay, focus_element) {
 
     event.preventDefault();
@@ -24,13 +25,15 @@ export function deactivate_popup(event, popup, overlay) {
 }
 
 
-export function reset_inputs(form) {
+export function reset_inputs(parent) {
 
-    let inputs = form.querySelectorAll('input');
+    let inputs = parent.querySelectorAll('input');
 
     for (let input of inputs) {
-        input.value = "";
-        input.removeAttribute("style");
+        if (input.type != "radio") {
+            input.value = "";
+            input.removeAttribute("style");
+        }
     }
 }
 
@@ -85,7 +88,8 @@ export async function add_new_client(event, form, side_msg=null) {
             side_msg.innerHTML = "Registro feito com sucesso!";
         }
 
-        setTimeout(() => reset_inputs(form), 5000);
+        reset_inputs(form);
+        setTimeout(() => side_msg.classList.remove("successful-msg"), 5000);
     }
     
 }

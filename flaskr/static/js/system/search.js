@@ -19,8 +19,6 @@ export async function search_client(event, form, side_msg=null) {
             side_msg.classList.remove("successful-msg");
             side_msg.classList.add("failed-msg");
             side_msg.innerHTML = "Valor inválido!";
-
-            setTimeout(() => hide_side_msg(side_msg), 5000);
         }
 
     } else if (ans.status == 404) {
@@ -29,8 +27,6 @@ export async function search_client(event, form, side_msg=null) {
             side_msg.classList.remove("successful-msg");
             side_msg.classList.add("failed-msg");
             side_msg.innerHTML = "Cliente não encontrado!";
-
-            setTimeout(() => hide_side_msg(side_msg), 5000);
         }
 
     } else if (ans.status == 200) {
@@ -64,10 +60,7 @@ export function show_client(client_info) {
         }
     }
 
-    console.log(client_info)
-
     let row = document.createElement("tr");
-
     let properties = ["name", "rg", "cpf", "phone_number", "birth_date"];
 
     properties.forEach(property => {

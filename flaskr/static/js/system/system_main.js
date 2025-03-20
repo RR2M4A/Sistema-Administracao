@@ -2,7 +2,7 @@
 
 import * as pp from "./popup.js";
 import * as fm from "../utils/formatters.js";
-import { search_client } from "./search.js";
+import { hide_side_msg, search_client } from "./search.js";
 
 const search_form = document.querySelector('.search-form');
 const search_client_bt = document.querySelector('.search-client-bt');
@@ -50,7 +50,13 @@ search_bar.addEventListener("input", (event) => {
 })
 
 radio_inputs.forEach((element) => {
-    element.addEventListener("change", (event) => {
+    element.addEventListener("change", () => {
         search_bar.value = "";
+        hide_side_msg(search_msg);
     })
+})
+
+document.addEventListener("DOMContentLoaded", () => {
+    pp.reset_inputs(popup_form);
+    pp.reset_inputs(search_form);
 })
