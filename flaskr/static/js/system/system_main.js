@@ -3,6 +3,7 @@
 import * as pp from "./popup.js";
 import * as fm from "../utils/formatters.js";
 import { hide_side_msg, search_client } from "./search.js";
+import { reload } from "./reload.js";
 
 const search_form = document.querySelector('.search-form');
 const search_client_bt = document.querySelector('.search-client-bt');
@@ -17,6 +18,8 @@ const popup_side_msg = document.querySelector('.popup-side-msg');
 const overlay = document.querySelector('.overlay');
 const close_popup_bt = document.querySelector('.close-popup-bt');
 const confirm_client_bt = document.querySelector('.confirm-bt');
+
+const reload_bt = document.querySelector('.reload-bt');
 
 const name_input = document.querySelector('#name');
 const cpf_input = document.querySelector('#cpf');
@@ -49,6 +52,12 @@ search_bar.addEventListener("input", (event) => {
     }
 })
 
+search_bar.addEventListener("keydown", (event) => {
+    if (event.key == "Enter") {
+        search_client(event, search_form, search_msg);
+    }
+});
+
 radio_inputs.forEach((element) => {
     element.addEventListener("change", () => {
         search_bar.value = "";
@@ -60,3 +69,5 @@ document.addEventListener("DOMContentLoaded", () => {
     pp.reset_inputs(popup_form);
     pp.reset_inputs(search_form);
 })
+
+reload_bt.addEventListener("click", reload);

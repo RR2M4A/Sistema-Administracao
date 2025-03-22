@@ -4,6 +4,7 @@ import { make_request } from "../utils/fetch_utils.js";
 
 
 const tbody = document.querySelector('.table-container tbody');
+const page_form = document.querySelector('.page-form');
 
 
 export async function search_client(event, form, side_msg=null) {
@@ -35,10 +36,11 @@ export async function search_client(event, form, side_msg=null) {
             side_msg.classList.remove("failed-msg");
             side_msg.classList.add("successful-msg");
             side_msg.innerHTML = "Cliente encontrado!";
-
+            
             setTimeout(() => hide_side_msg(side_msg), 5000);
         }
 
+        page_form.style.display = "none";
         let client_info = await ans.json();
         show_client(client_info);
     }

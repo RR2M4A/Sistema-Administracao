@@ -53,6 +53,7 @@ table tr:hover td {
 }
 
 .search-form .input-container:nth-child(1) {
+    position: relative;
     display: flex;
     flex-flow: column nowrap;
     flex-grow: 1;;
@@ -103,11 +104,25 @@ table tr:hover td {
     justify-content: center;
     border: 0;
     cursor: pointer;
-    background: #333;
     height: 25px;
     width: 25px;
     margin-left: 1px;
     margin-top: auto;
+}
+
+.reload-bt {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: none;
+}
+
+.search-client-bt {
+    background: #333;
+}
+
+.add-client-bt {
+    background: #333;
 }
 
 .table-container {
@@ -256,4 +271,5 @@ table tr:hover td {
     height: 25px;
     width: 25px;
     margin-left: 1px;
+    cursor: pointer;
 }
