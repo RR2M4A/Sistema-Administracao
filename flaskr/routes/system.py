@@ -1,22 +1,38 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, redirect, url_for, session
 from utils.decorators import login_required
 from services.system_service import SystemService
 from services.validation_service import ValidationService
 from http import HTTPStatus
 from utils.sanitizers import sanitize_many
-from utils.masks import mask_cpf, mask_rg, mask_phone_number
-from utils.date_utils import to_datetime
 
 
 system = Blueprint("system", __name__)
 
 
 @system.get("/system/")
+@system.get("/system/<page_id>")
 @login_required
-def system_get():
+def system_get(page_id = "1"):
     """Carrega a página principal do sistema."""
 
-    clients = SystemService.get_masked_clients()
+    page_mov = request.args.get("arrow")
+
+    if page_mov:
+        previous_page = session.get("page_id", 1)
+        next_page = previous_page + 1 if page_mov == "right" else previous_page - 1
+
+        return redirect(url_for("system.system_get", page_id=next_page))
+    
+    if not page_id.isdigit():
+        return redirect(url_for("system.system_get", page_id=1))
+
+    page_id = int(page_id)
+    clients, new_page_id = SystemService.get_clients_interval(page_id)
+
+    if page_id != new_page_id:
+        return redirect(url_for("system.system_get", page_id=new_page_id))
+    
+    session["page_id"] = new_page_id
     return render_template("system.html", clients=clients)
 
 

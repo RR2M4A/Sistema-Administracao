@@ -64,3 +64,8 @@ class Client(db.Model):
         """Retorna todas as linhas da table."""
 
         return db.session.execute(db.select(cls)).scalars().all()
+    
+
+    @classmethod
+    def count(cls):
+        return len((db.session.execute(db.select(cls))).all())

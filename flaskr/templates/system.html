@@ -57,8 +57,12 @@
                         </tr>
                     {% endfor %}
                 </tbody>
-    
             </table>
+            
+            <form method="get" class="page-form" action="{{ url_for('system.system_get') }}">
+                <button name="arrow" value="left" type="submit" class="arrow right-arrow"><img src="../static/img/left_arrow.png"></button>
+                <button name="arrow" value="right" type="submit" class="arrow left-arrow"><img src="../static/img/right_arrow.png"></button>
+            </form>
         </div>
 
         <div class="overlay"></div>

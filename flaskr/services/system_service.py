@@ -5,6 +5,7 @@ from extensions.database import db
 from sqlalchemy.exc import SQLAlchemyError
 from utils.masks import mask_cpf, mask_rg, mask_phone_number
 from utils.converters import model_to_dict
+from math import ceil
 
 
 class SystemService:
@@ -78,3 +79,18 @@ class SystemService:
     
         except SQLAlchemyError:
             db.rollback()
+
+
+    @classmethod
+    def get_clients_interval(cls, page_id: int, per_page: int = 20):
+
+        clients = cls.get_masked_clients()
+        total_clients = Client.count()
+
+        total_pages = ceil(total_clients / per_page)
+        page_id = max(1, min(page_id, total_pages))
+
+        start_index = per_page * (page_id - 1)
+        end_index = min(start_index + per_page, total_clients)
+
+        return clients[start_index:end_index], page_id

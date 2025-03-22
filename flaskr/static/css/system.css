@@ -238,3 +238,22 @@ table tr:hover td {
     display: block;
     color: red;
 }
+
+.page-form {
+    width: fit-content;
+    display: flex;
+    margin-left: auto;
+    margin-top: 5px;
+}
+
+.arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    cursor: pointer;
+    background: #333;
+    height: 25px;
+    width: 25px;
+    margin-left: 1px;
+}
