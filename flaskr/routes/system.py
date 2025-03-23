@@ -27,13 +27,13 @@ def system_get(page_id = "1"):
         return redirect(url_for("system.system_get", page_id=1))
 
     page_id = int(page_id)
-    clients, new_page_id = SystemService.get_clients_interval(page_id)
+    client_entries, new_page_id = SystemService.get_clients_interval(page_id)
 
     if page_id != new_page_id:
         return redirect(url_for("system.system_get", page_id=new_page_id))
     
     session["page_id"] = new_page_id
-    return render_template("system.html", clients=clients)
+    return render_template("system.html", client_entries=client_entries)
 
 
 @system.post("/system/add_client")

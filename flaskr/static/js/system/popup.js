@@ -78,18 +78,8 @@ export async function add_new_client(event, form, side_msg=null) {
 
     } else if (ans.status == 201) {
 
-        for (let input of inputs) {
-            input.style.border = "1px solid rgb(58, 152, 64)";
-        }
+        window.location.reload();
 
-        if (side_msg) {
-            side_msg.classList.remove("failed-msg");
-            side_msg.classList.add("successful-msg");
-            side_msg.innerHTML = "Registro feito com sucesso!";
-        }
-
-        reset_inputs(form);
-        setTimeout(() => side_msg.classList.remove("successful-msg"), 5000);
     }
     
 }

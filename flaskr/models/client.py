@@ -61,11 +61,15 @@ class Client(db.Model):
 
     @classmethod
     def find_all(cls):
-        """Retorna todas as linhas da table."""
+        """Retorna todas as linhas da table Client, ordenadas pelo
+        id."""
 
-        return db.session.execute(db.select(cls)).scalars().all()
+        return db.session.execute(
+            db.select(cls).order_by(cls.id)).scalars().all()
     
 
     @classmethod
     def count(cls):
-        return len((db.session.execute(db.select(cls))).all())
+        """Retorna o total de linhas que a table Client contém."""
+
+        return len(db.session.execute(db.select(cls)).all())

@@ -1,3 +1,4 @@
+from typing import List
 from datetime import datetime
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
@@ -36,3 +37,19 @@ class Entrance(db.Model):
         db.session.add(entrance)
         db.session.commit()
         return entrance
+    
+
+    @classmethod
+    def find_all(cls) -> List:
+        """Retorna todas as linhas da table Entrance, ordenadas pelo
+        dia e horário de entrada de forma decrescente."""
+
+        return db.session.execute(
+            db.select(cls).order_by(cls.entrance.desc())).scalars().all()
+    
+
+    @classmethod
+    def count(cls):
+        """Retorna o total de linhas que a table Entrance contém."""
+
+        return len(db.session.execute(db.select(cls)).all())

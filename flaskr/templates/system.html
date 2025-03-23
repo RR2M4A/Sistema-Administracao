@@ -40,21 +40,26 @@
                 <thead>
                     <tr>
                         <th class="name-col">Nome</th>
-                        <th class="rg-col">RG</th>
                         <th class="cpf-col">CPF</th>
                         <th class="phone-col">Telefone</th>
                         <th class="birth-col">Data de Nascimento</th>
+                        <th class="date-col">Data</th>
+                        <th class="time-col">Horário</th>
                     </tr>
                 </thead>
                 
                 <tbody>
-                    {% for client in clients %}
+                    {% for client_entry in client_entries %}
+                        {% set client = client_entry[0] %}
+                        {% set entry = client_entry[1].entrance %}
+
                         <tr>
                             <td>{{ client.name }}</td>
-                            <td>{{ client.rg }}</td>
                             <td>{{ client.cpf }}</td>
                             <td>{{ client.phone_number }}</td>
                             <td>{{ client.birth_date }}</td>
+                            <td>{{ entry.strftime('%d/%m/%Y') }}</td>
+                            <td>{{ entry.strftime('%H:%M:%S') }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

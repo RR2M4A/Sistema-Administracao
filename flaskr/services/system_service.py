@@ -62,35 +62,25 @@ class SystemService:
 
 
     @classmethod
-    def get_masked_clients(cls) -> List[dict]:
-        """Retorna todos os clientes armazenados no banco de dados,
-        com suas informações já mascaradas.
-        """
-
-        try:
-            clients = Client.find_all()
-            masked_clients = []
-
-            for client in clients:
-                client = cls.mask_client_info(client)
-                masked_clients.append(client)
-
-            return masked_clients
-    
-        except SQLAlchemyError:
-            db.rollback()
-
-
-    @classmethod
     def get_clients_interval(cls, page_id: int, per_page: int = 20):
+        """Retorna a lista de clientes com base na págína que o usuário
+        está atualmente, e a quantidade de clientes que são mostradas 
+        simultaneamente."""
 
-        clients = cls.get_masked_clients()
-        total_clients = Client.count()
+        entrances = Entrance.find_all()
+        total_entrances = Client.count()
 
-        total_pages = ceil(total_clients / per_page)
+        total_pages = ceil(total_entrances / per_page)
         page_id = max(1, min(page_id, total_pages))
 
         start_index = per_page * (page_id - 1)
-        end_index = min(start_index + per_page, total_clients)
+        end_index = min(start_index + per_page, total_entrances)
 
-        return clients[start_index:end_index], page_id
+        clients = []
+
+        for entrance in entrances[start_index:end_index]:
+            client = entrance.client
+            client = cls.mask_client_info(client)
+            clients.append((client, entrance))
+
+        return clients, page_id

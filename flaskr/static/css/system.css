@@ -28,18 +28,21 @@ table td {
     padding: 5px;
     text-align: left;
     border: 1px solid black;
-
+    font-size: 14px;
+    text-wrap: nowrap;
 }
 
 table th {
     background-color: #a1a1a1;
     font-weight: bold;
-    font-size: 14px;
 }
 
 table td {
     background-color: white;
-    font-size: 14px;
+}
+
+.name-col {
+    width: 100%;
 }
 
 table tr:hover td {
