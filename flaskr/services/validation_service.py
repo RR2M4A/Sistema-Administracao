@@ -60,7 +60,7 @@ class ValidationService:
     def validate_phone_number(cls, input: str) -> tuple:
         """Valida o número de telefone."""
 
-        is_valid = re.match(r"[0-9]{2} 9?[0-9]{4}[0-9]{4}", input)
+        is_valid = re.fullmatch(r"[0-9]{2} 9?[0-9]{4}[0-9]{4}", input)
 
         if not is_valid or not input:
             return ("phone-number", False)
@@ -73,7 +73,7 @@ class ValidationService:
     def validate_birth_date(cls, input: str) -> tuple:
         """Valida a data de nascimento."""
 
-        is_valid = re.match(r"(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19[0-9]{2}|20[0-9]{2})$", input)
+        is_valid = re.fullmatch(r"(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19[0-9]{2}|20[0-9]{2})", input)
 
         if not is_valid or not input:
             return ("birth-date", False)
