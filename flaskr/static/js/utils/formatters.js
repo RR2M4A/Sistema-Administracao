@@ -1,10 +1,7 @@
 "use strict"
 
-export function format_cpf(event) {
+export function format_cpf(input) {
 
-    event.preventDefault();
-
-    let input = event.target;
     let start = input.selectionStart;
     let old_value = input.value;
 
@@ -34,11 +31,8 @@ export function format_cpf(event) {
 }
 
 
-export function format_phone_number(event) {
+export function format_phone_number(input) {
 
-    event.preventDefault();
-
-    let input = event.target;
     let start = input.selectionStart;
     let old_value = input.value;
 
@@ -73,11 +67,8 @@ export function format_phone_number(event) {
 }
 
 
-export function format_birth_date(event) {
-    
-    event.preventDefault();
+export function format_birth_date(input) {
 
-    let input = event.target;
     let start = input.selectionStart;
     let old_value = input.value;
 
