@@ -29,12 +29,13 @@ table td {
     text-align: left;
     border: 1px solid black;
     font-size: 14px;
-    text-wrap: nowrap;
+    white-space: nowrap;
 }
 
 table th {
     background-color: #a1a1a1;
     font-weight: bold;
+    text-align: center;
 }
 
 table td {
@@ -79,6 +80,12 @@ table tr:hover td {
 
 .radio-container label {
     margin-left: 2px;
+}
+
+.search-client-popup .radio-container {
+    width: fit-content;
+    margin-left: auto;
+    margin-top: 20px;
 }
 
 .search-msg {
@@ -180,7 +187,7 @@ table tr:hover td {
     width: 100%;
 }
 
-.confirm-bt {
+.primary-button {
     width: 100%;
     height: 40px;
     outline: none;
@@ -188,16 +195,33 @@ table tr:hover td {
     font-weight: bold;
     border: 1px solid black;
     cursor: pointer;
-    background: rgb(35, 158, 35);
     color: white;
 }
 
-.confirm-bt:hover {
+.confirm-bt, .visit-bt {
+    background: rgb(35, 158, 35);
+}
+
+.confirm-bt:hover, .visit-bt:hover {
     background: rgb(26, 136, 26);
 }
 
-.confirm-bt:focus {
+.confirm-bt:focus, .visit-bt:focus {
     background: rgb(26, 136, 26);
+}
+
+.edit-bt {
+    display: none;
+    background: #3232e6;
+    margin-left: 20px;
+}
+
+.edit-bt:hover {
+    background: #3c3c9d;
+}
+
+.edit-bt:focus {
+    background: #3c3c9d;
 }
 
 .popup .input-container {
@@ -206,7 +230,7 @@ table tr:hover td {
 }
 
 
-.popup .input-container:first-child {
+.name-container {
     flex-flow: column nowrap;
 }
 

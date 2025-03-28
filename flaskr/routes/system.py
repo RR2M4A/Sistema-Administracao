@@ -3,7 +3,7 @@ from utils.decorators import login_required
 from services.system_service import SystemService
 from services.validation_service import ValidationService
 from http import HTTPStatus
-from utils.sanitizers import sanitize_many
+from utils.sanitizers import sanitize_many, sanitize
 
 
 system = Blueprint("system", __name__)
@@ -50,7 +50,7 @@ def system_add_client():
             "errors": errors
         }, HTTPStatus.BAD_REQUEST
     
-    if SystemService.find_client(req["cpf"], req["rg"]):
+    if SystemService.find_client(req["cpf"]) or SystemService.find_client(req["rg"]):
         return {"status": "error"}, HTTPStatus.CONFLICT
 
     client = SystemService.create_client(req)
@@ -64,6 +64,7 @@ def system_add_client():
 def system_search_client():
     """Busca o cliente no sistema, através do cpf informado."""
     
+
     req = sanitize_many(request.get_json())
     search_by, value = req.get("search"), req.get("search-bar")
 
@@ -83,3 +84,37 @@ def system_search_client():
     client.update({"status": "success"})
 
     return client, HTTPStatus.OK
+
+
+@system.post("/system/update_client")
+@login_required
+def system_update_client():
+    """Atualiza o nº de telefone ou a entrada do cliente."""
+    
+    req = request.get_json()
+    pressed_bt = req.get("bt")
+    client_id = req.get("client-id")
+
+    if not client_id.isdigit():
+        return {"status": "error"}, HTTPStatus.NOT_FOUND
+
+    client_id = int(client_id)
+    client = SystemService.find_client(client_id)
+
+    if not client:
+        return {"status": "error"}, HTTPStatus.NOT_FOUND
+
+    if pressed_bt == "edit":
+        field_to_edit = "phone_number"
+        phone_number = sanitize(req.get("phone-number"))
+        _, is_valid = ValidationService.validate_phone_number(phone_number)
+
+        if not is_valid:
+            return {"status": "error"}, HTTPStatus.BAD_REQUEST
+
+        SystemService.update_client(client, field_to_edit, phone_number)
+
+        return {"status": "success"}, HTTPStatus.OK
+
+    SystemService.create_entrance(client)
+    return {"status": "success"}, HTTPStatus.CREATED

@@ -3,7 +3,6 @@ def model_to_dict(obj: object) -> dict:
     'sa_instance_state'.
     """
 
-    obj = obj.__dict__
+    obj = obj.__dict__.copy()
     obj.pop("_sa_instance_state", None)
-    obj.pop("id", None)
     return obj

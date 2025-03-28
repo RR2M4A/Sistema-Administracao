@@ -2,7 +2,7 @@
 
 import { make_request } from "../utils/fetch_utils.js";
 import { activate_popup, deactivate_popup, reset_inputs } from "../utils/popup_utils.js";
-import { format_cpf, format_birth_date, format_phone_number } from "../utils/formatters.js";
+import { format_birth_date, format_cpf, format_phone_number } from "../utils/formatters.js";
 
 
 const activate_add_popup_bt = document.querySelector('.activate-add-popup-bt');
@@ -14,10 +14,10 @@ const new_client_form = new_client_popup.querySelector('form');
 const popup_side_msg = new_client_popup.querySelector('.popup-side-msg');
 const confirm_client_bt = new_client_form.querySelector('.confirm-bt');
 
-const name_input = document.querySelector("input[name='name']");
-const cpf_input = document.querySelector("input[name='cpf']");
-const phone_number_input = document.querySelector("input[name='phone-number']");
-const birth_date_input = document.querySelector("input[name='birth-date']");
+const name_input = new_client_popup.querySelector("input[name='name']");
+const cpf_input = new_client_popup.querySelector("input[name='cpf']");
+const phone_number_input = new_client_popup.querySelector("input[name='phone-number']");
+const birth_date_input = new_client_popup.querySelector("input[name='birth-date']");
 
 export async function add_client(form, side_msg=null) {
 

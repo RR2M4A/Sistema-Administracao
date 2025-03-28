@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import Union
 from models.client import Client
 from models.entrance import Entrance
 from extensions.database import db
@@ -67,6 +67,18 @@ class SystemService:
 
         return client
 
+    
+    @staticmethod
+    def update_client(client, field_to_edit, info):
+        """Dado o cliente, atualiza algum atributo dele."""
+
+        try:
+            setattr(client, field_to_edit, info)
+            db.session.commit()
+
+        except SQLAlchemyError:
+            db.rollback()
+
 
     @classmethod
     def get_clients_interval(cls, page_id: int, per_page: int = 20):
@@ -75,7 +87,7 @@ class SystemService:
         simultaneamente."""
 
         entrances = Entrance.find_all()
-        total_entrances = Client.count()
+        total_entrances = Entrance.count()
 
         total_pages = ceil(total_entrances / per_page)
         page_id = max(1, min(page_id, total_pages))
