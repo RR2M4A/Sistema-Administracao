@@ -34,15 +34,22 @@ class SystemService:
 
 
     @staticmethod
-    def find_client(*values) -> Client:
+    def find_client(value) -> Client:
         """Busca pelo cliente no banco de dados e o retorna."""
         
         try:
-            for value in values:
-                client = Client.find_one(value)
+            client = Client.find_by_id(value)
 
-                if client:
-                    return client
+            if client:
+                return client
+            
+            client = Client.find_by_rg(value)
+
+            if client:
+                return client
+            
+            client = Client.find_by_cpf(value)
+            return client
                     
         except SQLAlchemyError:
             db.rollback()

@@ -48,15 +48,33 @@ class Client(db.Model):
         
 
     @classmethod
-    def find_one(cls, value: str, allowed_columns = ["cpf", "rg"]):
-        """Busca e retorna um cliente do banco de dados."""
+    def find_by_id(cls, id: int):
+        """Busca pelo ID e retorna um cliente do banco de dados."""
 
-        for column in allowed_columns:
-            client = db.session.execute(db.select(cls).where(
-                getattr(cls, column) == value)).scalar_one_or_none()
+        client = db.session.execute(
+            db.select(cls).where(cls.id == id)).scalar_one_or_none()
+        
+        return client
+    
 
-            if client:
-                return client
+    @classmethod
+    def find_by_cpf(cls, cpf: str):
+        """Busca pelo CPF e retorna um cliente do banco de dados."""
+
+        client = db.session.execute(
+            db.select(cls).where(cls.cpf == cpf)).scalar_one_or_none()
+        
+        return client
+    
+
+    @classmethod
+    def find_by_rg(cls, rg: str):
+        """Busca pelo RG e retorna um cliente do banco de dados."""
+
+        client = db.session.execute(
+            db.select(cls).where(cls.rg == rg)).scalar_one_or_none()
+        
+        return client
 
 
     @classmethod
