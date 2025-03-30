@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+
+    <link href="../static/css/signup.css" rel="stylesheet">
+</head>
+<body>
+    <main class="blank-container">
+
+        <h2 class="welcome-msg">Crie seu primeiro usuário!</h2>
+        <form method="post" action="{{ url_for('auth.signup_post') }}">
+
+            <p class="invalid-credentials"></p>
+
+            <div class="input-container">
+                <label for="username">Usuário:</label>
+                <input id="username" name="username" type="text">
+            </div>
+
+            <div class="input-container">
+                <label for="first-password">Senha:</label>
+                <input id="first-password" name="first-password" type="password">
+            </div>
+
+            <div class="input-container">
+                <label for="second-password">Confirme sua senha:</label>
+                <input id="second-password" name="second-password" type="password">
+            </div>
+
+
+            <button class="submit-bt" type="button">Cadastrar-se</button>
+
+        </form>
+    </main>
+
+    <script type="module" src="../static/js/signup/signup_main.js"></script>
+</body>
+</html>

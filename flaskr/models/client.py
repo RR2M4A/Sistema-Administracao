@@ -1,5 +1,5 @@
-from typing import List
-from sqlalchemy import String
+from typing import List, Optional
+from sqlalchemy import String, exists
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from extensions.database import db
 
@@ -31,7 +31,7 @@ class Client(db.Model):
 
 
     @classmethod
-    def create(cls, data: dict):
+    def create(cls, data: dict) -> 'Client':
         """Instancia um objeto cliente e o armazena no banco de dados."""
 
         client = Client(
@@ -48,7 +48,7 @@ class Client(db.Model):
         
 
     @classmethod
-    def find_by_id(cls, id: int):
+    def find_by_id(cls, id: int) -> Optional['Client']:
         """Busca pelo ID e retorna um cliente do banco de dados."""
 
         client = db.session.execute(
@@ -58,7 +58,7 @@ class Client(db.Model):
     
 
     @classmethod
-    def find_by_cpf(cls, cpf: str):
+    def find_by_cpf(cls, cpf: str) -> Optional['Client']:
         """Busca pelo CPF e retorna um cliente do banco de dados."""
 
         client = db.session.execute(
@@ -68,7 +68,7 @@ class Client(db.Model):
     
 
     @classmethod
-    def find_by_rg(cls, rg: str):
+    def find_by_rg(cls, rg: str) -> Optional['Client']:
         """Busca pelo RG e retorna um cliente do banco de dados."""
 
         client = db.session.execute(
@@ -78,7 +78,7 @@ class Client(db.Model):
 
 
     @classmethod
-    def find_all(cls):
+    def find_all(cls) -> List[Optional['Client']]:
         """Retorna todas as linhas da table Client, ordenadas pelo
         id."""
 
@@ -87,7 +87,15 @@ class Client(db.Model):
     
 
     @classmethod
-    def count(cls):
+    def count(cls) -> int:
         """Retorna o total de linhas que a table Client contém."""
 
         return len(db.session.execute(db.select(cls)).all())
+    
+
+    @classmethod
+    def has_any(cls) -> bool:
+        """Retorna se existe ao menos uma tupla na table Client."""
+
+        return db.session.execute(
+            db.select(exists().where(cls.id.isnot(None)))).scalar()

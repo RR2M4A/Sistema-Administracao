@@ -49,7 +49,7 @@ class Entrance(db.Model):
     
 
     @classmethod
-    def count(cls):
+    def count(cls) -> int:
         """Retorna o total de linhas que a table Entrance contém."""
 
         return len(db.session.execute(db.select(cls)).all())
