@@ -23,7 +23,7 @@ class Client(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     rg: Mapped[str] = mapped_column(nullable=False)
-    cpf: Mapped[str] = mapped_column(String(11))
+    cpf: Mapped[str] = mapped_column(String(11), nullable=False)
     phone_number: Mapped[str] = mapped_column()
     birth_date: Mapped[str] = mapped_column()
 
@@ -51,30 +51,24 @@ class Client(db.Model):
     def find_by_id(cls, id: int) -> Optional['Client']:
         """Busca pelo ID e retorna um cliente do banco de dados."""
 
-        client = db.session.execute(
+        return db.session.execute(
             db.select(cls).where(cls.id == id)).scalar_one_or_none()
-        
-        return client
     
 
     @classmethod
     def find_by_cpf(cls, cpf: str) -> Optional['Client']:
         """Busca pelo CPF e retorna um cliente do banco de dados."""
 
-        client = db.session.execute(
+        return db.session.execute(
             db.select(cls).where(cls.cpf == cpf)).scalar_one_or_none()
-        
-        return client
     
 
     @classmethod
     def find_by_rg(cls, rg: str) -> Optional['Client']:
         """Busca pelo RG e retorna um cliente do banco de dados."""
 
-        client = db.session.execute(
+        return db.session.execute(
             db.select(cls).where(cls.rg == rg)).scalar_one_or_none()
-        
-        return client
 
 
     @classmethod
