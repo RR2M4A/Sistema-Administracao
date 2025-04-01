@@ -1,13 +1,21 @@
 from flask import Blueprint, render_template, request, session, url_for
 from services.auth_service import AuthService
+from models.user import User
+from extensions.login_manager import login_manager
 from http import HTTPStatus
-from utils.decorators import no_account
+from utils.decorators import no_account, admin_only
 
 
 auth = Blueprint("auth", __name__)
 
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.find_by_id(user_id)
+
+
 @auth.get("/signin/")
+@admin_only
 def signin_get():
     """Carrega a página de sign in."""
 
@@ -22,12 +30,11 @@ def signin_post():
     username = req["username"]
     password = req["password"]
 
-    user = AuthService.authenticate_user(username, password)
+    authenticated = AuthService.authenticate_user(username, password)
 
-    if user:
-        session["id"] = user.id
+    if authenticated:
         return {"authenticated": True, "redirect": url_for("system.system_get")}
-    
+
     return {"authenticated": False}
 
 

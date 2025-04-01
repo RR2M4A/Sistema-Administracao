@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
-from utils.decorators import login_required
+from flask_login import login_required
 from services.system_service import SystemService
 from services.validation_service import ValidationService
 from http import HTTPStatus

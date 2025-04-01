@@ -3,8 +3,10 @@ from sqlalchemy import exists
 from sqlalchemy.orm import Mapped, mapped_column
 from werkzeug.security import check_password_hash
 from extensions.database import db
+from flask_login import UserMixin
 
-class User(db.Model):
+
+class User(UserMixin, db.Model):
     """Representa a tablea de usuários do sistema.
     
     Colunas:
@@ -18,20 +20,18 @@ class User(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(nullable=False)
     password_hash: Mapped[str] = mapped_column(nullable=False)
-    is_admin: Mapped[bool] = mapped_column(nullable=False)
-    is_blocked: Mapped[bool] = mapped_column(nullable=False)
+    is_admin: Mapped[bool] = mapped_column()
 
 
     @staticmethod
     def create(username: str, password_hash: str, 
-               is_admin: bool, is_blocked: bool) -> 'User':
+               is_admin: bool) -> 'User':
         """Instancia um objeto User e o armazena no banco de dados."""
 
         user = User(
             username = username,
             password_hash = password_hash,
             is_admin = is_admin,
-            is_blocked = is_blocked
         )
 
         db.session.add(user)

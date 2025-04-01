@@ -1,5 +1,7 @@
+from typing import Optional
 from models.user import User
 from werkzeug.security import generate_password_hash
+import flask_login
 import re
 
 
@@ -9,12 +11,13 @@ class AuthService:
 
     @staticmethod
     def create_user(username: str, password: str, 
-                    is_admin=False, is_blocked=False):
+                    is_admin=False):
         
         password_hash = generate_password_hash(password)
-        user = User.create(username, password_hash, is_admin, is_blocked)
+        user = User.create(username, password_hash, is_admin)
 
         return user
+    
 
     @staticmethod
     def authenticate_user(username: str, password: str):
@@ -22,9 +25,10 @@ class AuthService:
         
         if user:
             if user.check_password(password):
-                return user
+                flask_login.login_user(user)
+                return True
 
-        return None
+        return False
     
 
     @staticmethod
