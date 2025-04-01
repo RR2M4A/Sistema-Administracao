@@ -1,20 +1,9 @@
-from flask import session, redirect, url_for
+from flask import session, redirect, url_for, abort
 from functools import wraps
 from utils.sanitizers import sanitize
 from models.user import User
 from models.client import Client
-
-def login_required(f):
-    """Exige que o usuário esteja logado para acessar as rotas."""
-
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        if "id" not in session:
-            return redirect(url_for("signin.signin_get"))
-        return f(*args, **kwargs)
-
-    return wrapper
-
+from flask_login import login_required, current_user
 
 def input_sanitized(f):
     """Retorna o input sanitizado."""
@@ -33,10 +22,23 @@ def no_account(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         if User.has_any() or Client.has_any():
-            print("Entrou no if")
             return redirect(url_for("auth.signin_get"))
         
-        print("Passou direto")
+        return f(*args, **kwargs)
+    
+    return wrapper
+
+
+def admin_only(f):
+    """Exige que o usuário tenha permissão de admin para acessar a rota."""
+
+    @wraps(f)
+    @login_required
+    def wrapper(*args, **kwargs):
+        
+        if current_user.is_admin:
+            return abort(404)
+        
         return f(*args, **kwargs)
     
     return wrapper
