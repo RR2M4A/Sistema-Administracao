@@ -15,7 +15,13 @@
 
         <form method="post">
 
-            <p class="wrong-credentials">Senha ou usuário incorretos!</p>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <p class="login-first">{{messages[0]}}</p>
+                {% endif %}
+            {% endwith %}
+            
+            <p class="wrong-credentials">Credenciais inválidas!</p>
 
             <div class="input-container">
                 <label for="username">Usuário:</label>

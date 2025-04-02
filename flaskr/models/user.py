@@ -21,17 +21,20 @@ class User(UserMixin, db.Model):
     username: Mapped[str] = mapped_column(nullable=False)
     password_hash: Mapped[str] = mapped_column(nullable=False)
     is_admin: Mapped[bool] = mapped_column()
-
+    is_active: Mapped[bool] = mapped_column()
+    misses: Mapped[int] = mapped_column(default=0)
+    
 
     @staticmethod
     def create(username: str, password_hash: str, 
-               is_admin: bool) -> 'User':
+               is_admin: bool, is_active: bool) -> 'User':
         """Instancia um objeto User e o armazena no banco de dados."""
 
         user = User(
             username = username,
             password_hash = password_hash,
             is_admin = is_admin,
+            is_active = is_active
         )
 
         db.session.add(user)

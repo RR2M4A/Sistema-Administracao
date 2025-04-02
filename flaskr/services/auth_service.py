@@ -1,6 +1,7 @@
 from typing import Optional
 from models.user import User
 from werkzeug.security import generate_password_hash
+from extensions.database import db
 import flask_login
 import re
 
@@ -11,24 +12,40 @@ class AuthService:
 
     @staticmethod
     def create_user(username: str, password: str, 
-                    is_admin=False):
+                    is_admin=False, is_active=True) -> Optional['User']:
         
         password_hash = generate_password_hash(password)
-        user = User.create(username, password_hash, is_admin)
+        user = User.create(username, password_hash, is_admin, is_active)
 
         return user
     
 
     @staticmethod
-    def authenticate_user(username: str, password: str):
-        user = User.find_by_username(username)
+    def authenticate_user(username: str, password: str) -> dict:
         
-        if user:
-            if user.check_password(password):
-                flask_login.login_user(user)
-                return True
+        user = User.find_by_username(username)
 
-        return False
+        if not user:
+            return {"authenticated": False, "is_active": True}
+
+        if not user.is_active:
+            return {"authenticated": False, "is_active": False}
+
+        if not user.check_password(password):
+
+            user.misses += 1
+            db.session.commit()
+
+            if user.misses >= 3:
+                user.is_active = False
+                db.session.commit()
+
+                return {"authenticated": False, "is_active": False}
+
+            return {"authenticated": False, "is_active": True}
+
+        flask_login.login_user(user)
+        return {"authenticated": True, "is_active": True}
     
 
     @staticmethod

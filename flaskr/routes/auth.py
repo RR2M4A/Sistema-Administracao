@@ -15,7 +15,6 @@ def load_user(user_id):
 
 
 @auth.get("/signin/")
-@admin_only
 def signin_get():
     """Carrega a página de sign in."""
 
@@ -30,12 +29,21 @@ def signin_post():
     username = req["username"]
     password = req["password"]
 
-    authenticated = AuthService.authenticate_user(username, password)
+    res = AuthService.authenticate_user(username, password)
 
-    if authenticated:
-        return {"authenticated": True, "redirect": url_for("system.system_get")}
+    if not res.get("is_active"):
+        return {"authenticated": False, 
+                "is_active": False, 
+                "redirect": None}
 
-    return {"authenticated": False}
+    if not res.get("authenticated"):
+        return {"authenticated": False, 
+                "is_active": True, 
+                "redirect": None}
+
+    return {"authenticated": True, 
+            "is_active": True, 
+            "redirect": url_for("system.system_get")}
 
 
 @auth.get("/")
