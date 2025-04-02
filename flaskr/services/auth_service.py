@@ -45,6 +45,9 @@ class AuthService:
             return {"authenticated": False, "is_active": True}
 
         flask_login.login_user(user)
+        user.misses = 0
+        db.session.commit()
+        
         return {"authenticated": True, "is_active": True}
     
 
