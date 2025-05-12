@@ -81,7 +81,15 @@ body {
 .wrong-credentials {
     display: none;
     color: red;
-    text-align: right;
+    text-align: center;
+    font-weight: bold;
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+.login-first {
+    color: red;
+    text-align: center;
     font-weight: bold;
     font-size: 11px;
     margin-top: 5px;
