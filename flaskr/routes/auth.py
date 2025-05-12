@@ -18,6 +18,7 @@ def load_user(user_id):
 def signin_get():
     """Carrega a página de sign in."""
 
+
     return render_template("signin.html")
 
 

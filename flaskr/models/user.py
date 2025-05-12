@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from sqlalchemy import exists
 from sqlalchemy.orm import Mapped, mapped_column
 from werkzeug.security import check_password_hash
@@ -22,6 +22,7 @@ class User(UserMixin, db.Model):
     password_hash: Mapped[str] = mapped_column(nullable=False)
     is_admin: Mapped[bool] = mapped_column()
     is_active: Mapped[bool] = mapped_column()
+    is_blocked: Mapped[bool] = mapped_column()
     misses: Mapped[int] = mapped_column(default=0)
     
 
@@ -34,7 +35,8 @@ class User(UserMixin, db.Model):
             username = username,
             password_hash = password_hash,
             is_admin = is_admin,
-            is_active = is_active
+            is_active = is_active,
+            is_blocked = False
         )
 
         db.session.add(user)
@@ -64,6 +66,15 @@ class User(UserMixin, db.Model):
 
         return db.session.execute(db.select(cls).where(
             cls.username==username)).scalar_one_or_none()
+    
+    
+    @classmethod
+    def find_all(cls) -> List[Optional['User']]:
+        """Retorna todas as linhas da table User, ordenadas pelo
+        id."""
+
+        return db.session.execute(
+            db.select(cls).order_by(cls.id)).scalars().all()
 
 
     def check_password(self, password: str) -> bool:

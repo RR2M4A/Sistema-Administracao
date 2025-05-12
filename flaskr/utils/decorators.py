@@ -36,7 +36,7 @@ def admin_only(f):
     @login_required
     def wrapper(*args, **kwargs):
         
-        if current_user.is_admin:
+        if not current_user.is_admin:
             return abort(404)
         
         return f(*args, **kwargs)
