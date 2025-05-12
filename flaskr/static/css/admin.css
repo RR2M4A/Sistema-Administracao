@@ -1,0 +1,122 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+.background {
+    position: relative;
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    padding: 3rem 1rem 1rem 1rem;
+}
+
+.main-container {
+    width: 400px;
+    height: 70%;
+    max-height: 700px;
+    margin: 0 auto;
+}
+
+.users-container {
+    border: 1px solid black;
+    width: 100%;
+    height: 100%;
+}
+
+.h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.users-list {
+    width: 100%;
+    text-decoration: none;
+    list-style: none;
+}
+
+.user {
+    display: flex;
+    border: 1px solid black;
+    border-right: 0;
+    border-left: 0;
+}
+
+.edit-bt, .delete-bt {
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    
+}
+
+.edit-bt {
+    margin-left: auto;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+}
+
+.popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;  
+    border: 1px solid black;
+    padding: 20px;
+    height: fit-content;
+    width: 500px;
+    transform: translate(-50%, -50%);
+    background-color: white;
+}
+
+.popup__input-container {
+    display: flex;
+    flex-flow: column nowrap;
+    margin-bottom: 20px;
+}
+
+.popup__radio-container {
+    margin-bottom: 20px;
+}
+
+.popup__radio-container label {
+    margin-right: 10px;
+}
+
+.popup__username {
+    padding: 5px;
+    font-size: 12px;
+    height: 35px;
+    color: black;
+    background-color: rgb(217, 217, 217);
+}
+
+.popup__boldtext {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.popup__submit {
+    height: 35px;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    background-color: rgb(28, 135, 28);
+    width: 100%;
+    border: 1px solid black;
+    cursor: pointer;
+    transition: all 300ms ease-in-out;
+}
+
+.popup__submit:hover {
+    background-color: rgb(16, 109, 16);
+}
