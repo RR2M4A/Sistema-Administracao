@@ -1,15 +1,15 @@
 from flask import Blueprint, render_template, request, session, url_for
-from flask_login import login_required
 from models.user import User
 from utils.sanitizers import sanitize_many
 from http import HTTPStatus
 from utils.converters import model_to_dict
+from utils.decorators import admin_required
 
 
 admin = Blueprint("admin", __name__)
 
 
-@login_required
+@admin_required
 @admin.get("/admin/")
 def admin_get():
 
@@ -18,7 +18,7 @@ def admin_get():
     
 
 
-@login_required
+@admin_required
 @admin.post("/admin/")
 def admin_view_info():
 
@@ -30,7 +30,7 @@ def admin_view_info():
     return user, HTTPStatus.OK
 
 
-@login_required
+@admin_required
 @admin.post("/admin/")
 def admin_edit():
 

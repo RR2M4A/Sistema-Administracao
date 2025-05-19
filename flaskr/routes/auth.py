@@ -3,7 +3,7 @@ from services.auth_service import AuthService
 from models.user import User
 from extensions.login_manager import login_manager
 from http import HTTPStatus
-from utils.decorators import no_account, admin_only
+from utils.decorators import no_account
 
 
 auth = Blueprint("auth", __name__)

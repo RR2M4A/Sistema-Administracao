@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
-from flask_login import login_required
+from utils.decorators import access_required
 from services.system_service import SystemService
 from services.validation_service import ValidationService
 from http import HTTPStatus
@@ -11,7 +11,7 @@ system = Blueprint("system", __name__)
 
 @system.get("/system/")
 @system.get("/system/<page_id>")
-@login_required
+@access_required
 def system_get(page_id = "1"):
     """Carrega a página principal do sistema."""
 
@@ -37,7 +37,7 @@ def system_get(page_id = "1"):
 
 
 @system.post("/system/add_client")
-@login_required
+@access_required
 def system_add_client():
     """Recebe os dados do cliente via POST, os valida e cria o cliente."""
     
@@ -60,7 +60,7 @@ def system_add_client():
 
 
 @system.post("/system/search_client")
-@login_required
+@access_required
 def system_search_client():
     """Busca o cliente no sistema, através do cpf informado."""
     
@@ -87,7 +87,7 @@ def system_search_client():
 
 
 @system.post("/system/update_client")
-@login_required
+@access_required
 def system_update_client():
     """Atualiza o nº de telefone ou a entrada do cliente."""
     

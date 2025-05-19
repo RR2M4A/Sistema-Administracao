@@ -15,7 +15,6 @@ def input_sanitized(f):
 
     return wrapper
 
-
 def no_account(f):
     """Utilizado para quando o usuário acessa o sistema pela primeira vez."""
 
@@ -23,22 +22,31 @@ def no_account(f):
     def wrapper(*args, **kwargs):
         if User.has_any() or Client.has_any():
             return redirect(url_for("auth.signin_get"))
-        
         return f(*args, **kwargs)
     
     return wrapper
 
-
-def admin_only(f):
-    """Exige que o usuário tenha permissão de admin para acessar a rota."""
+def access_required(f):
+    """Exige que o usuário esteja desbloqueado para acessar a rota."""
 
     @wraps(f)
     @login_required
     def wrapper(*args, **kwargs):
-        
+
+        if current_user.is_blocked:
+            return redirect(url_for('auth.signin_get'))
+        return f(*args, **kwargs)
+    
+    return wrapper
+
+def admin_required(f):
+    """Exige que o usuário tenha permissão de admin para acessar a rota."""
+
+    @wraps(f)
+    @access_required
+    def wrapper(*args, **kwargs):
         if not current_user.is_admin:
             return abort(404)
-        
         return f(*args, **kwargs)
     
     return wrapper
