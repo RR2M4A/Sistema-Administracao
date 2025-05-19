@@ -14,6 +14,7 @@ admin = Blueprint("admin", __name__)
 def admin_get():
 
     users = User.find_all()
+    print(users)
     return render_template("admin.html", users=users)
     
 
