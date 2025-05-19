@@ -5,4 +5,5 @@ def model_to_dict(obj: object) -> dict:
 
     obj = obj.__dict__.copy()
     obj.pop("_sa_instance_state", None)
+    obj.pop("password_hash", None)
     return obj
