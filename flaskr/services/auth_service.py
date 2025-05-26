@@ -48,7 +48,7 @@ class AuthService:
         user.misses = 0
         db.session.commit()
 
-        return {"authenticated": False, "status": "authenticated",
+        return {"authenticated": True, "status": "authenticated",
                 "redirect": url_for("system.system_get")}
 
 

@@ -14,7 +14,6 @@ export async function validate_credentials(event, inputs, side_msg) {
     let ans = await make_request(inputs);
     let data = await ans.json();
 
-
     if (!data.authenticated) {
 
         switch (data.status) {

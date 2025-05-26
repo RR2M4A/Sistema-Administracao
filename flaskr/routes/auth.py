@@ -30,6 +30,7 @@ def signin_post():
     password = req["password"]
 
     res = AuthService.authenticate_user(username, password)
+    print(res)
     return res
 
 
