@@ -30,20 +30,7 @@ def signin_post():
     password = req["password"]
 
     res = AuthService.authenticate_user(username, password)
-
-    if not res.get("is_active"):
-        return {"authenticated": False,
-                "is_active": False,
-                "redirect": None}
-
-    if not res.get("authenticated"):
-        return {"authenticated": False,
-                "is_active": True,
-                "redirect": None}
-
-    return {"authenticated": True,
-            "is_active": True,
-            "redirect": url_for("system.system_get")}
+    return res
 
 
 @auth.get("/")

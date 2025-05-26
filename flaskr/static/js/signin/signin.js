@@ -13,30 +13,31 @@ export async function validate_credentials(event, inputs, side_msg) {
     event.preventDefault();
     let ans = await make_request(inputs);
     let data = await ans.json();
-    
-    if (!data.is_active) {
-        side_msg.style.display = "block";
-        side_msg.innerHTML = "Conta bloqueada!"
+
+
+    if (!data.authenticated) {
+
+        switch (data.status) {
+            case "check_credentials":
+                side_msg.style.display = "block";
+                side_msg.innerHTML = "Credenciais inválidas!"
+                break;
+            case "blocked":
+                side_msg.style.display = "block";
+                side_msg.innerHTML = "Conta bloqueada!"
+                break
+        }
 
         inputs.forEach((input) => {
             input.value = "";
         })
 
         username_input.focus();
+        return;
 
-    } else if (!data.authenticated) {
-        side_msg.style.display = "block";
-        side_msg.innerHTML = "Credenciais inválidas!"
-
-        inputs.forEach((input) => {
-            input.value = "";
-        })
-
-        username_input.focus();
-
-    } else {
-        window.location.href = data.redirect;
     }
+
+    window.location.href = data.redirect;
 
 }
 
