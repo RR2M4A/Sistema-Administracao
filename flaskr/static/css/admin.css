@@ -50,7 +50,7 @@
     background: transparent;
     border: 0;
     cursor: pointer;
-    
+
 }
 
 .edit-bt {
@@ -71,7 +71,7 @@
     display: none;
     position: fixed;
     top: 50%;
-    left: 50%;  
+    left: 50%;
     border: 1px solid black;
     padding: 20px;
     height: fit-content;

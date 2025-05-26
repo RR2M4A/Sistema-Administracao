@@ -18,7 +18,6 @@ def load_user(user_id):
 def signin_get():
     """Carrega a página de sign in."""
 
-
     return render_template("signin.html")
 
 
@@ -33,17 +32,17 @@ def signin_post():
     res = AuthService.authenticate_user(username, password)
 
     if not res.get("is_active"):
-        return {"authenticated": False, 
-                "is_active": False, 
+        return {"authenticated": False,
+                "is_active": False,
                 "redirect": None}
 
     if not res.get("authenticated"):
-        return {"authenticated": False, 
-                "is_active": True, 
+        return {"authenticated": False,
+                "is_active": True,
                 "redirect": None}
 
-    return {"authenticated": True, 
-            "is_active": True, 
+    return {"authenticated": True,
+            "is_active": True,
             "redirect": url_for("system.system_get")}
 
 
@@ -52,7 +51,7 @@ def signin_post():
 @no_account
 def signup_get():
     """Carrega a página de signup."""
-    
+
     return render_template("signup.html")
 
 
@@ -61,7 +60,7 @@ def signup_get():
 @no_account
 def signup_post():
     """Lida com requisições do tipo POST na página de sign up."""
-    
+
     req = request.get_json()
     username = req.get("username")
     pass1 = req.get("first-password")
@@ -69,10 +68,10 @@ def signup_post():
 
     if not AuthService.is_valid_username(username):
         return {"status": "error"}, HTTPStatus.BAD_REQUEST
-    
+
     if not AuthService.is_same_password(pass1, pass2):
         return {"status": "error"}, HTTPStatus.UNAUTHORIZED
 
     AuthService.create_user(username, pass1, is_admin=True)
-    
+
     return {"status": "success"}, HTTPStatus.CREATED

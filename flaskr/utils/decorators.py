@@ -23,30 +23,30 @@ def no_account(f):
         if User.has_any() or Client.has_any():
             return redirect(url_for("auth.signin_get"))
         return f(*args, **kwargs)
-    
+
     return wrapper
 
 def access_required(f):
     """Exige que o usuário esteja desbloqueado para acessar a rota."""
 
-    @wraps(f)
     @login_required
+    @wraps(f)
     def wrapper(*args, **kwargs):
-
         if current_user.is_blocked:
             return redirect(url_for('auth.signin_get'))
         return f(*args, **kwargs)
-    
+
     return wrapper
+
 
 def admin_required(f):
     """Exige que o usuário tenha permissão de admin para acessar a rota."""
 
-    @wraps(f)
     @access_required
+    @wraps(f)
     def wrapper(*args, **kwargs):
         if not current_user.is_admin:
-            return abort(404)
+            return abort(403)
         return f(*args, **kwargs)
-    
+
     return wrapper

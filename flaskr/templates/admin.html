@@ -18,7 +18,7 @@
                 <label class="popup__boldtext">Usuário:</label>
                 <input class="popup__username" name="popup__username" disabled>
             </div>
-            
+
             <div class="popup__radio-container">
                 <p class="popup__boldtext">Bloqueado?</p>
                 <input type="radio" name="is-blocked" value="true" checked>
@@ -26,7 +26,7 @@
                 <input type="radio" name="is-blocked" value="false">
                 <label>Não</label>
             </div>
-    
+
             <div class="popup__radio-container">
                 <p class="popup__boldtext">É admin?</p>
                 <input type="radio" name="is-admin" value="true" checked>
@@ -37,7 +37,7 @@
 
             <button type="submit" class="popup__submit">Confirmar</button>
         </form>
-    </div>      
+    </div>
 
     <main class="main-container">
 
@@ -51,7 +51,7 @@
                 <li id="{{ user.id }}" class="user">
                     <p class="username">{{ user.username }}</p>
                     <button type="button" class="edit-bt"><img src="../static/img/edit.png"></button>
-                    <button type="button" class="delete-bt"><img src="../static/img/delete.png"></button>                
+                    <button type="button" class="delete-bt"><img src="../static/img/delete.png"></button>
                 </li>
             {% endfor %}
             </ul>
