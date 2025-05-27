@@ -27,7 +27,7 @@ class User(UserMixin, db.Model):
 
     @staticmethod
     def create(username: str, password_hash: str, is_admin: bool) -> 'User':
-        """Instancia um objeto User e o armazena no banco de dados."""
+        """Instancia um objeto User e o retorna."""
 
         user = User(
             username = username,

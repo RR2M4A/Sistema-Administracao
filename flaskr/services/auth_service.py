@@ -44,7 +44,7 @@ class AuthService:
 
 
     @classmethod
-    def signup(cls, username: str, pass1: str, pass2):
+    def signup(cls, username: str, pass1: str, pass2, is_admin: bool):
         """Faz o hashing da senha fornecida retorna um HTTPStatus."""
 
         if not cls.is_valid_username(username):
@@ -54,7 +54,7 @@ class AuthService:
             return AuthResponses.PASS_MISMATCH.value
 
         password_hash = generate_password_hash(pass1)
-        user = User.create(username, password_hash, False)
+        user = User.create(username, password_hash, is_admin)
 
         db.session.add(user)
         db.session.commit()

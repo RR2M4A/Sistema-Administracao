@@ -52,4 +52,4 @@ def signup_post():
     pass1 = req.get("first-password")
     pass2 = req.get("second-password")
 
-    return AuthService.signup(username, pass1, pass2)
+    return AuthService.signup(username, pass1, pass2, True)

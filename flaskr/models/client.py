@@ -27,25 +27,24 @@ class Client(db.Model):
     phone_number: Mapped[str] = mapped_column()
     birth_date: Mapped[str] = mapped_column()
 
-    entrances: Mapped[List["Entrance"]] = relationship(back_populates='client', cascade="all, delete-orphan")
+    entrances: Mapped[List['Entrance']] = relationship(back_populates='client', cascade="all, delete-orphan")
 
 
     @classmethod
-    def create(cls, data: dict) -> 'Client':
-        """Instancia um objeto cliente e o armazena no banco de dados."""
+    def create(cls, name: str, rg: str, cpf: str, phone_number: str,
+               birth_date: str) -> 'Client':
+        """Instancia um objeto cliente e o retorna."""
 
         client = Client(
-            name=data["name"],
-            rg=data["rg"],
-            cpf=data["cpf"],
-            phone_number=data["phone-number"],
-            birth_date=data["birth-date"]
+            name=name,
+            rg=rg,
+            cpf=cpf,
+            phone_number=phone_number,
+            birth_date=birth_date
         )
 
-        db.session.add(client)
-        db.session.commit()
         return client
-        
+
 
     @classmethod
     def find_by_id(cls, id: int) -> Optional['Client']:
@@ -53,7 +52,7 @@ class Client(db.Model):
 
         return db.session.execute(
             db.select(cls).where(cls.id == id)).scalar_one_or_none()
-    
+
 
     @classmethod
     def find_by_cpf(cls, cpf: str) -> Optional['Client']:
@@ -61,7 +60,7 @@ class Client(db.Model):
 
         return db.session.execute(
             db.select(cls).where(cls.cpf == cpf)).scalar_one_or_none()
-    
+
 
     @classmethod
     def find_by_rg(cls, rg: str) -> Optional['Client']:
@@ -78,14 +77,14 @@ class Client(db.Model):
 
         return db.session.execute(
             db.select(cls).order_by(cls.id)).scalars().all()
-    
+
 
     @classmethod
     def count(cls) -> int:
         """Retorna o total de linhas que a table Client contém."""
 
         return len(db.session.execute(db.select(cls)).all())
-    
+
 
     @classmethod
     def has_any(cls) -> bool:

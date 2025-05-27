@@ -32,7 +32,7 @@ def access_required(f):
     @login_required
     @wraps(f)
     def wrapper(*args, **kwargs):
-        if current_user.is_blocked:
+        if not current_user.is_active:
             return redirect(url_for('auth.signin_get'))
         return f(*args, **kwargs)
 

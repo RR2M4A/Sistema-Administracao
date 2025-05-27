@@ -1,17 +1,20 @@
+from utils.regex import RegexPatterns
 import re
 
 
-def sanitize(value):
-    """Remove caracteres indesejados, preservando letras, 
+def sanitize(value) -> str:
+    """Remove caracteres indesejados, preservando letras,
     números e espaços.
     """
 
     value = str(value).strip().lower()
-    value = re.sub(r"[^\/\w\s\u00E0-\u00F6\u00F8-\u00FF]", "", value)
-    return value
+    pattern = RegexPatterns.SANITIZE.value
+
+    return re.sub(pattern, "", value)
 
 
-def sanitize_many(d: dict):
+
+def sanitize_many(d: dict) -> dict[str]:
     """Aplica a sanitização a um dicionário e o retorna."""
 
     for key, value in d.items():
