@@ -8,7 +8,7 @@ from flask_login import UserMixin
 
 class User(UserMixin, db.Model):
     """Representa a tablea de usuários do sistema.
-    
+
     Colunas:
     - id: Chave primária única para identificar a linha no banco de dados.
     - username: Usuário de login do sistema.
@@ -20,27 +20,21 @@ class User(UserMixin, db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(nullable=False)
     password_hash: Mapped[str] = mapped_column(nullable=False)
-    is_admin: Mapped[bool] = mapped_column()
-    is_active: Mapped[bool] = mapped_column()
-    is_blocked: Mapped[bool] = mapped_column()
+    is_admin: Mapped[bool] = mapped_column(nullable=False)
+    is_active: Mapped[bool] = mapped_column(nullable=False, default=True)
     misses: Mapped[int] = mapped_column(default=0)
-    
+
 
     @staticmethod
-    def create(username: str, password_hash: str, 
-               is_admin: bool, is_active: bool) -> 'User':
+    def create(username: str, password_hash: str, is_admin: bool) -> 'User':
         """Instancia um objeto User e o armazena no banco de dados."""
 
         user = User(
             username = username,
             password_hash = password_hash,
             is_admin = is_admin,
-            is_active = is_active,
-            is_blocked = False
         )
 
-        db.session.add(user)
-        db.session.commit()
         return user
 
 
@@ -50,7 +44,7 @@ class User(UserMixin, db.Model):
 
         return db.session.execute(
             db.select(exists().where(cls.id.isnot(None)))).scalar()
-    
+
 
     @classmethod
     def find_by_id(cls, id: int) -> Optional['User']:
@@ -58,7 +52,7 @@ class User(UserMixin, db.Model):
 
         return db.session.execute(db.select(cls).where(
             cls.id==id)).scalar_one_or_none()
-    
+
 
     @classmethod
     def find_by_username(cls, username: str) -> Optional['User']:
@@ -66,8 +60,8 @@ class User(UserMixin, db.Model):
 
         return db.session.execute(db.select(cls).where(
             cls.username==username)).scalar_one_or_none()
-    
-    
+
+
     @classmethod
     def find_all(cls) -> List[Optional['User']]:
         """Retorna todas as linhas da table User, ordenadas pelo
