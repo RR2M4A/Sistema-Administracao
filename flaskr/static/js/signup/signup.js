@@ -12,16 +12,17 @@ const side_msg = document.querySelector('.invalid-credentials');
 export async function signup(inputs, side_msg) {
 
     let ans = await make_request(inputs);
-    
+    let data = await ans.json();
+
     if (ans.status == 400) {
 
         side_msg.style.display = "block";
-        side_msg.innerHTML = "Seu nome de usuário não segue o padrão válido!";
+        side_msg.innerHTML = data['msg'];
 
     } else if (ans.status == 401) {
 
         side_msg.style.display = "block";
-        side_msg.innerHTML = "As senhas não conferem!";
+        side_msg.innerHTML = data['msg'];
 
         pass_inputs[0].focus();
         pass_inputs.forEach((input) => {
@@ -30,7 +31,7 @@ export async function signup(inputs, side_msg) {
 
     } else if (ans.status == 201) {
 
-        alert("Usuário criado com sucesso!");
+        alert(data['msg']);
         window.location.reload();
     }
 

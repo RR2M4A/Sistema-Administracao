@@ -29,9 +29,7 @@ def signin_post():
     username = req["username"]
     password = req["password"]
 
-    res = AuthService.authenticate_user(username, password)
-    print(res)
-    return res
+    return AuthService.signin(username, password)
 
 
 @auth.get("/")
@@ -54,12 +52,4 @@ def signup_post():
     pass1 = req.get("first-password")
     pass2 = req.get("second-password")
 
-    if not AuthService.is_valid_username(username):
-        return {"status": "error"}, HTTPStatus.BAD_REQUEST
-
-    if not AuthService.is_same_password(pass1, pass2):
-        return {"status": "error"}, HTTPStatus.UNAUTHORIZED
-
-    AuthService.create_user(username, pass1, is_admin=True)
-
-    return {"status": "success"}, HTTPStatus.CREATED
+    return AuthService.signup(username, pass1, pass2)
