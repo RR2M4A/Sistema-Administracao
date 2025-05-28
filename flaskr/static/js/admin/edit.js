@@ -1,66 +1,55 @@
 'use strict'
 
-const edit_bts = [...document.querySelectorAll('.edit-bt')];
-const delete_bts = [...document.querySelectorAll('.delete-bt')];
+import { fetchInfo } from "../utils/fetch_utils.js";
+
+const editBts = [...document.querySelectorAll('.edit-bt')];
 const popup = document.querySelector('.popup');
 const overlay = document.querySelector('.overlay');
-const popup_username = document.querySelector('.popup__username');
-const radio_admin_false = document.querySelector('input[name="is-admin"][value="false"]');
-const radio_blocked_false = document.querySelector('input[name="is-blocked"][value="false"]');
-const submit_bt = document.querySelector('.popup__submit');
-const hidden_id = document.querySelector('.hidden-id');
+const popupUsername = document.querySelector('.popup .popup__username');
+const hiddenId = document.querySelector('.hidden-id');
+const popupForm = document.querySelector(".popup .popup__form");
 
 
-let current_user_info = null;
+let currUserInfo = null;
 
 
-async function fetch_info(id) {
-    const response = await fetch(window.location.href, {
-        method: "POST",
-        body: JSON.stringify({id}),
-        headers: { "content-type": "application/json" }
-    });
+async function loadPopup(id) {
 
-    const data = await response.json();
-    return data;
-}
+    let entry = {
+        id: id
+    }
 
-async function load_popup(id) {
-
-    current_user_info = (await fetch_info(id)).user;
+    let ans = await fetchInfo(null, entry);
+    currUserInfo = (await ans.json()).user;
 
     popup.style.display = "block";
     overlay.style.display = "block";
-    popup_username.value = current_user_info.username;
-    hidden_id.value = id;
+    popupForm.setAttribute("action", "/admin/edit/")
 
-    if (!current_user_info.is_admin) {
-        radio_admin_false.checked = true;
-    }
+    popupUsername.value = currUserInfo.username;
+    popupUsername.disabled = true;
+    hiddenId.value = id;
 
-    if (!current_user_info.is_blocked) {
-        radio_blocked_false.checked = true;
-    }
+    document.querySelector(`input[name="is-admin"][value="${currUserInfo.is_admin}"]`).checked = true;
+    document.querySelector(`input[name="is-active"][value="${currUserInfo.is_active}"]`).checked = true;
 }
 
-
-function unload_popup() {
+function unloadPopup() {
     popup.style.display = 'none';
     overlay.style.display = 'none';
+    popupForm.reset();
 }
 
 function init_listeners() {
-    edit_bts.forEach((bt) => {
+    editBts.forEach((bt) => {
         bt.addEventListener("click", () => {
-
             let user = bt.parentNode;
             let id = user.id;
-            load_popup(id);
-
+            loadPopup(id);
         });
     });
 
-    overlay.addEventListener("click", unload_popup);
+    overlay.addEventListener("click", unloadPopup);
 }
 
 init_listeners();

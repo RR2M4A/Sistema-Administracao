@@ -15,6 +15,19 @@ export function make_entry(inputs) {
 
 }
 
+export async function fetchInfo(url = null, entry = {}) {
+
+    url = url || window.location.href
+
+    const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify(entry),
+        headers: { "content-type": "application/json" }
+    });
+
+    return response;
+}
+
 
 export async function make_request(inputs, url=window.location.href) {
 
@@ -27,6 +40,6 @@ export async function make_request(inputs, url=window.location.href) {
     });
 
     return response;
-    
+
 }
 

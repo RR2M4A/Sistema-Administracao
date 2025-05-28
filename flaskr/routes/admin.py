@@ -1,10 +1,7 @@
-from flask import Blueprint, render_template, request, session, url_for, redirect
-from utils.sanitizers import sanitize_many
-from http import HTTPStatus
-from utils.converters import model_to_dict
+from flask import Blueprint, request
 from utils.decorators import admin_required
-from extensions.database import db
 from services.admin_service import AdminService
+from services.auth_service import AuthService
 
 admin = Blueprint("admin", __name__)
 
@@ -32,4 +29,18 @@ def admin_edit():
     """Lida com as edições dos atributos de admin."""
 
     req = request.form
-    return AdminService.handle_admin_update(req)
+    return AdminService.handle_user_update(req)
+
+
+@admin.post("/admin/new/")
+@admin_required
+def admin_new():
+    """Lida com a criação de novos usuários."""
+
+    req = request.get_json()
+    username = req.get("popup__username")
+    pass1 = req.get("first-pass")
+    pass2 = req.get("second-pass")
+    is_admin = True if req.get("is-admin") == 'true' else False
+
+    return AuthService.signup(username, pass1, pass2, is_admin)

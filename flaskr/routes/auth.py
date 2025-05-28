@@ -1,8 +1,7 @@
-from flask import Blueprint, render_template, request, session, url_for
+from flask import Blueprint, render_template, request
 from services.auth_service import AuthService
 from models.user import User
 from extensions.login_manager import login_manager
-from http import HTTPStatus
 from utils.decorators import no_account
 
 

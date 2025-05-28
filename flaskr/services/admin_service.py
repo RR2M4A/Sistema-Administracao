@@ -5,6 +5,9 @@ from models.user import User
 from utils.sanitizers import sanitize_many
 from utils.converters import model_to_dict
 from extensions.database import db
+from utils.regex import RegexPatterns
+from services.auth_service import AuthService
+
 
 class AdminResponses(Enum):
 
@@ -55,19 +58,56 @@ class AdminService:
 
 
     @staticmethod
-    def handle_admin_update(data: dict):
+    def handle_user_update(data: dict):
         """Lida com as edições do usuário selecionado."""
 
-        admin_val = True if data.get("is-admin") == 'true' else False
-        blocked_val = True if data.get("is-blocked") == 'true' else False
+        is_admin = True if data.get("is-admin") == 'true' else False
+        is_active = True if data.get("is-active") == 'true' else False
         user = User.find_by_id(data.get('id'))
 
         if not user:
             return AdminResponses.REDIRECT_TO_USERS.build()
 
-        user.is_admin = admin_val
-        user.is_blocked = blocked_val
+        user.is_admin = is_admin
+        user.is_active = is_active
         db.session.commit()
 
         return AdminResponses.REDIRECT_TO_USERS.build()
 
+
+    @staticmethod
+    def is_valid_username(username: str) -> bool:
+        """Verifica se o USERNAME é válido."""
+
+        pattern = RegexPatterns.USERNAME.value
+
+        if not isinstance(username, str):
+            return False
+
+        if not username:
+            return False
+
+        if not pattern.fullmatch(username):
+            return False
+
+        return True
+
+
+    @classmethod
+    def handle_user_creation(cls, data: dict):
+        """Valida os dados recebidos e cria um novo usuário.
+
+        Aqui, a classe AdminService é reutilizada, pois ela já lida com a
+        criação de usuários.
+        """
+
+        # É aqui que ele cria do mesmo jeito que o AuthService
+
+        data = sanitize_many(data)
+
+        username = data.get("popup__username")
+        pass1 = data.get("first-pass")
+        pass2 = data.get("second-pass")
+        is_admin = True if data.get("is-admin") == 'true' else False
+
+        return AuthService.signup(username, pass1, pass2, is_admin)

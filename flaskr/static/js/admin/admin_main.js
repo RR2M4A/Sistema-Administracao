@@ -1,3 +1,4 @@
 'use strict'
 
-import "./edit.js"
+import "./edit.js";
+import "./new_user.js";

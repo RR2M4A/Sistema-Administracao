@@ -38,6 +38,10 @@ class AuthResponses(Enum):
         {"msg": "Usuário criado com sucesso!"}, HTTPStatus.CREATED
     )
 
+    USER_ALREADY_EXISTS = (
+        {"msg": "Usuário já existente!"}, HTTPStatus.BAD_REQUEST
+    )
+
 
 class AuthService:
     """Classe responsável por lidar com a autenticação do usuário."""
@@ -49,6 +53,9 @@ class AuthService:
 
         if not cls.is_valid_username(username):
             return AuthResponses.INVALID_USERNAME.value
+
+        if User.find_by_username(username):
+            return AuthResponses.USER_ALREADY_EXISTS.value
 
         if pass1 != pass2:
             return AuthResponses.PASS_MISMATCH.value

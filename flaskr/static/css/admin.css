@@ -83,6 +83,13 @@
 .popup__input-container {
     display: flex;
     flex-flow: column nowrap;
+}
+
+.popup__input-container input {
+    padding: 5px;
+    font-size: 12px;
+    height: 35px;
+    color: black;
     margin-bottom: 20px;
 }
 
@@ -94,20 +101,12 @@
     margin-right: 10px;
 }
 
-.popup__username {
-    padding: 5px;
-    font-size: 12px;
-    height: 35px;
-    color: black;
-    background-color: rgb(217, 217, 217);
-}
-
 .popup__boldtext {
     font-size: 14px;
     font-weight: bold;
 }
 
-.popup__submit {
+.popup__submit, .new-user-popup__submit {
     height: 35px;
     color: white;
     font-size: 14px;
@@ -121,4 +120,41 @@
 
 .popup__submit:hover {
     background-color: rgb(16, 109, 16);
+}
+
+.new-user-bt, .new-user-popup__submit {
+    background-color: rgb(28, 135, 28);
+    color: white;
+    width: 100%;
+    height: 35px;
+    border: 1px solid black;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: all 300ms ease-in-out;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.new-user-bt:hover, .new-user-popup__submit:hover {
+    background-color: rgb(16, 109, 16);
+}
+
+.new-user-popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    border: 1px solid black;
+    padding: 20px;
+    height: fit-content;
+    width: 500px;
+    transform: translate(-50%, -50%);
+    background-color: white;
+}
+
+.side-msg {
+    text-align: right;
+    color: red;
+    font-weight: bold;
+    font-size: 12px;
 }
