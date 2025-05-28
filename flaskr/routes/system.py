@@ -12,27 +12,8 @@ system = Blueprint("system", __name__)
 def system_get(page_id = "1"):
     """Carrega a página principal do sistema."""
 
-    # Deixar a rota enxuta
-
-    page_mov = request.args.get("arrow")
-
-    if page_mov:
-        previous_page = session.get("page_id", 1)
-        next_page = previous_page + 1 if page_mov == "right" else previous_page - 1
-
-        return redirect(url_for("system.system_get", page_id=next_page))
-
-    if not page_id.isdigit():
-        return redirect(url_for("system.system_get", page_id=1))
-
-    page_id = int(page_id)
-    client_entries, new_page_id = SystemService.get_clients_interval(page_id)
-
-    if page_id != new_page_id:
-        return redirect(url_for("system.system_get", page_id=new_page_id))
-
-    session["page_id"] = new_page_id
-    return render_template("system.html", client_entries=client_entries)
+    req = request
+    return SystemService.handle_clients_render(req, page_id)
 
 
 @system.post("/system/add_client")
@@ -48,7 +29,6 @@ def system_add_client():
 @access_required
 def system_search_client():
     """Busca o cliente no sistema, através do cpf informado."""
-
 
     req = request.get_json()
     return SystemService.handle_client_search(req)

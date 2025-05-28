@@ -27,7 +27,7 @@ async function fetch_info(id) {
 
 async function load_popup(id) {
 
-    current_user_info = await fetch_info(id);
+    current_user_info = (await fetch_info(id)).user;
 
     popup.style.display = "block";
     overlay.style.display = "block";
@@ -56,7 +56,7 @@ function init_listeners() {
             let user = bt.parentNode;
             let id = user.id;
             load_popup(id);
-            
+
         });
     });
 

@@ -1,5 +1,6 @@
 from utils.regex import RegexPatterns
 import re
+from typing import Dict, Any
 
 
 def sanitize(value) -> str:
@@ -14,7 +15,7 @@ def sanitize(value) -> str:
 
 
 
-def sanitize_many(d: dict) -> dict[str]:
+def sanitize_many(d: dict) -> Dict[str, Any]:
     """Aplica a sanitização a um dicionário e o retorna."""
 
     for key, value in d.items():

@@ -1,12 +1,12 @@
 def mask_cpf(cpf: str):
     """Retorna o cpf mascarado."""
-    
+
     return "{}.***.***-{}".format(cpf[:3], cpf[-2:])
 
 
 def mask_rg(rg: str):
     """Retorna o rg mascarado.
-    
+
     Como o RG tem diversos padrões a depender do estado, a fim de segurança
     e praticidade, o padrão será de 7 asteriscos ('*').
     """

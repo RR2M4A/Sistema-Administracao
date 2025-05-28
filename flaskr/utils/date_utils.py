@@ -5,7 +5,7 @@ BRAZIL_TZ = timezone(timedelta(hours=-3))
 
 
 def to_datetime(date: str):
-    """Transforma a data DD/MM/YYYY para um objeto datetime e 
+    """Transforma a data DD/MM/YYYY para um objeto datetime e
     o retorna."""
 
     return datetime.strptime(date, "%d/%m/%Y")
@@ -18,7 +18,7 @@ def is_leap_year(year):
 
 
 def get_days_in_month(month, year):
-    """Retorna o número de dias de um mês, considerando ano bissexto para 
+    """Retorna o número de dias de um mês, considerando ano bissexto para
     fevereiro.
     """
 
@@ -36,5 +36,5 @@ def get_days_in_month(month, year):
         11: 30,
         12: 31,
     }
-    
+
     return days_in_month.get(month, 31)

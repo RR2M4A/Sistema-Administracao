@@ -6,9 +6,10 @@ from http import HTTPStatus
 
 # Bibliotecas de terceiros
 from validate_docbr import CPF
+from flask import render_template, url_for, redirect, session, Request
 
 # Imports do seu projeto
-from typing import Union, Optional, List
+from typing import Union, Optional, List, Union
 from models.client import Client
 from models.entrance import Entrance
 from extensions.database import db
@@ -46,11 +47,25 @@ class SystemResponses(Enum):
         {"msg": "Cliente encontrado!"}, HTTPStatus.OK
     )
 
+    REDIRECT_TO_CLIENTS = ("system.system_get", HTTPStatus.OK)
+
+    RENDER_CLIENTS = ("system.html", HTTPStatus.OK)
+
     def build(self, **kwargs):
         """Retorna a resposta com dados adicionais ao dicionário."""
+        content, status = self.value
 
-        data, status = self.value
-        data = data.copy()
+        # Para nomes de template ou redirecionamentos
+        if isinstance(content, str):
+
+            # Template
+            if content.endswith(".html"):
+                return render_template(content, **kwargs)
+
+            return redirect(url_for(content, **kwargs))
+
+        # Para objetos json
+        data = content.copy()
         data.update(kwargs)
         return data, status
 
@@ -118,7 +133,9 @@ class SystemService:
             setattr(client, "phone_number", phone_number)
             db.session.commit()
 
-        SystemService.create_entrance(client)
+        entrance = Entrance.create(client)
+        db.session.add(entrance)
+        db.session.commit()
         return SystemResponses.CLIENT_UPDATED.value
 
     @classmethod
@@ -144,7 +161,32 @@ class SystemService:
 
 
     @staticmethod
-    def find_client(value: str | int) -> Optional[Client]:
+    def handle_clients_render(data: Request, page_id: str):
+        """Carrega a página principal do sistema."""
+
+        page_mov = data.args.get("arrow")
+
+        if page_mov:
+            previous_page = session.get("page_id", 1)
+            next_page = previous_page + 1 if page_mov == "right" else previous_page - 1
+
+            return SystemResponses.REDIRECT_TO_CLIENTS.build(page_id=next_page)
+
+        if not page_id.isdigit():
+            return SystemResponses.REDIRECT_TO_CLIENTS.build(page_id=1)
+
+        page_id = int(page_id)
+        client_entries, new_page_id = SystemService.get_clients_interval(page_id)
+
+        if page_id != new_page_id:
+            return SystemResponses.REDIRECT_TO_CLIENTS.build(page_id=new_page_id)
+
+        session["page_id"] = new_page_id
+        return SystemResponses.RENDER_CLIENTS.build(client_entries=client_entries)
+
+
+    @staticmethod
+    def find_client(value: Union[str, int]) -> Optional[Client]:
         """Busca pelo cliente no banco de dados e o retorna."""
 
         for func in (Client.find_by_id, Client.find_by_rg, Client.find_by_cpf):
@@ -221,8 +263,9 @@ class SystemService:
         pattern = RegexPatterns.PHONE_NUMBER.value
         is_valid = pattern.fullmatch(input)
 
+
         if not is_valid or not input:
-            False
+            return False
 
         return True
 

@@ -7,12 +7,13 @@
     <title>Sistema</title>
 
     <link href="../static/css/system.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="../static/img/logo.ico">
 </head>
 <body>
     <main class="blank-container">
 
         <div class="table-container">
-            
+
             <form class="search-form" method="post" action="{{ url_for('system.system_search_client') }}">
 
                 <div class="input-container">
@@ -20,7 +21,7 @@
                     <div class="radio-container">
                         <input name="search" class="radio-bt" type="radio" value="cpf" checked>
                         <label>CPF</label>
-    
+
                         <input name="search" class="radio-bt" type="radio" value="rg">
                         <label>RG</label>
                     </div>
@@ -35,7 +36,7 @@
                     <button class="activate-add-popup-bt" type="submit"><img src="../static/img/plus.png"></button>
                 </div>
             </form>
-    
+
             <table>
                 <thead>
                     <tr>
@@ -47,7 +48,7 @@
                         <th class="time-col">Horário</th>
                     </tr>
                 </thead>
-                
+
                 <tbody>
                     {% for client_entry in client_entries %}
                         {% set client = client_entry[0] %}
@@ -64,7 +65,7 @@
                     {% endfor %}
                 </tbody>
             </table>
-            
+
             <form method="get" class="page-form" action="{{ url_for('system.system_get') }}">
                 <button name="arrow" value="left" type="submit" class="arrow right-arrow"><img src="../static/img/left_arrow.png"></button>
                 <button name="arrow" value="right" type="submit" class="arrow left-arrow"><img src="../static/img/right_arrow.png"></button>
@@ -86,9 +87,9 @@
                     <label>Editar</label>
 
                     <input name="edit" class="radio-bt" type="radio" value="no-edit" checked>
-                    <label>Não editar</label>                    
+                    <label>Não editar</label>
                 </div>
-                
+
                 <div class="input-container name-container">
                     <label for="search-name">Nome</label>
                     <input type="text" id="search-name" name="name">
@@ -126,7 +127,7 @@
                 </div>
 
                 <input type="text" name="client-id" class="client-id" style="display: none">
-                
+
             </form>
         </div>
 
@@ -137,7 +138,7 @@
 
             <p class="popup-side-msg"></p>
             <form class="popup-form" method="post" action="{{ url_for('system.system_add_client') }}">
-                
+
                 <div class="input-container name-container">
                     <label for="add-name">Nome</label>
                     <input type="text" id="add-name" name="name">
@@ -170,7 +171,7 @@
                 </div>
 
                 <button class="primary-button confirm-bt" type="button">OK</button>
-                
+
             </form>
         </div>
     </main>

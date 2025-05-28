@@ -37,7 +37,7 @@ class Entrance(db.Model):
         db.session.add(entrance)
         db.session.commit()
         return entrance
-    
+
 
     @classmethod
     def find_all(cls) -> List:
@@ -46,7 +46,7 @@ class Entrance(db.Model):
 
         return db.session.execute(
             db.select(cls).order_by(cls.entrance.desc())).scalars().all()
-    
+
 
     @classmethod
     def count(cls) -> int:
