@@ -1,8 +1,9 @@
-from flask import Flask
+from flask import Flask, session, request, redirect, url_for
 from models import *
 from extensions.database import db
 from extensions.login_manager import login_manager
 from datetime import timedelta
+from flask_login import current_user
 
 
 def create_app():
@@ -17,7 +18,8 @@ def create_app():
     app.config["SESSION_COOKIE_SECURE"] = True
     app.config["SESSION_COOKIE_HTTPONLY"] = True
     app.config["SESSION_COOKIE_SAMESITE"] = 'Lax'
-    app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=4)
+    app.config['SESSION_PERMANENT'] = True
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=15)
 
 
     login_manager.init_app(app)
@@ -34,6 +36,10 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+
+    @app.before_request
+    def make_session_permanent():
+        session.permanent = True
 
     return app
 

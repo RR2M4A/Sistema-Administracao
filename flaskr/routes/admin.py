@@ -53,3 +53,12 @@ def admin_delete():
 
     req = request.get_json()
     return AdminService.handle_user_removal(req)
+
+
+@admin.post("/admin/run_reports/")
+@admin_required
+def admin_reports():
+    "Responsável por gerar o relatório de clientes."
+
+    req = request.get_json()
+    return AdminService.handle_report_generation(req)

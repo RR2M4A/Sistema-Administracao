@@ -10,6 +10,8 @@
 </head>
 <body class="background">
 
+    <button type="button" class="admin-bt">Área do sistema</button>
+
     <div class="overlay"></div>
     <div class="popup">
 
@@ -61,6 +63,7 @@
         </div>
 
         <button class="new-user-bt" type="button">Novo usuário</button>
+        <button class="run-report-bt" type="button"">Gerar relatório</button>
     </main>
 
     <div class="new-user-popup">
@@ -90,6 +93,25 @@
 
             <button type="button" class="new-user-popup__submit">Confirmar</button>
 
+        </form>
+    </div>
+
+    <div class="report-box">
+        <h2>Gerar Relatório</h2>
+        <p class="report-box__side-msg"></p>
+
+        <form method="POST" action="/admin/run_reports/">
+            <div class="report-box__input-container">
+                <label for="start-date">Data de Início</label>
+                <input class="start-date" name="start-date" required>
+            </div>
+
+            <div class="report-box__input-container">
+                <label for="final-date">Data de Fim</label>
+                <input class="final-date" name="final-date" required>
+            </div>
+
+            <button class="generate-report-bt" type="button">Gerar</button>
         </form>
     </div>
 

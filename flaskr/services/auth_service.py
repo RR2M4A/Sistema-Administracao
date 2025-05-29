@@ -85,6 +85,7 @@ class AuthService:
 
             return AuthResponses.CHECK_CREDENTIALS.value
 
+        flask_login.logout_user()
         flask_login.login_user(user)
         user.misses = 0
         db.session.commit()

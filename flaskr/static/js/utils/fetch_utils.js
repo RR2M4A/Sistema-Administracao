@@ -26,6 +26,7 @@ export async function fetchInfo(url = null, entry = {}) {
     });
 
     return response;
+
 }
 
 

@@ -10,6 +10,11 @@
     <link rel="icon" type="image/x-icon" href="../static/img/logo.ico">
 </head>
 <body>
+
+    {% if current_user.is_admin %}
+        <button type="button" class="admin-bt">Área do admin</button>
+    {% endif %}
+
     <main class="blank-container">
 
         <div class="table-container">

@@ -1,5 +1,5 @@
 from enum import Enum
-from flask import render_template, url_for, redirect
+from flask import render_template, url_for, redirect, send_file
 from http import HTTPStatus
 from models.user import User
 from utils.sanitizers import sanitize_many
@@ -8,6 +8,12 @@ from extensions.database import db
 from utils.regex import RegexPatterns
 from services.auth_service import AuthService
 from flask_login import current_user
+from models.client import Client
+from models.entrance import Entrance
+import tempfile
+from datetime import datetime
+from sqlalchemy import and_
+import pandas as pd
 
 
 class AdminResponses(Enum):
@@ -33,6 +39,16 @@ class AdminResponses(Enum):
     USER_IS_LOGGED_IN = (
         {"msg": "O usuário está logado! Operação cancelada!"},
         HTTPStatus.FORBIDDEN
+    )
+
+    DATA_NOT_FOUND = (
+        {"msg": "Nenhum dado encontrado para o período selecionado."},
+        HTTPStatus.NOT_FOUND
+    )
+
+    INVALID_DATA_TYPE = (
+        {"msg": "Datas inválidas!"},
+        HTTPStatus.BAD_REQUEST
     )
 
 
@@ -147,3 +163,56 @@ class AdminService:
         db.session.delete(user)
         db.session.commit()
         return AdminResponses.USER_DELETED.value
+
+
+    @staticmethod
+    def handle_report_generation(data: dict):
+
+        start_date = data.get("start-date")
+        final_date = data.get("final-date")
+
+        # Converte para datetime
+        try:
+            start_obj = datetime.strptime(start_date, "%d/%m/%Y")
+            final_obj = datetime.strptime(final_date, "%d/%m/%Y")
+            final_obj = final_obj.replace(hour=23, minute=59, second=59)
+        except:
+            return AdminResponses.INVALID_DATA_TYPE.value
+
+        # Busca os dados entre as datas
+        result = db.session.execute(
+            db.select(Client, Entrance)
+            .join(Entrance, Client.id==Entrance.client_id)
+            .where(and_(
+                Entrance.entrance >= start_obj,
+                Entrance.entrance <= final_obj))).all()
+
+
+        data = []
+        for client, entrance in result:
+            data.append({
+                "Nome": client.name,
+                "CPF": client.cpf,
+                "Data de Nascimento": client.birth_date,
+                "Telefone": client.phone_number,
+                "Entrada": entrance.entrance.strftime("%d/%m/%Y %H:%M:%S")
+            })
+
+        if not data:
+            print(AdminResponses.DATA_NOT_FOUND.value)
+            return AdminResponses.DATA_NOT_FOUND.value
+
+        df = pd.DataFrame(data)
+
+        # Cria arquivo temporário
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx")
+        df.to_excel(temp_file.name, index=False)
+        temp_file.close()
+
+        # Envia o arquivo para download
+        return send_file(
+            temp_file.name,
+            as_attachment=True,
+            download_name="relatorio.xlsx",
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
