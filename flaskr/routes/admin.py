@@ -44,3 +44,12 @@ def admin_new():
     is_admin = True if req.get("is-admin") == 'true' else False
 
     return AuthService.signup(username, pass1, pass2, is_admin)
+
+
+@admin.post("/admin/delete/")
+@admin_required
+def admin_delete():
+    "Lida com a remoção de um usuário."
+
+    req = request.get_json()
+    return AdminService.handle_user_removal(req)

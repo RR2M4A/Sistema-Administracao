@@ -7,6 +7,7 @@ from utils.converters import model_to_dict
 from extensions.database import db
 from utils.regex import RegexPatterns
 from services.auth_service import AuthService
+from flask_login import current_user
 
 
 class AdminResponses(Enum):
@@ -14,8 +15,25 @@ class AdminResponses(Enum):
     RENDER_USERS = ("admin.html", HTTPStatus.OK)
     REDIRECT_TO_USERS = ("admin.admin_get", HTTPStatus.OK)
 
-    LOAD_USER = ({"msg": "Usuário carregado com sucesso!"}, HTTPStatus.OK)
-    USER_NOT_FOUND = ({"msg": "Usuário não encontrado!"}, HTTPStatus.NOT_FOUND)
+    LOAD_USER = (
+        {"msg": "Usuário carregado com sucesso!"},
+        HTTPStatus.OK
+    )
+
+    USER_NOT_FOUND = (
+        {"msg": "Usuário não encontrado!"},
+        HTTPStatus.NOT_FOUND
+    )
+
+    USER_DELETED = (
+        {"msg": "Usuário excluído com sucesso!"},
+        HTTPStatus.NO_CONTENT
+    )
+
+    USER_IS_LOGGED_IN = (
+        {"msg": "O usuário está logado! Operação cancelada!"},
+        HTTPStatus.FORBIDDEN
+    )
 
 
     def build(self, **kwargs):
@@ -111,3 +129,21 @@ class AdminService:
         is_admin = True if data.get("is-admin") == 'true' else False
 
         return AuthService.signup(username, pass1, pass2, is_admin)
+
+
+    @classmethod
+    def handle_user_removal(cls, data: dict):
+
+        user = User.find_by_id(data.get("id"))
+
+        if not user:
+            return AdminResponses.USER_NOT_FOUND.value
+
+        logged_user = current_user.__dict__
+
+        if user.id == logged_user.get('id'):
+            return AdminResponses.USER_IS_LOGGED_IN.value
+
+        db.session.delete(user)
+        db.session.commit()
+        return AdminResponses.USER_DELETED.value
