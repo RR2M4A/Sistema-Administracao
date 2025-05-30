@@ -1,10 +1,6 @@
 <div align="center" alt="imagem do readme">
-    <img src="capa_sis_gama.jpg" width="900px" height="250">
+    <img src="https://github.com/user-attachments/assets/1ab76b87-75c4-4fd2-8f5f-a38c6e3191fe" width="750px" height="300">
 </div>
-
-<br>
-
-
 
 # Sistema de Gestão de Atendimentos - Administração Regional do Gama
 
