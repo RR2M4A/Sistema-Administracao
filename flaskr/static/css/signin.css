@@ -1,80 +1,9 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
-}
-
-.background {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    width: 100vw;
-    background-color: rgba(255, 255, 255, 1);
-}
-
-.background::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: url("../img/yellow_ype.png");
-    background-size: cover;
-    background-position: center;
-    opacity: 0.8;
-    z-index: -1;
-}
-
-.blank-container {
-    background: #fff;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    width: 380px;
-}
-
-.input-container {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 1rem;
-}
-
-.input-container:first-of-type {
-    margin-top: 30px;
-}
-
-.input-container label {
-    font-size: 14px;
-    margin-bottom: 5px;
-    color: #333;
-}
-
-.input-container input {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    outline: none;
-    transition: border 0.3s;
-}
-
-.input-container input:focus {
-    border-color: #666;
-}
-
-.submit-bt {
-    background: #333;
-    color: white;
-    border: none;
-    padding: 10px;
-    width: 100%;
-    border-radius: 4px;
-    cursor: pointer;
+.login-first {
+    color: red;
+    text-align: center;
     font-weight: bold;
-    transition: all ease-in-out 0.3s;
+    font-size: 11px;
+    margin-top: 5px;
 }
 
 .no-acess-msg {
@@ -83,30 +12,4 @@
     margin-top: 18px;
     color: rgb(50, 65, 131);
     font-weight: bold;
-}
-
-.submit-bt:hover {
-    background: #555;
-}
-
-.welcome-msg {
-    font-size: 16px;
-    text-align: center;
-}
-
-.wrong-credentials {
-    display: none;
-    color: red;
-    text-align: center;
-    font-weight: bold;
-    font-size: 11px;
-    margin-top: 5px;
-}
-
-.login-first {
-    color: red;
-    text-align: center;
-    font-weight: bold;
-    font-size: 11px;
-    margin-top: 5px;
 }

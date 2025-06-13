@@ -1,48 +1,40 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
+{% extends 'auth_base.html' %}
 
-    <link href="../static/css/signup.css" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="../static/img/logo.ico">
-</head>
-<body>
-    <main class="blank-container">
+{% block title %}Sign Up{% endblock %}
 
-        <div class="logo-container">
-            <img class="logo" src="../static/img/logo-gdf-redondo.png" alt="Logo">
-            <h1 class="title">
-        </div>
+{% block head_links %}
+<link href="../static/css/auth_base.css" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="../static/img/logo.ico">
+{% endblock %}
 
-        <h2 class="welcome-msg">Crie seu primeiro usuário!</h2>
-        <form method="post" action="{{ url_for('auth.signup_post') }}">
+{% block welcome_msg%}Crie seu primeiro usuário!{% endblock %}
 
-            <p class="invalid-credentials"></p>
+{% block form %}
+<form method="post" action="{{ url_for('auth.signup_post') }}">
 
-            <div class="input-container">
-                <label for="username">Usuário:</label>
-                <input id="username" name="username" type="text">
-            </div>
+    <p class="invalid-credentials"></p>
 
-            <div class="input-container">
-                <label for="first-password">Senha:</label>
-                <input id="first-password" name="first-password" type="password">
-            </div>
+    <div class="input-container">
+        <label for="username">Usuário:</label>
+        <input id="username" name="username" type="text">
+    </div>
 
-            <div class="input-container">
-                <label for="second-password">Confirme sua senha:</label>
-                <input id="second-password" name="second-password" type="password">
-            </div>
+    <div class="input-container">
+        <label for="first-password">Senha:</label>
+        <input id="first-password" name="first-password" type="password">
+    </div>
+
+    <div class="input-container">
+        <label for="second-password">Confirme sua senha:</label>
+        <input id="second-password" name="second-password" type="password">
+    </div>
 
 
-            <button class="submit-bt" type="button">Cadastrar-se</button>
+    <button class="submit-bt" type="button">Cadastrar-se</button>
 
-        </form>
-    </main>
+</form>
+{% endblock %}
 
-    <script type="module" src="../static/js/signup/signup_main.js"></script>
-</body>
-</html>
+{% block scripts %}
+<script type="module" src="../static/js/signup/signup_main.js"></script>
+{% endblock %}

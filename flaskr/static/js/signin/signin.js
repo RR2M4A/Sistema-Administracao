@@ -5,7 +5,7 @@ import { make_request } from "../utils/fetch_utils.js";
 const submit_bt = document.querySelector('.submit-bt');
 const username_input = document.querySelector('input[name="username"]');
 const inputs = document.querySelectorAll('form input');
-const side_msg = document.querySelector('.wrong-credentials');
+const side_msg = document.querySelector('.invalid-credentials');
 
 
 export async function validate_credentials(event, inputs, side_msg) {
