@@ -1,11 +1,15 @@
-name: "Suggests PRs for other branches"
+name: "Suggest PRs for other branches"
 
 on:
   pull_request:
-    types: 
+    types:
       - closed
     branches:
       - main
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   create-pull-requests:
@@ -13,33 +17,56 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout completo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Install GitHub CLI
-        run: sudo apt-get install gh -y
+      - name: Configurar Git (evita avisos de usuário)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Creating PRs for other branches
+      - name: Instalar GitHub CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gh
+
+      - name: Autenticar GitHub CLI
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Lista as branches remotas, exceto main
+          echo "${GH_TOKEN}" | gh auth login --with-token
+
+      - name: Buscar todas as refs
+        run: |
+          git fetch --all
+
+      - name: Criar PRs para outras branches
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Lista as branches remotas, exceto main. Ajuste filtros conforme convenção do seu repositório.
           branches=$(git ls-remote --heads origin | awk '{print $2}' | sed 's|refs/heads/||' | grep -v '^main$')
-
+          
           for branch in $branches; do
-            echo "Verificando se a branch '$branch' está atrás da main..."
+            echo "Verificando branch '$branch'..."
+            
+            # Podemos primeiro garantir que origin/main e origin/branch estão atualizados localmente
+            git fetch origin main:refs/remotes/origin/main
+            git fetch origin $branch:refs/remotes/origin/$branch
 
-            # Verificar se o branch está atrás da main (evita PRs inúteis)
-            if git fetch origin $branch && [ "$(git rev-list origin/$branch..origin/main --count)" -gt 0 ]; then
-              echo "Criando PR: main → $branch"
+            # Verifica quantos commits em main não estão em branch
+            ahead_count=$(git rev-list origin/$branch..origin/main --count || echo "0")
+            if [ "$ahead_count" -gt 0 ]; then
+              echo "Branch '$branch' está atrás da main por $ahead_count commits. Criando PR..."
               gh pr create \
                 --base "$branch" \
                 --head "main" \
                 --title "Atualizar $branch com as mudanças da main" \
                 --body "Este PR sincroniza '$branch' com a main após um merge." \
-                || echo "Não foi possível criar PR para $branch (talvez já exista)"
+                || echo "Ignorando PR para $branch (já existente ou erro ao criar)."
             else
               echo "Branch '$branch' já está atualizada com a main."
             fi
           done
-  
