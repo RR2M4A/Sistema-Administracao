@@ -1,45 +1,42 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In</title>
+{% extends 'auth_base.html' %}
 
-    <link href="../static/css/signin.css" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="../static/img/logo.ico">
-</head>
-<body class="background">
-    <main class="blank-container">
+{% block title %}Sign In{% endblock %}
 
-        <h2 class="welcome-msg">Login</h2>
+{% block head_links %}
+<link href="../static/css/signin.css" rel="stylesheet">
+<link href="../static/css/auth_base.css" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="../static/img/logo.ico">
+{% endblock %}
 
-        <form method="post">
+{% block welcome_msg %}Faça seu login!{% endblock %}
 
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    <p class="login-first">{{messages[0]}}</p>
-                {% endif %}
-            {% endwith %}
+{% block form %}
+<form method="post">
 
-            <p class="wrong-credentials">Credenciais inválidas!</p>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <p class="login-first">{{messages[0]}}</p>
+        {% endif %}
+    {% endwith %}
 
-            <div class="input-container">
-                <label for="username">Usuário:</label>
-                <input id="username" name="username" type="text">
-            </div>
+    <p class="invalid-credentials"></p>
 
-            <div class="input-container">
-                <label for="password">Senha:</label>
-                <input id="password" name="password" type="password">
-            </div>
+    <div class="input-container">
+        <label for="username">Usuário:</label>
+        <input id="username" name="username" type="text">
+    </div>
 
-            <button class="submit-bt" type="button">Entrar</button>
-            <p class="no-acess-msg">Não possui acesso?<br>Solicite ao administrador do sistema.</p>
+    <div class="input-container">
+        <label for="password">Senha:</label>
+        <input id="password" name="password" type="password">
+    </div>
 
-        </form>
-    </main>
+    <button class="submit-bt" type="button">Entrar</button>
+    <p class="no-acess-msg">Não possui acesso?<br>Solicite ao administrador do sistema.</p>
 
-    <script type="module" src="../static/js/signin/signin_main.js"></script>
-</body>
-</html>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="../static/js/signin/signin_main.js"></script>
+{% endblock %}
