@@ -1,0 +1,45 @@
+name: "Suggests PRs for other branches"
+
+on:
+  pull_request:
+    types: 
+      - closed
+    branches:
+      - main
+
+jobs:
+  create-pull-requests:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install GitHub CLI
+        run: sudo apt-get install gh -y
+
+      - name: Creating PRs for other branches
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Lista as branches remotas, exceto main
+          branches=$(git ls-remote --heads origin | awk '{print $2}' | sed 's|refs/heads/||' | grep -v '^main$')
+
+          for branch in $branches; do
+            echo "Verificando se a branch '$branch' está atrás da main..."
+
+            # Verificar se o branch está atrás da main (evita PRs inúteis)
+            if git fetch origin $branch && [ "$(git rev-list origin/$branch..origin/main --count)" -gt 0 ]; then
+              echo "Criando PR: main → $branch"
+              gh pr create \
+                --base "$branch" \
+                --head "main" \
+                --title "Atualizar $branch com as mudanças da main" \
+                --body "Este PR sincroniza '$branch' com a main após um merge." \
+                || echo "Não foi possível criar PR para $branch (talvez já exista)"
+            else
+              echo "Branch '$branch' já está atualizada com a main."
+            fi
+          done
+  
