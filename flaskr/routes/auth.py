@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, request
-from services.auth_service import AuthService
-from models.user import User
-from extensions.login_manager import login_manager
-from utils.decorators import no_account
+from services import AuthService
+from models import User
+from extensions import login_manager
+from utils import no_account
 
 
 auth = Blueprint("auth", __name__)

@@ -1,7 +1,9 @@
+from utils import admin_required
+from services import AdminService
+from services import AuthService
+
 from flask import Blueprint, request
-from utils.decorators import admin_required
-from services.admin_service import AdminService
-from services.auth_service import AuthService
+
 
 admin = Blueprint("admin", __name__)
 
@@ -41,7 +43,7 @@ def admin_new():
     username = req.get("popup__username")
     pass1 = req.get("first-pass")
     pass2 = req.get("second-pass")
-    is_admin = True if req.get("is-admin") == 'true' else False
+    is_admin = req.get("is-admin") == 'true'
 
     return AuthService.signup(username, pass1, pass2, is_admin)
 

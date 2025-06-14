@@ -1,7 +1,7 @@
 from typing import List, Optional
 from sqlalchemy import String, exists
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from extensions.database import db
+from extensions import db
 
 
 class Client(db.Model):
@@ -27,7 +27,8 @@ class Client(db.Model):
     phone_number: Mapped[str] = mapped_column()
     birth_date: Mapped[str] = mapped_column()
 
-    entrances: Mapped[List['Entrance']] = relationship(back_populates='client', cascade="all, delete-orphan")
+    entrances: Mapped[List['Entrance']] = relationship(
+        back_populates='client', cascade="all, delete-orphan")
 
 
     @classmethod
@@ -47,11 +48,11 @@ class Client(db.Model):
 
 
     @classmethod
-    def find_by_id(cls, id: int) -> Optional['Client']:
+    def find_by_id(cls, client_id: int) -> Optional['Client']:
         """Busca pelo ID e retorna um cliente do banco de dados."""
 
         return db.session.execute(
-            db.select(cls).where(cls.id == id)).scalar_one_or_none()
+            db.select(cls).where(cls.id == client_id)).scalar_one_or_none()
 
 
     @classmethod
