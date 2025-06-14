@@ -49,7 +49,7 @@ class SystemResponses(Enum):
 
     REDIRECT_TO_CLIENTS = ("system.system_get", HTTPStatus.OK)
 
-    RENDER_CLIENTS = ("system.html", HTTPStatus.OK)
+    RENDER_CLIENTS = ("system/system.html", HTTPStatus.OK)
 
     def build(self, **kwargs):
         """Retorna a resposta com dados adicionais ao dicionário."""

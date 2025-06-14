@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Sistema{% endblock %}
+
+{% block head_links %}
+    <link href="{{ url_for('static', filename='css/system.css') }}" rel='stylesheet'>
+{% endblock %}
+
+{% block content %}
+
+    {% if current_user.is_admin %}
+        <button type="button" class="admin-bt">Área do admin</button>
+    {% endif %}
+
+    <main class="blank-container">
+
+        <div class="overlay"></div>
+
+        {% include 'system/table.html' %}
+        {% include 'system/search_client_popup.html' %}
+        {% include 'system/new_client_popup.html' %}
+
+    </main>
+
+{% endblock %}
+
+{% block scripts %}
+    <script type="module" src="{{ url_for('static', filename='js/system/system_main.js')}}"></script>
+{% endblock %}

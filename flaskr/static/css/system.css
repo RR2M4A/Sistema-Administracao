@@ -6,7 +6,7 @@
     font-family: Arial, sans-serif;
 }
 
-body {
+.background {
     position: relative;
     display: flex;
     height: 100vh;

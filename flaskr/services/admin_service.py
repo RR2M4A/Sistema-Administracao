@@ -18,7 +18,7 @@ import pandas as pd
 
 class AdminResponses(Enum):
 
-    RENDER_USERS = ("admin.html", HTTPStatus.OK)
+    RENDER_USERS = ("admin/admin.html", HTTPStatus.OK)
     REDIRECT_TO_USERS = ("admin.admin_get", HTTPStatus.OK)
 
     LOAD_USER = (

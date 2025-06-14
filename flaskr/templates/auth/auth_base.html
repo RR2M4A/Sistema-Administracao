@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <main class="blank-container">
+        <div class="logo-container">
+            <img class="logo" src="../static/img/logo-gdf-redondo.png" alt="Logo">
+            <h1 class="title">
+        </div>
+
+        <h2 class="welcome-msg">{% block welcome_msg %}{% endblock %}</h2>
+
+        {% block form %}{% endblock %}
+    </main>
+{% endblock %}

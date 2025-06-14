@@ -17,7 +17,7 @@ def load_user(user_id):
 def signin_get():
     """Carrega a página de sign in."""
 
-    return render_template("signin.html")
+    return render_template("auth/signin.html")
 
 
 @auth.post("/signin/")
@@ -37,7 +37,7 @@ def signin_post():
 def signup_get():
     """Carrega a página de signup."""
 
-    return render_template("signup.html")
+    return render_template("auth/signup.html")
 
 
 @auth.post("/")
