@@ -27,7 +27,7 @@ class Client(db.Model):
     phone_number: Mapped[str] = mapped_column()
     birth_date: Mapped[str] = mapped_column()
 
-    entrances: Mapped[List['Entrance']] = relationship(
+    entrances: Mapped[List['Entrance']] = relationship(                 # type: ignore
         back_populates='client', cascade="all, delete-orphan")
 
 
