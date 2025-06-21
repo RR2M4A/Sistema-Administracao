@@ -44,6 +44,8 @@ class Client(db.Model):
             birth_date=birth_date
         )
 
+        db.session.add(client)
+        db.session.commit()
         return client
 
 

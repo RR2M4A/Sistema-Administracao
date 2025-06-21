@@ -95,11 +95,7 @@ class SystemService:
             return SystemResponses.CLIENT_EXISTS.value
 
         client = Client.create(*data.values())
-        entrance = Entrance.create(client)
-
-        db.session.add(client)
-        db.session.add(entrance)
-        db.session.commit()
+        Entrance.create(client)
 
         return SystemResponses.CLIENT_CREATED.value
 
