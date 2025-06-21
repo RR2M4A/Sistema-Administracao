@@ -1,0 +1,28 @@
+<div class="popup">
+
+    <form class="popup__form" method="post" action="{{ url_for('admin.admin_edit') }}">
+        <div class="popup__input-container">
+            <input style="display: none;" name="id" class="hidden-id">
+            <label class="popup__boldtext">Usuário:</label>
+            <input class="popup__username" name="popup__username">
+        </div>
+
+        <div class="popup__radio-container">
+            <p class="popup__boldtext">Ativo?</p>
+            <input type="radio" name="is-active" value="true">
+            <label>Sim</label>
+            <input type="radio" name="is-active" value="false" checked>
+            <label>Não</label>
+        </div>
+
+        <div class="popup__radio-container">
+            <p class="popup__boldtext">É admin?</p>
+            <input type="radio" name="is-admin" value="true">
+            <label>Sim</label>
+            <input type="radio" name="is-admin" value="false" checked>
+            <label>Não</label>
+        </div>
+
+        <button type="submit" class="popup__submit">Confirmar</button>
+    </form>
+</div>

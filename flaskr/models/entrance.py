@@ -2,9 +2,9 @@ from typing import List
 from datetime import datetime
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from extensions.database import db
-from utils.date_utils import BRAZIL_TZ
-from models.client import Client
+from extensions import db
+from utils import BRAZIL_TZ
+from models import Client
 
 
 class Entrance(db.Model):
@@ -29,6 +29,7 @@ class Entrance(db.Model):
 
     @classmethod
     def create(cls, client: Client):
+        """ Cria e retorna um objeto de Entrance."""
         entrance = Entrance(
             entrance=datetime.now(BRAZIL_TZ),
             client=client

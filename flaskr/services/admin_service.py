@@ -1,24 +1,20 @@
 from enum import Enum
-from flask import render_template, url_for, redirect, send_file
 from http import HTTPStatus
-from models.user import User
-from utils.sanitizers import sanitize_many
-from utils.converters import model_to_dict
-from extensions.database import db
-from utils.regex import RegexPatterns
-from services.auth_service import AuthService
-from flask_login import current_user
-from models.client import Client
-from models.entrance import Entrance
 import tempfile
 from datetime import datetime
+from flask import render_template, url_for, redirect, send_file
+from utils import sanitize_many, model_to_dict, RegexPatterns
+from extensions import db
+from flask_login import current_user
+from models import *
 from sqlalchemy import and_
 import pandas as pd
+from .auth_service import AuthService
 
 
 class AdminResponses(Enum):
 
-    RENDER_USERS = ("admin.html", HTTPStatus.OK)
+    RENDER_USERS = ("admin/admin.html", HTTPStatus.OK)
     REDIRECT_TO_USERS = ("admin.admin_get", HTTPStatus.OK)
 
     LOAD_USER = (
@@ -95,8 +91,8 @@ class AdminService:
     def handle_user_update(data: dict):
         """Lida com as edições do usuário selecionado."""
 
-        is_admin = True if data.get("is-admin") == 'true' else False
-        is_active = True if data.get("is-active") == 'true' else False
+        is_admin = data.get("is-admin") == 'true'
+        is_active = data.get("is-active") == 'true'
         user = User.find_by_id(data.get('id'))
 
         if not user:
@@ -142,7 +138,7 @@ class AdminService:
         username = data.get("popup__username")
         pass1 = data.get("first-pass")
         pass2 = data.get("second-pass")
-        is_admin = True if data.get("is-admin") == 'true' else False
+        is_admin = data.get("is-admin") == 'true'
 
         return AuthService.signup(username, pass1, pass2, is_admin)
 

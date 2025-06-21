@@ -1,16 +1,14 @@
-from flask import Flask, session, request, redirect, url_for
-from models import *
-from extensions.database import db
-from extensions.login_manager import login_manager
 from datetime import timedelta
-from flask_login import current_user
+from flask import Flask, session
+from models import *
+from extensions import db
+from extensions import login_manager
 
 
 def create_app():
     """Inicializa, configura e retorna o Flask WSGI."""
 
     app = Flask(__name__)
-
     app.secret_key = "Use a secret key here"
 
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///system.db"
@@ -25,13 +23,13 @@ def create_app():
     login_manager.init_app(app)
     db.init_app(app)
 
-    from routes.auth import auth
+    from routes import auth
     app.register_blueprint(auth)
 
-    from routes.system import system
+    from routes import system
     app.register_blueprint(system)
 
-    from routes.admin import admin
+    from routes import admin
     app.register_blueprint(admin)
 
     with app.app_context():
@@ -45,5 +43,5 @@ def create_app():
 
 
 if __name__ == "__main__":
-    app = create_app()
-    app.run(port=5000, debug=True)
+    flask_app = create_app()
+    flask_app.run(port=5000, debug=True)

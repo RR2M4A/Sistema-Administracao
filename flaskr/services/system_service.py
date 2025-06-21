@@ -3,22 +3,16 @@ from math import ceil
 from enum import Enum
 from datetime import datetime
 from http import HTTPStatus
+from typing import Union, Optional, List
 
 # Bibliotecas de terceiros
 from validate_docbr import CPF
 from flask import render_template, url_for, redirect, session, Request
 
 # Imports do seu projeto
-from typing import Union, Optional, List, Union
-from models.client import Client
-from models.entrance import Entrance
-from extensions.database import db
-from utils.masks import mask_cpf, mask_rg, mask_phone_number
-from utils.converters import model_to_dict
-from utils.date_utils import get_days_in_month, to_datetime
-from utils.decorators import input_sanitized
-from utils.sanitizers import sanitize, sanitize_many
-from utils.regex import RegexPatterns
+from models import Client, Entrance
+from extensions import db
+from utils import *
 
 
 class SystemResponses(Enum):
@@ -49,7 +43,7 @@ class SystemResponses(Enum):
 
     REDIRECT_TO_CLIENTS = ("system.system_get", HTTPStatus.OK)
 
-    RENDER_CLIENTS = ("system.html", HTTPStatus.OK)
+    RENDER_CLIENTS = ("system/system.html", HTTPStatus.OK)
 
     def build(self, **kwargs):
         """Retorna a resposta com dados adicionais ao dicionário."""
@@ -101,11 +95,7 @@ class SystemService:
             return SystemResponses.CLIENT_EXISTS.value
 
         client = Client.create(*data.values())
-        entrance = Entrance.create(client)
-
-        db.session.add(client)
-        db.session.add(entrance)
-        db.session.commit()
+        Entrance.create(client)
 
         return SystemResponses.CLIENT_CREATED.value
 
@@ -195,6 +185,8 @@ class SystemService:
             if client:
                 return client
 
+        return None
+
 
     @staticmethod
     def mask_client_info(client: Union[Client, dict]) -> dict:
@@ -236,52 +228,48 @@ class SystemService:
 
     @classmethod
     @input_sanitized
-    def is_valid_name(cls, input: str) -> bool:
+    def is_valid_name(cls, user_input: str) -> bool:
         """Valida o nome."""
-        return bool(input)
+        return bool(user_input)
 
 
     @classmethod
     @input_sanitized
-    def is_valid_rg(cls, input: str) -> bool:
+    def is_valid_rg(cls, user_input: str) -> bool:
         """Valida o rg."""
-        return bool(input)
+        return bool(user_input)
 
 
     @classmethod
     @input_sanitized
-    def is_valid_cpf(cls, input: str) -> bool:
+    def is_valid_cpf(cls, user_input: str) -> bool:
         """Valida o cpf."""
-        return bool(input) and cls.CPF_VALIDATOR.validate(input)
+        return bool(user_input) and cls.CPF_VALIDATOR.validate(user_input)
 
 
     @classmethod
     @input_sanitized
-    def is_valid_phone(cls, input: str) -> bool:
+    def is_valid_phone(cls, user_input: str) -> bool:
         """Valida o número de telefone."""
 
         pattern = RegexPatterns.PHONE_NUMBER.value
-        is_valid = pattern.fullmatch(input)
+        is_valid = pattern.fullmatch(user_input)
 
-
-        if not is_valid or not input:
-            return False
-
-        return True
+        return bool(is_valid and user_input)
 
 
     @classmethod
     @input_sanitized
-    def is_valid_birth_date(cls, input: str) -> bool:
+    def is_valid_birth_date(cls, user_input: str) -> bool:
         """Valida a data de nascimento."""
 
         pattern = RegexPatterns.BIRTH_DATE.value
-        is_valid = re.fullmatch(pattern, input)
+        is_valid = re.fullmatch(pattern, user_input)
 
-        if not is_valid or not input:
+        if not is_valid or not user_input:
             return False
 
-        day, month, year = map(int, [input[:2], input[3:5], input[6:8]])
+        day, month, year = map(int, [user_input[:2], user_input[3:5], user_input[6:8]])
 
         if month < 1 or month > 12:
             return False
@@ -292,7 +280,7 @@ class SystemService:
         if year > datetime.today().year:
             return False
 
-        if to_datetime(input) > datetime.today():
+        if to_datetime(user_input) > datetime.today():
             return False
 
         return True

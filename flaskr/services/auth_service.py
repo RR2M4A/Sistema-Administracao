@@ -1,13 +1,20 @@
-from models.user import User
-from utils.regex import RegexPatterns
-from werkzeug.security import generate_password_hash
-from extensions.database import db
-import flask_login
 from enum import Enum
 from http import HTTPStatus
+from werkzeug.security import generate_password_hash
+
+from models import User
+from utils import RegexPatterns
+from extensions import db
+
+import flask_login
+
 
 
 class AuthResponses(Enum):
+    """Classe responsável por fornecer as respostas da
+    rota de autenticação.
+    """
+
     CHECK_CREDENTIALS = {
         "authenticated": False,
         "status": "check_credentials",

@@ -1,0 +1,41 @@
+{% extends 'auth/auth_base.html' %}
+
+{% block title %}Sign In{% endblock %}
+
+{% block head_links %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/signin.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth_base.css') }}">
+{% endblock %}
+
+{% block welcome_msg %}Faça seu login!{% endblock %}
+
+{% block form %}
+    <form method="post">
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <p class="login-first">{{messages[0]}}</p>
+            {% endif %}
+        {% endwith %}
+
+        <p class="invalid-credentials"></p>
+
+        <div class="input-container">
+            <label for="username">Usuário:</label>
+            <input id="username" name="username" type="text">
+        </div>
+
+        <div class="input-container">
+            <label for="password">Senha:</label>
+            <input id="password" name="password" type="password">
+        </div>
+
+        <button class="submit-bt" type="button">Entrar</button>
+        <p class="no-acess-msg">Não possui acesso?<br>Solicite ao administrador do sistema.</p>
+
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    <script type="module" src="{{ url_for('static', filename='js/signin/signin_main.js') }}"></script>
+{% endblock %}

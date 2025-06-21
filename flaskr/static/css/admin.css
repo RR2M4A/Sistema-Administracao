@@ -5,7 +5,9 @@
     font-family: Arial, sans-serif;
 }
 
+
 /* Testing 2 */
+
 .background {
     position: relative;
     display: flex;
@@ -242,5 +244,7 @@
     width: 120px;
     color: white;
     background: gray;
-    cursor: pointer;
+    cursor: pointer0;
 }
+
+/* linha comentada */

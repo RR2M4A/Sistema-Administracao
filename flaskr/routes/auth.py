@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, request
-from services.auth_service import AuthService
-from models.user import User
-from extensions.login_manager import login_manager
-from utils.decorators import no_account
+from services import AuthService
+from models import User
+from extensions import login_manager
+from utils import no_account
 
 
 auth = Blueprint("auth", __name__)
@@ -17,7 +17,7 @@ def load_user(user_id):
 def signin_get():
     """Carrega a página de sign in."""
 
-    return render_template("signin.html")
+    return render_template("auth/signin.html")
 
 
 @auth.post("/signin/")
@@ -37,7 +37,7 @@ def signin_post():
 def signup_get():
     """Carrega a página de signup."""
 
-    return render_template("signup.html")
+    return render_template("auth/signup.html")
 
 
 @auth.post("/")

@@ -2,7 +2,7 @@ from typing import Optional, List
 from sqlalchemy import exists
 from sqlalchemy.orm import Mapped, mapped_column
 from werkzeug.security import check_password_hash
-from extensions.database import db
+from extensions import db
 from flask_login import UserMixin
 
 
@@ -47,11 +47,11 @@ class User(UserMixin, db.Model):
 
 
     @classmethod
-    def find_by_id(cls, id: int) -> Optional['User']:
+    def find_by_id(cls, user_id: int) -> Optional['User']:
         """Busca um usuário pelo ID."""
 
         return db.session.execute(db.select(cls).where(
-            cls.id==id)).scalar_one_or_none()
+            cls.id==user_id)).scalar_one_or_none()
 
 
     @classmethod

@@ -1,6 +1,6 @@
 from flask import Blueprint, request
-from utils.decorators import access_required
-from services.system_service import SystemService
+from utils import access_required
+from services import SystemService
 
 
 system = Blueprint("system", __name__)

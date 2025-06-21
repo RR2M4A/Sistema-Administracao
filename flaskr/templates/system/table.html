@@ -1,0 +1,59 @@
+<div class="table-container">
+
+    <form class="search-form" method="post" action="{{ url_for('system.system_search_client') }}">
+
+        <div class="input-container">
+
+            <div class="radio-container">
+                <input name="search" class="radio-bt" type="radio" value="cpf" checked>
+                <label>CPF</label>
+
+                <input name="search" class="radio-bt" type="radio" value="rg">
+                <label>RG</label>
+            </div>
+
+            <p class="search-msg"></p>
+            <input name="search-bar" class="search-bar" type="text" placeholder="Buscar">
+            <button class="reload-bt" type="submit"><img src="../static/img/reload.png"></button>
+        </div>
+
+        <div class="input-container">
+            <button class="search-client-bt" type="submit"><img src="../static/img/lupe.png"></button>
+            <button class="activate-add-popup-bt" type="submit"><img src="../static/img/plus.png"></button>
+        </div>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th class="name-col">Nome</th>
+                <th class="cpf-col">CPF</th>
+                <th class="phone-col">Telefone</th>
+                <th class="birth-col">Data de<br>Nascimento</th>
+                <th class="date-col">Data</th>
+                <th class="time-col">Horário</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for client_entry in client_entries %}
+                {% set client = client_entry[0] %}
+                {% set entry = client_entry[1].entrance %}
+
+                <tr>
+                    <td>{{ client.name }}</td>
+                    <td>{{ client.cpf }}</td>
+                    <td>{{ client.phone_number }}</td>
+                    <td>{{ client.birth_date }}</td>
+                    <td>{{ entry.strftime('%d/%m/%Y') }}</td>
+                    <td>{{ entry.strftime('%H:%M:%S') }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <form method="get" class="page-form" action="{{ url_for('system.system_get') }}">
+        <button name="arrow" value="left" type="submit" class="arrow right-arrow"><img src="../static/img/left_arrow.png"></button>
+        <button name="arrow" value="right" type="submit" class="arrow left-arrow"><img src="../static/img/right_arrow.png"></button>
+    </form>
+</div>
