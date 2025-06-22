@@ -68,10 +68,7 @@ class AuthService:
             return AuthResponses.PASS_MISMATCH.value
 
         password_hash = generate_password_hash(pass1)
-        user = User.create(username, password_hash, is_admin)
-
-        db.session.add(user)
-        db.session.commit()
+        User.create(username, password_hash, is_admin)
 
         return AuthResponses.USER_CREATED.value
 

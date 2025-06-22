@@ -35,6 +35,8 @@ class User(UserMixin, db.Model):
             is_admin = is_admin,
         )
 
+        db.session.add(user)
+        db.session.commit()
         return user
 
 
