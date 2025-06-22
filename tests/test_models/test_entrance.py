@@ -14,7 +14,7 @@ def test_entrance_creation(clients_objs):
 
 def test_finding_all_entrances_with_existing_entrances(entrances_objs):
     """Testa o método 'Entrance.find_all()' da classe 'Entrance'.
-    É válido se 'Entrance.find_all()' retorna as instâncias da fixture.
+    É válido se 'Entrance.find_all()' retornar as instâncias da fixture na ordem inversa.
     """
 
     all_entrances = Entrance.find_all()
