@@ -1,11 +1,10 @@
 from datetime import datetime
 import pytest
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash
 from models import *
-from extensions import db
-from utils import BRAZIL_TZ
+from extensions import db # type: ignore
+from utils import BRAZIL_TZ # type: ignore
 
 
 class AppConfig:
