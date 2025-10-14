@@ -40,6 +40,11 @@ class Entrance(db.Model):
         return entrance
 
 
+    @staticmethod
+    def findByClient(client_id: int):
+        return Entrance.query.filter_by(client_id=client_id).all()
+
+
     @classmethod
     def find_all(cls) -> List:
         """Retorna todas as linhas da table Entrance, ordenadas pelo

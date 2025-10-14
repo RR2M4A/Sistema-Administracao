@@ -40,29 +40,43 @@ export async function search_client(form, side_msg=null) {
             side_msg.classList.add("failed-msg");
             side_msg.innerHTML = "Valor inválido!";
         }
-        
+
     } else if (ans.status == 404) {
 
         if (side_msg) {
             side_msg.classList.remove("successful-msg");
             side_msg.classList.add("failed-msg");
-            side_msg.innerHTML = "Cliente não encontrado!";    
+            side_msg.innerHTML = "Cliente não encontrado!";
         }
-        
+
     } else if (ans.status == 200) {
 
-        side_msg.classList.remove("successful-msg");
-        side_msg.classList.remove("failed-msg");
-
-        let client_info = await ans.json();
-
-        activate_popup(search_popup, overlay);
-        load_popup_info(client_info);
+        side_msg.classList.remove("successful-msg", "failed-msg");
+        let data = await ans.json();
+        updateTable(data.results);
 
     }
 
 }
 
+
+function updateTable(results) {
+    const tbody = document.querySelector(".client-table-body");
+    tbody.innerHTML = ""; // limpa antes de preencher
+
+    for (let c of results) {
+        let row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${c.name}</td>
+            <td>${c.cpf}</td>
+            <td>${c.phone_number}</td>
+            <td>${c.birth_date}</td>
+            <td>${c.date}</td>
+            <td>${c.time}</td>
+        `;
+        tbody.appendChild(row);
+    }
+}
 
 export function load_popup_info(client_info) {
 
@@ -76,7 +90,6 @@ export function load_popup_info(client_info) {
     for (let input of text_inputs) {
         disable_input(input);
     }
-
 }
 
 
@@ -111,7 +124,7 @@ export function init_listeners() {
     })
 
     search_bar.addEventListener("input", () => {
-    
+
         let marked_radio = document.querySelector("input[name='search']:checked");
 
         if (marked_radio.value == "cpf") {
@@ -129,7 +142,7 @@ export function init_listeners() {
         element.addEventListener("change", (event) => {
 
             let marked_radio = form.querySelector("input[name='edit']:checked");
-            
+
             if (marked_radio.value == "edit") {
                 edit_bt.style.display = "block";
                 enable_input(phone_number_input);

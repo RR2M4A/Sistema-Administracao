@@ -144,10 +144,22 @@ class SystemService:
         if not client:
             return SystemResponses.CLIENT_NOT_EXISTS.value
 
-        client = cls.mask_client_info(client)
-        client.update({"status": "success"})
+        # Buscar todas as entradas do cliente
+        entrances = Entrance.findByClient(client.id)
+        results = []
 
-        return client
+        for entrance in entrances:
+            client_info = cls.mask_client_info(client)
+            results.append({
+                "name": client_info["name"],
+                "cpf": client_info["cpf"],
+                "phone_number": client_info["phone_number"],
+                "birth_date": client_info["birth_date"],
+                "date": entrance.entrance.strftime("%d/%m/%Y"),
+                "time": entrance.entrance.strftime("%H:%M:%S")
+            })
+
+        return {"status": "success", "results": results}, HTTPStatus.OK
 
 
     @staticmethod

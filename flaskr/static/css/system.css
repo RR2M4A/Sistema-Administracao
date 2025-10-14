@@ -33,9 +33,10 @@ table td {
 }
 
 table th {
-    background-color: #a1a1a1;
+    background-color: rgb(52, 58, 64);
     font-weight: bold;
     text-align: center;
+    color: white;
 }
 
 table td {
