@@ -3,12 +3,12 @@ import pytest
 from flask import Flask
 from werkzeug.security import generate_password_hash
 from models import *
-from extensions import db # type: ignore
-from utils import BRAZIL_TZ # type: ignore
+from extensions import db
+from utils import BRAZIL_TZ
 
 
 class AppConfig:
-    """Classe com as configurações do app flask."""
+    """Class with Flask's config."""
 
     TESTING = True
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
@@ -16,7 +16,7 @@ class AppConfig:
 
 @pytest.fixture(scope='session', autouse=True)
 def app():
-    """Fixture que cria e retorna o Flask WSGI."""
+    """Returns Flask's WSGI."""
 
     flask_app = Flask(__name__)
     flask_app.config.from_object(AppConfig)
@@ -33,7 +33,7 @@ def app():
 
 @pytest.fixture
 def users_objs():
-    """Fixture que retorna uma lista de usuários fictícios."""
+    """Returns a list of users."""
 
     return [
         User( # type: ignore
@@ -59,7 +59,7 @@ def users_objs():
 
 @pytest.fixture
 def clients_objs():
-    """Fixture que retorna uma lista de clientes fictícios."""
+    """Returns a list of clients."""
 
     return [
         Client( # type: ignore
@@ -90,37 +90,39 @@ def clients_objs():
 
 
 @pytest.fixture
-def entrances_objs(clients_objs):
-    """Fixture que retorna uma lista de entradas fictícias."""
-
-    return [
-        Entrance(entrance=datetime.now(BRAZIL_TZ), client=clients_objs[0]), # type: ignore
-        Entrance(entrance=datetime.now(BRAZIL_TZ), client=clients_objs[1]), # type: ignore
-        Entrance(entrance=datetime.now(BRAZIL_TZ), client=clients_objs[2]), # type: ignore
-    ]
+def entrances_objs():
+    """Returns a list of entrances."""
+    return Entrance.find_all()
 
 
 @pytest.fixture(autouse=True)
-def database(users_objs, clients_objs, entrances_objs):
-    """Fixture que retorna uma instância do banco de dados, alimentado
-    pelos dados fictícios.
+def database(users_objs, clients_objs):
+    """
+    Resets database and inserts fresh test data before each test.
     """
 
+    # Truncate all tables
     for table in reversed(db.metadata.sorted_tables):
         db.session.execute(table.delete())
-    db.session.commit()
 
+    # Reinsert users and clients
     db.session.add_all(users_objs)
     db.session.add_all(clients_objs)
-    db.session.add_all(entrances_objs)
+
+    # Add entrances for each client
+    entrances = [
+        Entrance(entrance=datetime.now(BRAZIL_TZ), client=client)
+        for client in clients_objs
+    ]
+
+    db.session.add_all(entrances)
     db.session.commit()
 
     yield db
 
-
 @pytest.fixture()
 def client(app):
-    """Fixture que retorna o cliente - agente para as requisições nas rotas."""
+    """Returns a client - used for testing routes."""
 
     return app.test_client()
 
