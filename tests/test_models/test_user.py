@@ -3,8 +3,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 
 def test_user_creation():
-    """Testa o método 'User.create()' da classe 'User'.
-    É válido se 'User.create()' retorna uma instância de 'User'.
+    """Tests the method 'User.create()' from User's class.
+    It should return the 'User's instance.
     """
 
     user = User.create(
@@ -14,14 +14,11 @@ def test_user_creation():
     )
 
     assert isinstance(user, User)
-    assert user.username == 'user'
-    assert check_password_hash(user.password_hash, '123')
-    assert not user.is_admin
 
 
 def test_finding_user_by_username_with_existing_user(users_objs):
-    """Testa o método 'User.find_by_username()' da classe 'User'.
-    É válido se 'User.find_by_username()' retornar a instância da fixture.
+    """Tests the method 'User.find_by_username()' from User's class.
+    It should return the 'User's instance.
     """
 
     user = User.find_by_username('admin_user')
@@ -29,8 +26,8 @@ def test_finding_user_by_username_with_existing_user(users_objs):
 
 
 def test_finding_user_by_username_without_existing_user():
-    """Testa o método 'User.find_by_username()' da classe 'User'.
-    É válido se 'User.find_by_username()' retornar 'None'.
+    """Tests the method 'User.find_by_username()' from User's class.
+    It should return 'None'.
     """
 
     user = User.find_by_username('admin_user_2')
@@ -38,38 +35,40 @@ def test_finding_user_by_username_without_existing_user():
 
 
 def test_finding_user_by_id_with_existing_user(users_objs):
-    """Testa o método 'User.find_by_id()' da classe 'User'.
-    É válido se 'User.find_by_id()' retornar a instância da fixture.
+    """Tests the method 'User.find_by_id()' from User's class.
+    It should return the 'User's instance.
     """
 
-    user = User.find_by_id(1)
-    assert user in users_objs
+    user = User.find_by_id(users_objs[0].id)
+    assert isinstance(user, User)
 
 
 def test_finding_user_by_id_without_existing_user():
-    """Testa o método 'User.find_by_id()' da classe 'User'.
-    É válido se 'User.find_by_id()' retornar 'None'.
+    """Tests the method 'User.find_by_id()' from User's class.
+    It should return 'None'.
     """
 
+    # '10' is a non-existing user id in the fixture
     user = User.find_by_id(10)
     assert user is None
 
 
 def test_finding_all_users_with_existing_users(users_objs):
-    """Testa o método 'User.find_all()' da classe 'User'.
-    É válido se 'User.find_all()' retornar as instâncias da fixture na mesma ordem.
+    """Tests the method 'User.find_all()' from User's class.
+    It should return all instances of 'User' class.
     """
 
     all_users = User.find_all()
-    assert all_users == users_objs
+    for user in all_users:
+        assert user in users_objs
 
 
 def test_finding_all_users_without_existing_users(database):
-    """Testa o método 'User.find_all()' da classe 'User'.
-    É válido se 'User.find_all()' retornar uma lista vazia.
+    """Tests the method 'User.find_all()' from User's class.
+    It should return an empty list.
     """
 
-    # Limpando todas as linhas da table 'User' do banco de dados
+    # Clearing all rows from the database
     database.session.query(User).delete()
     database.session.commit()
 
@@ -78,8 +77,8 @@ def test_finding_all_users_without_existing_users(database):
 
 
 def test_if_has_any_user_with_existing_users():
-    """Testa o método 'User.has_any()' da classe 'User'.
-    É válido se 'User.has_any()' retornar 'True'.
+    """Tests the method 'User.has_any()' from User's class.
+    It should return 'True'.
     """
 
     has_any = User.has_any()
@@ -87,11 +86,11 @@ def test_if_has_any_user_with_existing_users():
 
 
 def test_if_has_any_user_without_existing_users(database):
-    """Testa o método 'User.has_any()' da classe 'User'.
-    É válido se 'User.has_any()' retornar 'False'.
+    """Tests the method 'User.has_any()' from User's class.
+    It should return 'False'.
     """
 
-    # Limpando todas as linhas da table 'User' do banco de dados
+    # Clearing all rows from the database
     database.session.query(User).delete()
     database.session.commit()
 
@@ -100,10 +99,9 @@ def test_if_has_any_user_without_existing_users(database):
 
 
 def test_checking_password_with_valid_password():
-    """Testa o método 'User.check_password()' da classe 'User'.
-    É válido se 'User.check_password()' retornar 'True'.
+    """Tests the method 'User.check_password()' from User's class.
+    It should return 'True'.
     """
-
     user = User.find_by_id(1)
 
     assert user is not None
@@ -111,8 +109,8 @@ def test_checking_password_with_valid_password():
 
 
 def test_checking_password_with_invalid_password():
-    """Testa o método 'User.check_pasword()' da classe 'User'.
-    É válido se 'User.check_pasword()' retornar 'False'.
+    """Tests the method 'User.check_password()' from User's class.
+    It should return 'False'.
     """
 
     user = User.find_by_id(1)

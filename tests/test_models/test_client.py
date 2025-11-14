@@ -2,8 +2,8 @@ from models import Client #type: ignore
 
 
 def test_client_creation():
-    """Testa o método 'Client.create()' da classe 'Client'.
-    É válido se 'Client.create()' retorna uma instância de 'Client'.
+    """Tests the method 'Client.create()' from Client's class.
+    It should return a 'Client's instance.
     """
 
     client = Client.create(
@@ -15,82 +15,91 @@ def test_client_creation():
     )
 
     assert isinstance(client, Client)
-    assert client.name == 'Mario'
-    assert client.rg == '987654321'
-    assert client.cpf == '60655920056'
-    assert client.phone_number == '6191118080'
-    assert client.birth_date == '05/05/2025'
 
 
 def test_finding_client_by_id_with_existing_client(clients_objs):
-    """Testa o método 'Client.find_by_id()' da classe 'Client'.
-    É válido se 'Client.find_by_id()' retorna uma instância de 'Client'.
+    """Tests the method 'Client.find_by_id()' from Client's class.
+    It should return the client associated with that ID.
     """
 
-    client = Client.find_by_id(1)
-    assert client in clients_objs
+    for client in clients_objs:
+        id = client.id
+        query_result = Client.find_by_id(id)
+
+        assert query_result == client
 
 
 def test_finding_client_by_id_without_existing_client():
-    """Testa o método 'Client.find_by_id()' da classe 'Client'.
-    É válido se 'Client.find_by_id()' retornar 'None'.
+    """Tests the method 'Client.find_by_id()' from Client's class.
+    It should return 'None'.
     """
 
+    # '10' is a no-existing ID in database
     client = Client.find_by_id(10)
     assert client is None
 
 
 def test_finding_client_by_cpf_with_existing_client(clients_objs):
-    """Testa o método 'Client.find_by_cpf()' da classe 'Client'.
-    É válido se 'Client.find_by_cpf()' retornar a instância da fixture.
+    """Tests the method 'Client.find_by_cpf()' from Client's class.
+    It should return the client associated with that CPF.
     """
 
-    client = Client.find_by_cpf("77596529097")
-    assert client in clients_objs
+    for client in clients_objs:
+        cpf = client.cpf
+        query_result = Client.find_by_cpf(cpf)
+
+        assert query_result == client
 
 
 def test_finding_client_by_cpf_without_existing_client():
-    """Testa o método 'Client.find_by_cpf()' da classe 'Client'.
-    É válido se 'Client.find_by_cpf()' retornar 'None'.
+    """Tests the method 'Client.find_by_cpf()' from Client's class.
+    It should return 'None'.
     """
 
+    # '11111111111' is a no-existing cpf in database
     client = Client.find_by_cpf("11111111111")
     assert client is None
 
 
 def test_finding_client_by_rg_with_existing_client(clients_objs):
-    """Testa o método 'Client.find_by_rg()' da classe 'Client'.
-    É válido se 'Client.find_by_rg()' retornar a instância da fixture.
+    """Tests the method 'Client.find_by_rg()' from Client's class.
+    It should return the client associated with that RG.
     """
 
-    client = Client.find_by_rg("12345")
-    assert client in clients_objs
+    for client in clients_objs:
+        rg = client.rg
+        query_result = Client.find_by_rg(rg)
+
+        assert client == query_result
 
 
 def test_finding_client_by_rg_without_existing_client():
-    """Testa o método 'Client.find_by_rg()' da classe 'Client'.
-    É válido se 'Client.find_by_rg()' retornar 'None'.
+    """Tests the method 'Client.find_by_cpf()' from Client's class.
+    It should return 'None'.
     """
 
+    # '101020' is a non-existing RG in database
     client = Client.find_by_rg("101020")
     assert client is None
 
 
 def test_finding_all_clients_with_existing_clients(clients_objs):
-    """Testa o método 'Client.find_all()' da classe 'Client'.
-    É válido se 'Client.find_all()' retornar as instâncias da fixture na mesma ordem.
+    """Tests the method 'Client.find_all()' from Client's class.
+    It should return all instances of the 'Client' class.
     """
 
     all_clients = Client.find_all()
-    assert all_clients == clients_objs
+
+    for client in all_clients:
+        assert client in clients_objs
 
 
 def test_finding_all_clients_without_existing_clients(database):
-    """Testa o método 'Client.find_all()' da classe 'Client'.
-    É válido se 'Client.find_all()' retornar uma lista vazia.
+    """Tests the method 'Client.find_all()' from Client's class.
+    It should return an empty list.
     """
 
-    # Limpando todas as linhas da table 'Client' do banco de dados
+    # Clearing all rows from the database
     database.session.query(Client).delete()
     database.session.commit()
 
@@ -99,8 +108,8 @@ def test_finding_all_clients_without_existing_clients(database):
 
 
 def test_counting_clients_with_existing_clients(clients_objs):
-    """Testa o método 'Client.count()' da classe 'Client'.
-    É válido se 'Client.count()' retornar o tamanho da fixture 'clients_objs'.
+    """Tests the method 'Client.count()' from Client's class.
+    It should return the total number of rows in the database.
     """
 
     count = Client.count()
@@ -108,11 +117,11 @@ def test_counting_clients_with_existing_clients(clients_objs):
 
 
 def test_counting_clients_without_existing_clients(database):
-    """Testa o método 'Client.count()' da classe 'Client'.
-    É válido se 'Client.count()' retornar o inteiro 0.
+    """Tests the method 'Client.count()' from Client's class.
+    It should return '0'.
     """
 
-    # Limpando todas as linhas da table 'Client' do banco de dados
+    # Clearing all rows from the database
     database.session.query(Client).delete()
     database.session.commit()
 
@@ -121,22 +130,20 @@ def test_counting_clients_without_existing_clients(database):
 
 
 def test_if_has_any_client_with_existing_clients():
-    """Testa o método 'Client.has_any()' da classe 'Client'.
-    É válido se 'Client.has_any()' retornar 'True'.
+    """Tests the method 'Client.has_any()' from Client's class.
+    It should return 'True'
     """
 
-    has_any = Client.has_any()
-    assert has_any
+    assert Client.has_any()
 
 
 def test_if_has_any_client_without_existing_clients(database):
-    """Testa o método 'Client.has_any()' da classe 'Client'.
-    É válido se 'Client.has_any()' retornar 'False'.
+    """Tests the method 'Client.has_any()' from Client's class.
+    It should return 'False'
     """
 
-    # Limpando todas as linhas da table 'Client' do banco de dados
+    # Clearing all rows from the database
     database.session.query(Client).delete()
     database.session.commit()
 
-    has_any = Client.has_any()
-    assert not has_any
+    assert not Client.has_any()

@@ -1,6 +1,6 @@
 from typing import List
 from datetime import datetime
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, func
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from extensions import db
 from utils import BRAZIL_TZ
@@ -8,54 +8,73 @@ from models import Client
 
 
 class Entrance(db.Model):
-    """Representa a tabela de entradas no banco de dados.
+    """
+    Represents the entrances table in the database.
 
-    Colunas:
-    - id: Chave primária única para identificar a linha no banco de dados.
-    - entrance_date: Data da entrada.
-    - client_id: Chave estrangeira que relaciona esta entrada a um cliente.
-    - client: Relacionamento com a classe Client, indicando o cliente que fez
-    a entrada.
+    Columns:
+    - id: Unique primary key.
+    - entrance: The timestamp of the entrance.
+    - client_id: Foreign key linking to the client.
+    - client: Relationship to the Client object.
     """
 
     __tablename__ = "entrances"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    entrance: Mapped[datetime] = mapped_column(nullable=False)
-    client_id: Mapped[int] = mapped_column(ForeignKey("clients.id"), nullable=False)
+    entrance: Mapped[datetime] = mapped_column(nullable=False, index=True)
+
+    client_id: Mapped[int] = mapped_column(
+        ForeignKey("clients.id"), nullable=False, index=True
+    )
 
     client: Mapped["Client"] = relationship(back_populates='entrances')
 
 
     @classmethod
-    def create(cls, client: Client):
-        """ Cria e retorna um objeto de Entrance."""
-        entrance = Entrance(
+    def create(cls, client: Client) -> 'Entrance':
+        """
+        Instantiates a new Entrance object for the given client.
+        The service layer is responsible for the database transaction.
+        """
+
+        return Entrance(
             entrance=datetime.now(BRAZIL_TZ),
             client=client
         )
 
-        db.session.add(entrance)
-        db.session.commit()
-        return entrance
 
+    @classmethod
+    def find_by_client(cls, client_id: int) -> List['Entrance']:
+        """
+        Finds all entrances for a specific client, ordered by most recent.
+        """
 
-    @staticmethod
-    def findByClient(client_id: int):
-        return Entrance.query.filter_by(client_id=client_id).all()
+        query = db.select(cls).where(
+            cls.client_id == client_id
+        ).order_by(cls.entrance.desc())
+
+        return db.session.scalars(query).all()
 
 
     @classmethod
-    def find_all(cls) -> List:
-        """Retorna todas as linhas da table Entrance, ordenadas pelo
-        dia e horário de entrada de forma decrescente."""
+    def find_all(cls) -> List['Entrance']:
+        """
+        Returns all rows from the Entrance table, ordered by
+        entrance datetime descending.
+        """
 
-        return db.session.execute(
-            db.select(cls).order_by(cls.entrance.desc())).scalars().all()
+        return db.session.scalars(
+            db.select(cls).order_by(cls.entrance.desc())).all()
 
 
     @classmethod
     def count(cls) -> int:
-        """Retorna o total de linhas que a table Entrance contém."""
+        """
+        Returns the total number of rows the Entrance table contains,
+        calculated efficiently by the database.
+        """
 
-        return len(db.session.execute(db.select(cls)).all())
+        count_query = db.select(func.count(cls.id))
+        total = db.session.scalar(count_query)
+
+        return total or 0

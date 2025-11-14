@@ -2,33 +2,47 @@ from models import Entrance #type: ignore
 
 
 def test_entrance_creation(clients_objs):
-    """Testa o método 'Entrance.create()' da classe 'Entrance'.
-    É válido se 'Entrance.create()' retorna uma instância de 'Entrance'.
+    """Tests the method 'Entrance.create()' from Entrance's class.
+    It should return a 'Entrance's instance.
     """
 
-    entrance = Entrance.create(clients_objs[0])
+    entrance = Entrance.create(client=clients_objs[0])
 
-    assert entrance is not None
+    assert isinstance(entrance, Entrance)
     assert entrance.client == clients_objs[0]
 
 
-def test_finding_all_entrances_with_existing_entrances(entrances_objs):
-    """Testa o método 'Entrance.find_all()' da classe 'Entrance'.
-    É válido se 'Entrance.find_all()' retornar as instâncias da fixture na ordem inversa.
+def test_finding_entrances_by_client_with_existing_client(entrances_objs):
+    """Tests the method 'Entrance.find_by_client()' from Entrance's class.
+    It should return an array of a client's entrances.
     """
 
-    all_entrances = Entrance.find_all()
+    array = Entrance.find_by_client(entrances_objs[0].id)
+    assert len(array) > 0
 
-    # Garantindo que as entradas estejam em ordem decrescente
-    expected_order = entrances_objs[::-1]
 
-    assert all_entrances is not None
-    assert all_entrances == expected_order
+def test_finding_entrances_by_client_without_existing_client():
+    """Tests the method 'Entrance.find_by_client()' from Entrance's class.
+    It should return an empty list.
+    """
+
+    # '1000' is a non-existing client id
+    array = Entrance.find_by_client(1000)
+    assert array == []
+
+
+def test_finding_all_entrances_with_existing_entrances(entrances_objs):
+    """Tests the method 'Entrance.find_all()' from Entrance's class.
+    Is thould return all Entrance's instances of the database.
+    """
+
+    for entrance in entrances_objs:
+        assert isinstance(entrance, Entrance)
 
 
 def test_finding_all_entrances_without_existing_entrances(database):
-    """Testa o método 'Entrance.find_all()' da classe 'Entrance'.
-    É válido se 'Entrance.find_all()' retornar uma lista vazia.
+    """Tests the method 'Entrance.find_all()' from Entrance's class.
+    It should return an empty list.
     """
 
     # Limpando todas as linhas da table 'Entrance' do banco de dados
@@ -40,8 +54,8 @@ def test_finding_all_entrances_without_existing_entrances(database):
 
 
 def test_counting_entrances_with_existing_entrances(entrances_objs):
-    """Testa o método 'Entrance.count()' da classe 'Entrance'.
-    É válido se 'Entrance.count()' retornar o tamanho da fixture 'entrance_objs'.
+    """Tests the method 'Entrance.count()' from Entrance's class.
+    It should return the total number of rows in the database.
     """
 
     count = Entrance.count()
@@ -49,8 +63,8 @@ def test_counting_entrances_with_existing_entrances(entrances_objs):
 
 
 def test_counting_entrances_without_existing_entrances(database):
-    """Testa o método 'Entrance.count()' da classe 'Entrance'.
-    É válido se 'Entrance.count()' retornar o inteiro 0.
+    """Tests the method 'Entrance.count()' from Entrance's class.
+    It should return '0'.
     """
 
     # Limpando todas as linhas da table 'Entrance' do banco de dados

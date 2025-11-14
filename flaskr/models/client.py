@@ -1,42 +1,45 @@
 from typing import List, Optional
-from sqlalchemy import String, exists
+from sqlalchemy import String, func
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from extensions import db
 
 
 class Client(db.Model):
-    """Representa a tabela de clientes do banco de dados.
+    """
+    Represents the clients table in the database.
 
-    Colunas:
-    - id: Chave primária única para identificar a linha no banco de dados.
-    - name: Nome do cliente.
-    - rg: Registro Geral (RG) do cliente.
-    - cpf: Cadastro de Pessoa Física (CPF) do cliente.
-    - phone_number: Número de telefone do cliente.
-    - birth_date: Data de nascimento do cliente.
-    - entrances: Relacionamento com as entradas realizadas pelo cliente, onde
-    cada entrada é uma data em que o cliente consultou a administração.
+    Columns:
+    - id: Unique primary key.
+    - name: Client's name.
+    - rg: General Registry (RG) of the client.
+    - cpf: Individual Taxpayer Registry (CPF) of the client.
+    - phone_number: Client's phone number.
+    - birth_date: Client's date of birth.
+    - entrances: Relationship with the client's entrances.
     """
 
     __tablename__ = "clients"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(nullable=False)
-    rg: Mapped[str] = mapped_column(nullable=False)
-    cpf: Mapped[str] = mapped_column(String(11), nullable=False)
-    phone_number: Mapped[str] = mapped_column()
+    name: Mapped[str] = mapped_column(nullable=False, index=True)
+    rg: Mapped[str] = mapped_column(nullable=False, unique=True, index=True)
+    cpf: Mapped[str] = mapped_column(String(11), nullable=False, unique=True, index=True)
+    phone_number: Mapped[str] = mapped_column(nullable=True)
     birth_date: Mapped[str] = mapped_column()
 
-    entrances: Mapped[List['Entrance']] = relationship(                 # type: ignore
+    entrances: Mapped[List['Entrance']] = relationship(     #type: ignore
         back_populates='client', cascade="all, delete-orphan")
 
 
     @classmethod
     def create(cls, name: str, rg: str, cpf: str, phone_number: str,
                birth_date: str) -> 'Client':
-        """Instancia um objeto cliente e o retorna."""
+        """
+        Instantiates a new Client object.
+        The service layer is responsible for the database transaction.
+        """
 
-        client = Client(
+        return Client(
             name=name,
             rg=rg,
             cpf=cpf,
@@ -44,54 +47,56 @@ class Client(db.Model):
             birth_date=birth_date
         )
 
-        db.session.add(client)
-        db.session.commit()
-        return client
-
 
     @classmethod
     def find_by_id(cls, client_id: int) -> Optional['Client']:
-        """Busca pelo ID e retorna um cliente do banco de dados."""
-
-        return db.session.execute(
-            db.select(cls).where(cls.id == client_id)).scalar_one_or_none()
+        """Finds a client by their primary key (ID)."""
+        return db.session.get(cls, client_id)
 
 
     @classmethod
     def find_by_cpf(cls, cpf: str) -> Optional['Client']:
-        """Busca pelo CPF e retorna um cliente do banco de dados."""
+        """Finds a client by their CPF."""
 
-        return db.session.execute(
-            db.select(cls).where(cls.cpf == cpf)).scalar_one_or_none()
+        return db.session.scalars(
+            db.select(cls).where(cls.cpf == cpf)
+        ).one_or_none()
 
 
     @classmethod
     def find_by_rg(cls, rg: str) -> Optional['Client']:
-        """Busca pelo RG e retorna um cliente do banco de dados."""
+        """Finds a client by their RG."""
 
-        return db.session.execute(
-            db.select(cls).where(cls.rg == rg)).scalar_one_or_none()
+        return db.session.scalars(
+            db.select(cls).where(cls.rg == rg)
+        ).one_or_none()
 
 
     @classmethod
-    def find_all(cls) -> List[Optional['Client']]:
-        """Retorna todas as linhas da table Client, ordenadas pelo
-        id."""
+    def find_all(cls) -> List['Client']:
+        """
+        Returns all rows from the Client table, ordered by name.
+        """
 
-        return db.session.execute(
-            db.select(cls).order_by(cls.id)).scalars().all()
+        return db.session.scalars(
+            db.select(cls).order_by(cls.name)
+        ).all()
 
 
     @classmethod
     def count(cls) -> int:
-        """Retorna o total de linhas que a table Client contém."""
+        """
+        Returns the total number of rows the Client table contains.
+        """
 
-        return len(db.session.execute(db.select(cls)).all())
+        count_query = db.select(func.count(cls.id))
+        total = db.session.scalar(count_query)
+        return total or 0
 
 
     @classmethod
     def has_any(cls) -> bool:
-        """Retorna se existe ao menos uma tupla na table Client."""
+        """Returns True if there is at least one client in the table."""
 
-        return db.session.execute(
-            db.select(exists().where(cls.id.isnot(None)))).scalar()
+        first_client = db.session.scalars(db.select(cls)).first()
+        return first_client is not None
