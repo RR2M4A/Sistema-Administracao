@@ -3,15 +3,21 @@ import re
 
 
 class RegexPatterns(Enum):
+    """
+    Class containing common regex patterns used in the code.
+    """
 
-    USERNAME = re.compile(r"^[\w.-]+$")
+    # Only allows: [a-z, A-Z, 0-9, -, _, .]
+    USERNAME = re.compile(r"^[a-zA-Z0-9_.-]+$")
 
-    PHONE_NUMBER = re.compile(r"[0-9]{2} 9?[0-9]{4}[0-9]{4}")
+    # Only allows: "XX 9XXXXXXXX" or "XX XXXXXXXX"
+    PHONE_NUMBER = re.compile(r"^[0-9]{2} 9?[0-9]{8}$")
 
-    BIRTH_DATE = re.compile(
-        r"(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19[0-9]{2}|20[0-9]{2})"
-    )
+    # Only allows: "DD/MM/YYYY"
+    BIRTH_DATE = re.compile(r"^\d{2}\/\d{2}\/\d{4}$")
 
+    # Only allows: [a-z, A-Z, /, " ", accentuated letters]
+    # " " means space
     SANITIZE = re.compile(
-        r"[^\/\w\s\u00E0-\u00F6\u00F8-\u00FF]"
+        r"[^/\w\s\u00E0-\u00F6\u00F8-\u00FF\u00C0-\u00D6\u00D8-\u00DF]"
     )
