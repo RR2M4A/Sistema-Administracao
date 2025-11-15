@@ -16,8 +16,9 @@ class RegexPatterns(Enum):
     # Only allows: "DD/MM/YYYY"
     BIRTH_DATE = re.compile(r"^\d{2}\/\d{2}\/\d{4}$")
 
-    # Only allows: [a-z, A-Z, /, " ", accentuated letters]
+    # Only allows: [a-z, A-Z, 0-9, _, /, " ", accentuated letters]
     # " " means space
+    # It looks for invalid characters
     SANITIZE = re.compile(
         r"[^/\w\s\u00E0-\u00F6\u00F8-\u00FF\u00C0-\u00D6\u00D8-\u00DF]"
     )

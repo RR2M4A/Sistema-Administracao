@@ -92,7 +92,7 @@ def test_birth_date_regex_invalid(invalid_date):
 
 
 @pytest.mark.parametrize("valid_string", [
-    "valid_s",
+    "validstring",
     "áéíóúâêîôûàèìòù",
     "Text123",
     "       ",
@@ -101,21 +101,20 @@ def test_birth_date_regex_invalid(invalid_date):
 def test_sanitize_regex_valid(valid_string):
     """
     Tests the 'SANITIZE' regex from 'regex.py'.
-    It should return 'valid_string' string.
+    SANITIZE should NOT find invalid characters.
     """
 
-    assert not regex.RegexPatterns.SANITIZE.value.fullmatch(valid_string)
+    assert not regex.RegexPatterns.SANITIZE.value.search(valid_string)
 
 
 @pytest.mark.parametrize("invalid_string", [
     "!@#$%¨*&¨*&¨*¨(!@#?:^}`|\\",
-    "()", "{}", '[]',
-    "321317839102",
+    "()", "{}", "[]",
 ])
 def test_sanitize_regex_invalid(invalid_string):
     """
     Tests the 'SANITIZE' regex from 'regex.py'.
-    It should return 'None' for the listed values.
+    SANITIZE should find invalid characters.
     """
 
-    assert not regex.RegexPatterns.SANITIZE.value.fullmatch(invalid_string)
+    assert regex.RegexPatterns.SANITIZE.value.search(invalid_string)

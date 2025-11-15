@@ -4,21 +4,21 @@ from typing import Dict, Any
 
 
 def sanitize(value) -> str:
-    """Remove caracteres indesejados, preservando letras,
-    números e espaços.
+    """
+    Removes unwanted characters, preserving letters,
+    numbers, and spaces, and strips whitespace.
     """
 
-    value = str(value).strip().lower()
+    value = str(value).strip()
     pattern = RegexPatterns.SANITIZE.value
 
     return re.sub(pattern, "", value)
 
 
+def sanitize_many(data: dict) -> Dict[str, Any]:
+    """
+    Applies sanitization to all values in a dictionary
+    and returns a new, sanitized dictionary.
+    """
 
-def sanitize_many(d: dict) -> Dict[str, Any]:
-    """Aplica a sanitização a um dicionário e o retorna."""
-
-    for key, value in d.items():
-        d[key] = sanitize(value)
-
-    return d
+    return {key: sanitize(value) for key, value in data.items()}
