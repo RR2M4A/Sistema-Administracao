@@ -4,37 +4,33 @@ from datetime import timedelta, timezone, datetime
 BRAZIL_TZ = timezone(timedelta(hours=-3))
 
 
-def to_datetime(date: str):
-    """Transforma a data DD/MM/YYYY para um objeto datetime e
-    o retorna."""
-
-    return datetime.strptime(date, "%d/%m/%Y")
-
-
-def is_leap_year(year):
-    """Verifica se um ano é bissexto."""
-
-    return (year % 4 == 0 and (year % 100 != 0 or year % 400 == 0))
-
-
-def get_days_in_month(month, year):
-    """Retorna o número de dias de um mês, considerando ano bissexto para
-    fevereiro.
+def to_start_of_day(date_str: str) -> datetime:
+    """
+    Transforms a DD/MM/YYYY string into a datetime object
+    set to the beginning of that day (00:00:00).
     """
 
-    days_in_month = {
-        1: 31,
-        2: 28 if not is_leap_year(year) else 29,
-        3: 31,
-        4: 30,
-        5: 31,
-        6: 30,
-        7: 31,
-        8: 31,
-        9: 30,
-        10: 31,
-        11: 30,
-        12: 31,
-    }
+    try:
+        return datetime.strptime(date_str, "%d/%m/%Y").replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+    except ValueError:
+        raise ValueError(
+            f"The data format should be DD/MM/YYYY, not {date_str}."
+        )
 
-    return days_in_month.get(month, 31)
+
+def to_end_of_day(date_str: str) -> datetime:
+    """
+    Transforms a DD/MM/YYYY string into a datetime object
+    set to the end of that day (23:59:59).
+    """
+
+    try:
+        return datetime.strptime(date_str, "%d/%m/%Y").replace(
+            hour=23, minute=59, second=59, microsecond=999999
+        )
+    except ValueError:
+        raise ValueError(
+            f"The data format should be DD/MM/YYYY, not {date_str}."
+        )
