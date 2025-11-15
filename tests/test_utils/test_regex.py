@@ -91,15 +91,31 @@ def test_birth_date_regex_invalid(invalid_date):
     assert not regex.RegexPatterns.BIRTH_DATE.value.fullmatch(invalid_date)
 
 
-def test_sanitize_regex():
+@pytest.mark.parametrize("valid_string", [
+    "valid_s",
+    "áéíóúâêîôûàèìòù",
+    "Text123",
+    "       ",
+    "bar/bar",
+])
+def test_sanitize_regex_valid(valid_string):
     """
     Tests the 'SANITIZE' regex from 'regex.py'.
-    It should correctly remove invalid characters from a string.
+    It should return 'valid_string' string.
     """
 
-    dirty_string = "Usuário_123!@# (teste) com acentuação/barra"
-    expected_clean_string = "Usuário_123 teste com acentuação/barra"
+    assert not regex.RegexPatterns.SANITIZE.value.fullmatch(valid_string)
 
-    res = regex.RegexPatterns.SANITIZE.value.sub("", dirty_string)
 
-    assert res == expected_clean_string
+@pytest.mark.parametrize("invalid_string", [
+    "!@#$%¨*&¨*&¨*¨(!@#?:^}`|\\",
+    "()", "{}", '[]',
+    "321317839102",
+])
+def test_sanitize_regex_invalid(invalid_string):
+    """
+    Tests the 'SANITIZE' regex from 'regex.py'.
+    It should return 'None' for the listed values.
+    """
+
+    assert not regex.RegexPatterns.SANITIZE.value.fullmatch(invalid_string)
