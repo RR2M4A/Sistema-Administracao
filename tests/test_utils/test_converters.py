@@ -2,31 +2,33 @@ from utils import converters
 import pytest
 
 
-UNWANTED_ATTRIBUTES = ["_sa_instance_state", "password_hash"]
+UNWANTED_ATTRIBUTES = ["password_hash"]
 
 
-def test_model_to_dict_with_a_valid_SQLAlchemy_obj(clients_objs):
+def test_model_to_dict_with_a_valid_SQLAlchemy_obj(users_objs):
     """
     Tests the 'model_to_dict()' method from 'converters.py'.
     It should return a dict with the targeted attributes removed.
     """
 
-    clean_client = converters.model_to_dict(clients_objs[0])
+    for user in users_objs:
 
-    for attribute in UNWANTED_ATTRIBUTES:
-        assert attribute not in clean_client
+        clean_user = converters.model_to_dict(user)
+
+        for attribute in UNWANTED_ATTRIBUTES:
+            assert attribute not in clean_user
 
 
-def test_model_to_dict_returns_a_copy_not_reference(clients_objs):
+def test_model_to_dict_returns_a_copy_not_reference(users_objs):
     """
     Tests the 'model_to_dict()' method from 'converters.py'.
     It should return the copy of the dict, not its reference.
     """
 
-    valid_client = clients_objs[0]
-    clean_client = converters.model_to_dict(clients_objs[0])
+    for client in users_objs:
+        clean_client = converters.model_to_dict(client)
 
-    assert clean_client is not valid_client.__dict__
+        assert clean_client is not client.__dict__
 
 
 @pytest.mark.parametrize('obj', [

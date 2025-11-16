@@ -1,4 +1,10 @@
 from typing import Any, Dict
+from sqlalchemy.inspection import inspect
+from sqlalchemy.exc import NoInspectionAvailable
+
+
+SENSITIVE_KEYS = ["password_hash"]
+
 
 def model_to_dict(obj: Any) -> Dict[str, Any]:
     """
@@ -6,15 +12,20 @@ def model_to_dict(obj: Any) -> Dict[str, Any]:
     filtering out internal and sensitive keys.
 
     Removes:
-    - _sa_instance_state (SQLAlchemy internal)
     - password_hash (Sensitive data)
     """
 
     try:
-        return {
-            key: value
-            for key, value in obj.__dict__.items()
-            if key not in ("_sa_instance_state", "password_hash")}
 
-    except AttributeError:
+        mapper = inspect(obj).mapper
+
+        data = {
+            attr.key: getattr(obj, attr.key)
+            for attr in mapper.column_attrs
+            if attr.key not in SENSITIVE_KEYS
+        }
+
+        return data
+
+    except (AttributeError, NoInspectionAvailable):
         return {}
