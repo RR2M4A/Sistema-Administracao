@@ -10,7 +10,7 @@ system = Blueprint("system", __name__)
 @system.get("/system/<page_id>")
 @access_required
 def system_get(page_id = "1"):
-    """Carrega a página principal do sistema."""
+    """Loads the system main page, with clients listed paginated."""
 
     req = request
     return SystemService.handle_clients_render(req, page_id)
@@ -19,7 +19,7 @@ def system_get(page_id = "1"):
 @system.post("/system/add_client")
 @access_required
 def system_add_client():
-    """Recebe os dados do cliente via POST, os valida e cria o cliente."""
+    """Adds a new client to the system."""
 
     req = request.get_json()
     return SystemService.handle_client_creation(req)
@@ -28,7 +28,7 @@ def system_add_client():
 @system.post("/system/search_client")
 @access_required
 def system_search_client():
-    """Busca o cliente no sistema, através do cpf informado."""
+    """Searches for a client in the system."""
 
     req = request.get_json()
     return SystemService.handle_client_search(req)
@@ -37,7 +37,7 @@ def system_search_client():
 @system.post("/system/update_client")
 @access_required
 def system_update_client():
-    """Atualiza o nº de telefone ou a entrada do cliente."""
+    """Updates client information in the system."""
 
     req = request.get_json()
     return SystemService.handle_client_update(req)

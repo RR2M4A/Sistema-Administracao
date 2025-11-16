@@ -5,6 +5,8 @@ from werkzeug.security import generate_password_hash
 from models import *
 from extensions import db
 from utils import BRAZIL_TZ
+import validate_docbr
+import faker
 
 
 class AppConfig:
@@ -93,6 +95,20 @@ def clients_objs():
 def entrances_objs():
     """Returns a list of entrances."""
     return Entrance.find_all()
+
+
+@pytest.fixture(scope='session')
+def cpf_validator():
+    """Returns the 'CPF_Validator' class from 'validate_docbr's lib."""
+
+    return validate_docbr.CPF()
+
+
+@pytest.fixture(scope='session')
+def faker_obj():
+    """Returns the 'Faker' class from 'Faker's lib."""
+
+    return faker.Faker("pt_BR")
 
 
 @pytest.fixture(autouse=True)

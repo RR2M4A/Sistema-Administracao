@@ -5,17 +5,20 @@ from datetime import datetime
 from http import HTTPStatus
 from typing import Union, Optional, List
 
-# Bibliotecas de terceiros
+from sqlalchemy.exc import IntegrityError
 from validate_docbr import CPF
 from flask import render_template, url_for, redirect, session, Request
 
-# Imports do seu projeto
 from models import Client, Entrance
 from extensions import db
 from utils import *
 
 
 class SystemResponses(Enum):
+    """
+    Centralizes all possible responses for the System blueprint.
+    Each member holds a tuple: (content, status_code)
+    """
 
     CLIENT_CREATED = (
         {"msg": "Cliente criado com sucesso!"}, HTTPStatus.CREATED
@@ -49,7 +52,7 @@ class SystemResponses(Enum):
         """Retorna a resposta com dados adicionais ao dicionário."""
         content, status = self.value
 
-        # Para nomes de template ou redirecionamentos
+        # For template names or redirect
         if isinstance(content, str):
 
             # Template
@@ -58,16 +61,14 @@ class SystemResponses(Enum):
 
             return redirect(url_for(content, **kwargs))
 
-        # Para objetos json
+        # For JSON objects
         data = content.copy()
         data.update(kwargs)
         return data, status
 
 
 class SystemService:
-    """Classe responsável por tratar da gravação e leitura de clientes
-    no banco de dados, referente à rota system.
-    """
+    """Handles business logic for client registration and entrances."""
 
     CPF_VALIDATOR = CPF()
 
@@ -79,57 +80,77 @@ class SystemService:
         "birth-date": "is_valid_birth_date"
     }
 
+    MAX_AGE = 130
+
 
     @classmethod
     def handle_client_creation(cls, data: dict) -> Client:
-        """Instancia e armazena um cliente e sua entrada."""
+        """Validates, creates, and stores a client and their first entrance."""
 
-        errors = cls.validate_all(data)
+        sanitized_data = sanitize_many(data)
+        errors = cls.validate_all(sanitized_data)
 
         if errors:
             return SystemResponses.INVALID_DATA.build(errors=errors)
 
-        identifier = data.get("cpf") or data.get("rg")
-        if cls.find_client(identifier):
+        client = Client.create(
+            name=sanitized_data.get("name"),
+            rg=sanitized_data.get("rg"),
+            cpf=sanitized_data.get("cpf"),
+            phone_number=sanitized_data.get("phone-number"),
+            birth_date=sanitized_data.get("birth-date")
+        )
 
-            return SystemResponses.CLIENT_EXISTS.value
+        entrance = Entrance.create(client)
 
-        client = Client.create(*data.values())
-        Entrance.create(client)
+        try:
+            db.session.add(client)
+            db.session.add(entrance)
+            db.session.commit()
 
-        return SystemResponses.CLIENT_CREATED.value
+        except IntegrityError:
+            db.session.rollback()
+            return SystemResponses.CLIENT_EXISTS.build()
+
+        return SystemResponses.CLIENT_CREATED.build()
+
 
     @classmethod
     def handle_client_update(cls, data: dict) -> Client:
+        """Handles client data updates and registers a new entrance."""
 
         client_id = data.get("client-id")
 
-        if not client_id.isdigit():
-            return SystemResponses.CLIENT_NOT_EXISTS.value
+        try:
+            client_id = int(client_id)
+        except:
+            SystemResponses.CLIENT_NOT_EXISTS.build()
 
-        client = cls.find_client(int(client_id))
-
+        client = cls.find_client(client_id)
         if not client:
-            return SystemResponses.CLIENT_NOT_EXISTS.value
+            return SystemResponses.CLIENT_NOT_EXISTS.build()
 
-        pressed_bt = data.get("bt")
-
-        if pressed_bt == 'edit':
+        # Verificando qual botão foi pressionado
+        if data.get("bt") == 'edit':
             phone_number = sanitize(data.get("phone-number"))
 
             if not cls.is_valid_phone(phone_number):
-                return SystemResponses.INVALID_DATA.build(phone_number=phone_number)
+                return SystemResponses.INVALID_DATA.build(
+                    errors=["phone-number"]
+                )
 
             setattr(client, "phone_number", phone_number)
-            db.session.commit()
 
         entrance = Entrance.create(client)
         db.session.add(entrance)
         db.session.commit()
-        return SystemResponses.CLIENT_UPDATED.value
+
+        return SystemResponses.CLIENT_UPDATED.build()
+
 
     @classmethod
     def handle_client_search(cls, data: dict):
+        """Searches for a client and returns all their entrances."""
 
         data = sanitize_many(data)
         search_by, value = data.get("search"), data.get("search-bar")
@@ -137,34 +158,29 @@ class SystemService:
         validator = getattr(cls, f"is_valid_{search_by}")
 
         if not validator(value):
-            return SystemResponses.INVALID_DATA.value
+            return SystemResponses.INVALID_DATA.build(errors=[search_by])
 
         client = cls.find_client(value)
 
         if not client:
-            return SystemResponses.CLIENT_NOT_EXISTS.value
+            return SystemResponses.CLIENT_NOT_EXISTS.build()
 
-        # Buscar todas as entradas do cliente
-        entrances = Entrance.findByClient(client.id)
-        results = []
+        entrances = Entrance.find_by_client(client.id)
 
-        for entrance in entrances:
-            client_info = cls.mask_client_info(client)
-            results.append({
-                "name": client_info["name"],
-                "cpf": client_info["cpf"],
-                "phone_number": client_info["phone_number"],
-                "birth_date": client_info["birth_date"],
-                "date": entrance.entrance.strftime("%d/%m/%Y"),
-                "time": entrance.entrance.strftime("%H:%M:%S")
-            })
+        client_info = mask_client_info(client)
+
+        results = [{
+            **client_info,
+            "date": entrance.entrance.strftime("%d/%m/%Y"),
+            "time": entrance.entrance.strftime("%H:%M:%S")
+        } for entrance in entrances]
 
         return {"status": "success", "results": results}, HTTPStatus.OK
 
 
     @staticmethod
     def handle_clients_render(data: Request, page_id: str):
-        """Carrega a página principal do sistema."""
+        """Loads the main system page with paginated clients."""
 
         page_mov = data.args.get("arrow")
 
@@ -189,7 +205,7 @@ class SystemService:
 
     @staticmethod
     def find_client(value: Union[str, int]) -> Optional[Client]:
-        """Busca pelo cliente no banco de dados e o retorna."""
+        """Finds a client by ID, RG, or CPF."""
 
         for func in (Client.find_by_id, Client.find_by_rg, Client.find_by_cpf):
 
@@ -201,79 +217,65 @@ class SystemService:
 
 
     @staticmethod
-    def mask_client_info(client: Union[Client, dict]) -> dict:
-        """Retorna o cliente com suas informações sensíveis mascaradas."""
+    def get_clients_interval(page_id: int, per_page: int = 20):
+        """
+        Returns a paginated list of clients for the given page.
+        """
 
-        client = model_to_dict(client)
-
-        client["cpf"] = mask_cpf(client.get("cpf"))
-        client["rg"] = mask_rg(client.get("rg"))
-        client["phone_number"] = mask_phone_number(client.get("phone_number"))
-
-        return client
-
-
-    @classmethod
-    def get_clients_interval(cls, page_id: int, per_page: int = 20):
-        """Retorna a lista de clientes com base na págína que o usuário
-        está atualmente, e a quantidade de clientes que são mostradas
-        simultaneamente."""
-
-        entrances = Entrance.find_all()
         total_entrances = Entrance.count()
+        if total_entrances == 0:
+            return [], 1
 
         total_pages = ceil(total_entrances / per_page)
         page_id = max(1, min(page_id, total_pages))
 
-        start_index = per_page * (page_id - 1)
-        end_index = min(start_index + per_page, total_entrances)
+        offset = per_page * (page_id - 1)
+
+        paginated_query = db.select(Entrance).order_by(
+            Entrance.entrance.desc()
+        ).offset(offset).limit(per_page)
+
+        entrances = db.session.scalars(paginated_query).all()
 
         clients = []
-
-        for entrance in entrances[start_index:end_index]:
-            client = entrance.client
-            client = cls.mask_client_info(client)
-            clients.append((client, entrance))
+        for entrance in entrances:
+            client_data = mask_client_info(entrance.client)
+            clients.append((client_data, entrance))
 
         return clients, page_id
 
 
-    @classmethod
-    @input_sanitized
-    def is_valid_name(cls, user_input: str) -> bool:
-        """Valida o nome."""
-        return bool(user_input)
+    @staticmethod
+    def is_valid_name(user_input: str) -> bool:
+        """Check if the name is valid."""
+        return bool(user_input.strip())
+
+
+    @staticmethod
+    def is_valid_rg(user_input: str) -> bool:
+        """Check if the RG is valid."""
+        return bool(user_input.strip())
 
 
     @classmethod
-    @input_sanitized
-    def is_valid_rg(cls, user_input: str) -> bool:
-        """Valida o rg."""
-        return bool(user_input)
-
-
-    @classmethod
-    @input_sanitized
     def is_valid_cpf(cls, user_input: str) -> bool:
-        """Valida o cpf."""
+        """Check if the CPF is valid."""
         return bool(user_input) and cls.CPF_VALIDATOR.validate(user_input)
 
 
-    @classmethod
-    @input_sanitized
-    def is_valid_phone(cls, user_input: str) -> bool:
-        """Valida o número de telefone."""
+    @staticmethod
+    def is_valid_phone(user_input: str) -> bool:
+        """Check if the phone number is valid."""
 
         pattern = RegexPatterns.PHONE_NUMBER.value
         is_valid = pattern.fullmatch(user_input)
 
-        return bool(is_valid and user_input)
+        return is_valid and user_input
 
 
     @classmethod
-    @input_sanitized
     def is_valid_birth_date(cls, user_input: str) -> bool:
-        """Valida a data de nascimento."""
+        """Check if the birth date is valid."""
 
         pattern = RegexPatterns.BIRTH_DATE.value
         is_valid = re.fullmatch(pattern, user_input)
@@ -281,34 +283,32 @@ class SystemService:
         if not is_valid or not user_input:
             return False
 
-        day, month, year = map(int, [user_input[:2], user_input[3:5], user_input[6:8]])
+        try:
+            limit_year = datetime.today().year - cls.MAX_AGE
+            lower_date = datetime(limit_year, 1, 1)
 
-        if month < 1 or month > 12:
+            day, month, year = map(int, user_input.split('/'))
+            parsed_date = datetime(year, month, day)
+
+            if parsed_date > datetime.today() or parsed_date < lower_date:
+                return False
+
+            return True
+        except ValueError:
             return False
-
-        if day < 1 or day > get_days_in_month(month, year):
-            return False
-
-        if year > datetime.today().year:
-            return False
-
-        if to_datetime(user_input) > datetime.today():
-            return False
-
-        return True
 
 
     @classmethod
     def validate_all(cls, data: dict) -> List[str]:
-        """Valida todos os campos com as funções de validação."""
+        """
+        Validates all fields from a pre-sanitized dict.
+        """
 
         errors = []
-        sanitized = sanitize_many(data)
 
         for key, validator_name in cls.VALIDATORS.items():
-
             function = getattr(cls, validator_name)
-            is_valid = function(sanitized.get(key, ""))
+            is_valid = function(data.get(key, ""))
 
             if not is_valid:
                 errors.append(key)
