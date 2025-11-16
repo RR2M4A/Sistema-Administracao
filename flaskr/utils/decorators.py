@@ -1,22 +1,15 @@
-from flask import session, redirect, url_for, abort
+from flask import redirect, url_for, abort
 from functools import wraps
-from utils.sanitizers import sanitize
 from models.user import User
 from models.client import Client
 from flask_login import login_required, current_user
 
-def input_sanitized(f):
-    """Retorna o input sanitizado."""
-
-    @wraps(f)
-    def wrapper(self, input, *args, **kwargs):
-        input = sanitize(str(input))
-        return f(self, input, *args, **kwargs)
-
-    return wrapper
 
 def no_account(f):
-    """Utilizado para quando o usuário acessa o sistema pela primeira vez."""
+    """
+    Used for the first-time setup route.
+    If any user or client exists, redirects to the login page.
+    """
 
     @wraps(f)
     def wrapper(*args, **kwargs):
@@ -27,7 +20,10 @@ def no_account(f):
     return wrapper
 
 def access_required(f):
-    """Exige que o usuário esteja desbloqueado para acessar a rota."""
+    """
+    Requires the user to be logged in (@login_required) AND
+    to be an active (not blocked) user.
+    """
 
     @login_required
     @wraps(f)
@@ -40,7 +36,10 @@ def access_required(f):
 
 
 def admin_required(f):
-    """Exige que o usuário tenha permissão de admin para acessar a rota."""
+    """
+    Requires the user to have admin permissions.
+    This decorator stacks on top of @access_required.
+    """
 
     @access_required
     @wraps(f)
