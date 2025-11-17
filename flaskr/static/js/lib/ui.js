@@ -70,3 +70,15 @@ export function loadClientInfo(inputs, clientInfo) {
     if (inputs.phoneNumber) inputs.phoneNumber.value = clientInfo.phone_number;
     if (inputs.birthDate) inputs.birthDate.value = clientInfo.birth_date;
 }
+
+
+export function downloadFile(blob, filename) {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+}

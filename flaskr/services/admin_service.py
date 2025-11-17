@@ -4,7 +4,7 @@ from http import HTTPStatus
 import tempfile
 from datetime import datetime
 from flask import render_template, url_for, redirect, send_file
-from utils import sanitize_many, model_to_dict, RegexPatterns
+from utils import sanitize_many, model_to_dict, RegexPatterns, to_start_of_day, to_end_of_day
 from extensions import db
 from flask_login import current_user
 from models import *
@@ -197,18 +197,22 @@ class AdminService:
             .where(and_(
                 Entrance.entrance >= start_date,
                 Entrance.entrance <= final_date
-            ))).all()
+            ))
+        ).all()
 
-        # Format data for the report
         data = []
         for client, entrance in results:
             data.append({
                 "Nome": client.name,
                 "CPF": client.cpf,
+                "RG": client.rg,
                 "Data de Nascimento": client.birth_date,
                 "Telefone": client.phone_number,
-                "Entrada": entrance.entrance.strftime("%d/%m/%Y %H:%M:%S")
+                "Departamento": entrance.department,
+                "Data": entrance.entrance.strftime("%d/%m/%Y"),
+                "Hora": entrance.entrance.strftime("%H:%M:%S")
             })
+
         return data
 
 
