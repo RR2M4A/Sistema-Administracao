@@ -1,9 +1,9 @@
 "use strict"
 
-export function format_cpf(input) {
+export function formatCpf(input) {
 
     let start = input.selectionStart;
-    let old_value = input.value;
+    let oldValue = input.value;
 
     let value = input.value.replace(/\D/g, "");
 
@@ -24,17 +24,17 @@ export function format_cpf(input) {
     }
 
     input.value = value;
-    
-    let diff = input.value.length - old_value.length;
+
+    let diff = input.value.length - oldValue.length;
     input.setSelectionRange(start + diff, start + diff);
 
 }
 
 
-export function format_phone_number(input) {
+export function formatPhoneNumber(input) {
 
     let start = input.selectionStart;
-    let old_value = input.value;
+    let oldValue = input.value;
 
     let value = input.value.replace(/\D/g, "");
 
@@ -61,16 +61,16 @@ export function format_phone_number(input) {
 
     input.value = value;
 
-    let diff = input.value.length - old_value.length;
+    let diff = input.value.length - oldValue.length;
     input.setSelectionRange(start + diff, start + diff);
 
 }
 
 
-export function format_birth_date(input) {
+export function formatBirthDate(input) {
 
     let start = input.selectionStart;
-    let old_value = input.value;
+    let oldValue = input.value;
 
     let value = input.value.replace(/\D/g, "");
 
@@ -88,6 +88,6 @@ export function format_birth_date(input) {
 
     input.value = value;
 
-    let diff = input.value.length - old_value.length;
+    let diff = input.value.length - oldValue.length;
     input.setSelectionRange(start + diff, start + diff);
 }

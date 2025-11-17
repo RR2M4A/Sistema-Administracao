@@ -245,7 +245,7 @@ table tr:hover td {
     margin-left: 1rem;
 }
 
-.popup .input-container input {
+.popup .input-container input, select {
     height: 35px;
     padding: 5px;
     font-size: 14px;

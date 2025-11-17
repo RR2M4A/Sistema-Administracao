@@ -15,14 +15,14 @@ def load_user(user_id):
 
 @auth.get("/signin/")
 def signin_get():
-    """Carrega a página de sign in."""
+    """Loads the sign in page."""
 
     return render_template("auth/signin.html")
 
 
 @auth.post("/signin/")
 def signin_post():
-    """Lida com requisições do tipo POST na página de sign in."""
+    """Treats the POST requests to the /signin/ route."""
 
     req = request.get_json()
     username = req["username"]
@@ -35,7 +35,7 @@ def signin_post():
 @auth.get("/signup/")
 @no_account
 def signup_get():
-    """Carrega a página de signup."""
+    """Loads the sign up page."""
 
     return render_template("auth/signup.html")
 
@@ -44,7 +44,7 @@ def signup_get():
 @auth.post("/signup/")
 @no_account
 def signup_post():
-    """Lida com requisições do tipo POST na página de sign up."""
+    """Treats the POST requests to the /signup/ route."""
 
     req = request.get_json()
     username = req.get("username")

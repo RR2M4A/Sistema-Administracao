@@ -1,6 +1,6 @@
 <div class="table-container">
 
-    <form class="search-form" method="post" action="{{ url_for('system.system_search_client') }}">
+    <form class="search-form" method="post" action="{{ url_for('system.system_get_client_entrances') }}">
 
         <div class="input-container">
 
@@ -19,7 +19,7 @@
 
         <div class="input-container">
             <button class="search-client-bt" type="submit"><img src="../static/img/lupe.png"></button>
-            <button class="activate-add-popup-bt" type="submit"><img src="../static/img/plus.png"></button>
+            <button class="activate-add-popup-bt" type="button"><img src="../static/img/plus.png"></button>
         </div>
     </form>
 
@@ -30,6 +30,7 @@
                 <th class="cpf-col">CPF</th>
                 <th class="phone-col">Telefone</th>
                 <th class="birth-col">Data de<br>Nascimento</th>
+                <th class="department-col">Departamento</th>
                 <th class="date-col">Data</th>
                 <th class="time-col">Horário</th>
             </tr>
@@ -38,15 +39,15 @@
         <tbody class="client-table-body">
             {% for client_entry in client_entries %}
                 {% set client = client_entry[0] %}
-                {% set entry = client_entry[1].entrance %}
-
+                {% set entry = client_entry[1] %}
                 <tr>
                     <td>{{ client.name }}</td>
                     <td>{{ client.cpf }}</td>
                     <td>{{ client.phone_number }}</td>
                     <td>{{ client.birth_date }}</td>
-                    <td>{{ entry.strftime('%d/%m/%Y') }}</td>
-                    <td>{{ entry.strftime('%H:%M:%S') }}</td>
+                    <td>{{ entry.department }}</td>
+                    <td>{{ entry.entrance.strftime('%d/%m/%Y') }}</td>
+                    <td>{{ entry.entrance.strftime('%H:%M:%S') }}</td>
                 </tr>
             {% endfor %}
         </tbody>

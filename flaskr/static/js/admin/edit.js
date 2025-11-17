@@ -1,55 +1,98 @@
 'use strict'
 
-import { fetchInfo } from "../utils/fetch_utils.js";
+import * as api from '../lib/api.js';
+import * as ui from '../lib/ui.js';
+import { activate_popup, deactivate_popup } from '../lib/popup_utils.js';
 
-const editBts = [...document.querySelectorAll('.edit-bt')];
-const popup = document.querySelector('.popup');
-const overlay = document.querySelector('.overlay');
-const popupUsername = document.querySelector('.popup .popup__username');
-const hiddenId = document.querySelector('.hidden-id');
-const popupForm = document.querySelector(".popup .popup__form");
+const elements = {
+    editBts: document.querySelectorAll('.edit-bt'),
+    popup: document.querySelector('.popup'),
+    overlay: document.querySelector('.overlay'),
+    popupUsername: document.querySelector('.popup .popup__username'),
+    hiddenId: document.querySelector('.hidden-id'),
+    popupForm: document.querySelector(".popup .popup__form"),
+    sideMsg: document.querySelector('.popup .popup-side-msg'),
+    submitBt: document.querySelector('.popup__submit')
+};
 
+const uiLogic = {
+    showPopup(userInfo) {
+        ui.clearFeedback(elements.sideMsg);
 
-let currUserInfo = null;
+        if (elements.popupUsername) {
+            elements.popupUsername.value = userInfo.username;
+            elements.popupUsername.disabled = true;
+        }
+        if (elements.hiddenId) {
+            elements.hiddenId.value = userInfo.id;
+        }
 
+        const adminRadio = document.querySelector(`input[name="is-admin"][value="${userInfo.is_admin}"]`);
+        if (adminRadio) adminRadio.checked = true;
 
-async function loadPopup(id) {
+        const activeRadio = document.querySelector(`input[name="is-active"][value="${userInfo.is_active}"]`);
+        if (activeRadio) activeRadio.checked = true;
 
-    let entry = {
-        id: id
+        activate_popup(elements.popup, elements.overlay, null);
+    },
+
+    hidePopup() {
+        if (!elements.popup || elements.popup.style.display === 'none') return;
+        deactivate_popup(elements.popup, elements.overlay, true);
+        if (elements.popupForm) elements.popupForm.reset();
+        ui.clearFeedback(elements.sideMsg);
+    }
+};
+
+const handlers = {
+    async handleOpenPopup(event) {
+        const button = event.currentTarget;
+        const id = button.parentNode.id;
+
+        try {
+            const data = await api.adminGetUserInfo(id);
+            uiLogic.showPopup(data.user);
+        } catch (error) {
+            ui.showFeedback(elements.sideMsg, error.message, true);
+        }
+    },
+
+    async handleSubmit(event) {
+        event.preventDefault();
+        ui.clearFeedback(elements.sideMsg);
+
+        const formData = new FormData(elements.popupForm);
+        const payload = Object.fromEntries(formData.entries());
+
+        payload.username = elements.popupUsername.value;
+
+        try {
+            const data = await api.adminUpdateUser(payload);
+
+            ui.showFeedback(elements.sideMsg, data.msg, false);
+
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+
+        } catch (error) {
+            ui.showFeedback(elements.sideMsg, error.message, true);
+        }
+    }
+};
+
+export function initEditUsers() {
+    if (elements.editBts.length > 0) {
+        elements.editBts.forEach((bt) => {
+            bt.addEventListener("click", handlers.handleOpenPopup);
+        });
     }
 
-    let ans = await fetchInfo(null, entry);
-    currUserInfo = (await ans.json()).user;
+    if (elements.overlay) {
+        elements.overlay.addEventListener("click", uiLogic.hidePopup);
+    }
 
-    popup.style.display = "block";
-    overlay.style.display = "block";
-    popupForm.setAttribute("action", "/admin/edit/")
-
-    popupUsername.value = currUserInfo.username;
-    popupUsername.disabled = true;
-    hiddenId.value = id;
-
-    document.querySelector(`input[name="is-admin"][value="${currUserInfo.is_admin}"]`).checked = true;
-    document.querySelector(`input[name="is-active"][value="${currUserInfo.is_active}"]`).checked = true;
+    if (elements.submitBt) {
+        elements.submitBt.addEventListener("click", handlers.handleSubmit);
+    }
 }
-
-function unloadPopup() {
-    popup.style.display = 'none';
-    overlay.style.display = 'none';
-    popupForm.reset();
-}
-
-function init_listeners() {
-    editBts.forEach((bt) => {
-        bt.addEventListener("click", () => {
-            let user = bt.parentNode;
-            let id = user.id;
-            loadPopup(id);
-        });
-    });
-
-    overlay.addEventListener("click", unloadPopup);
-}
-
-init_listeners();

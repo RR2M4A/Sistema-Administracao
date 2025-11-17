@@ -1,37 +1,40 @@
+// static/js/admin/delete.js
 'use strict'
 
-import { fetchInfo } from "../utils/fetch_utils.js";
+import * as api from '../lib/api.js';
+
+const elements = {
+    deleteBts: document.querySelectorAll('.delete-bt')
+};
 
 
-const deleteBts = document.querySelectorAll('.delete-bt')
+const handlers = {
+    async handleDeleteClick(event) {
+        const button = event.currentTarget;
 
+        const user = button.parentNode;
+        const id = user.id;
+        const username = button.previousElementSibling.previousElementSibling.innerHTML;
 
-async function delete_user(id, username) {
+        if (confirm(`Tem certeza que deseja remover "${username}?"`)) {
 
-    if (confirm(`Tem certeza que deseja remover "${username}?"`)) {
+            try {
+                const data = await api.adminDeleteUser(id);
 
-        let url = `${window.location.origin}/admin/delete/`;
-        let ans = await fetchInfo(url, {id: id});
-        let data = await ans.json();
+                alert(data.msg);
+                window.location.reload();
 
-        alert(data['msg'])
-        window.location.reload();
+            } catch (error) {
+                alert(error.message);
+            }
+        }
     }
+};
 
-}
-
-
-function init_listeners() {
-    deleteBts.forEach(bt => {
-        bt.addEventListener("click", () => {
-            let user = bt.parentNode;
-            let username = bt.previousElementSibling.previousElementSibling.innerHTML;
-            let id = user.id;
-
-            delete_user(id, username);
+export function initDeleteUsers() {
+    if (elements.deleteBts.length > 0) {
+        elements.deleteBts.forEach(bt => {
+            bt.addEventListener("click", handlers.handleDeleteClick);
         });
-    });
+    }
 }
-
-init_listeners();
-

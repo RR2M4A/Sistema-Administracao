@@ -9,7 +9,7 @@
 {% block welcome_msg%}Crie seu primeiro usuário!{% endblock %}
 
 {% block form %}
-    <form method="post" action="{{ url_for('auth.signup_post') }}">
+    <form id="signup-form" method="post" action="/signup/">
 
         <p class="invalid-credentials"></p>
 
@@ -34,5 +34,5 @@
 {% endblock %}
 
 {% block scripts %}
-    <script type="module" src="{{ url_for('static', filename='js/signup/signup_main.js')}}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/auth/auth_main.js')}}"></script>
 {% endblock %}

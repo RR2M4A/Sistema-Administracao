@@ -1,7 +1,12 @@
-'use strict'
+"use strict";
 
-import "./edit.js";
-import "./new_user.js";
-import "./delete.js";
-import "./run_reports.js";
-import "./go_to_system.js";
+import { initEditUsers } from './edit.js';
+import { initNewUser } from './new_user.js';
+import { initRunReports } from './run_reports.js';
+import { initDeleteUsers } from './delete.js';
+import './go_to_system.js';
+
+initEditUsers();
+initNewUser();
+initRunReports();
+initDeleteUsers();

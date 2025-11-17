@@ -1,88 +1,70 @@
 'use strict';
 
-import { fetchInfo } from "../utils/fetch_utils.js";
-import { format_birth_date } from "../utils/formatters.js";
+import * as api from '../lib/api.js';
+import * as ui from '../lib/ui.js';
+import { formatBirthDate } from '../lib/formatters.js';
+import { activate_popup, deactivate_popup } from '../lib/popup_utils.js';
 
-const overlay = document.querySelector('.overlay');
-const reportBt = document.querySelector('.run-report-bt');
-const generateReportsBt = document.querySelector('.generate-report-bt');
-const reportBox = document.querySelector('.report-box');
-const reportForm = document.querySelector('.report-box form');
-const start_date = document.querySelector('.start-date');
-const final_date = document.querySelector('.final-date');
-const sideMsg = document.querySelector('.report-box__side-msg');
+const elements = {
+    overlay: document.querySelector('.overlay'),
+    reportBt: document.querySelector('.run-report-bt'),
+    generateReportsBt: document.querySelector('.generate-report-bt'),
+    reportBox: document.querySelector('.report-box'),
+    reportForm: document.querySelector('.report-box form'),
+    startDateInput: document.querySelector('.start-date'),
+    finalDateInput: document.querySelector('.final-date'),
+    sideMsg: document.querySelector('.report-box__side-msg')
+};
 
+const uiLogic = {
+    showReportBox() {
+        ui.clearFeedback(elements.sideMsg);
+        activate_popup(elements.reportBox, elements.overlay, elements.startDateInput);
+    },
 
-function loadReportBox() {
-    overlay.style.display = "block";
-    reportBox.style.display = "block";
-}
+    hideReportBox() {
+        if (!elements.reportBox || elements.reportBox.style.display === 'none') return;
+        deactivate_popup(elements.reportBox, elements.overlay, false);
+        ui.clearFeedback(elements.sideMsg);
+    }
+};
 
+const handlers = {
+    async handleSubmitReport(event) {
+        event.preventDefault();
+        ui.clearFeedback(elements.sideMsg);
 
-function unloadReportBox() {
-    overlay.style.display = "none";
-    reportBox.style.display = "none";
-    reportForm.reset();
-}
+        const payload = {
+            "start-date": elements.startDateInput.value,
+            "final-date": elements.finalDateInput.value
+        };
 
+        try {
+            const blob = await api.adminRunReport(payload);
+            ui.downloadFile(blob, "relatorio.xlsx");
+            uiLogic.hideReportBox();
 
-async function runReports() {
+        } catch (error) {
+            ui.showFeedback(elements.sideMsg, error.message, true);
+        }
+    }
+};
 
-    let entry = {
-        "start-date": start_date.value,
-        "final-date": final_date.value
+export function initRunReports() {
+    if (elements.generateReportsBt) {
+        elements.generateReportsBt.addEventListener("click", handlers.handleSubmitReport);
+    }
+    if (elements.reportBt) {
+        elements.reportBt.addEventListener("click", uiLogic.showReportBox);
+    }
+    if (elements.overlay) {
+        elements.overlay.addEventListener("click", uiLogic.hideReportBox);
     }
 
-    let url = `${window.location.origin}/admin/run_reports/`;
-    let response = await fetchInfo(url, entry);
-
-    if (response.status != 200) {
-        let data = await response.json();
-        sideMsg.innerHTML = data['msg'];
-
-    } else {
-
-        let blob = await response.blob();
-
-        url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "relatorio.xlsx";
-        document.body.appendChild(a);
-
-        a.click();
-        a.remove();
-
-        window.URL.revokeObjectURL(url);
-        sideMsg.innerHTML = "";
-        window.location.reload();
+    if (elements.startDateInput) {
+        elements.startDateInput.addEventListener("input", (e) => formatBirthDate(e.target));
     }
-
+    if (elements.finalDateInput) {
+        elements.finalDateInput.addEventListener("input", (e) => formatBirthDate(e.target));
+    }
 }
-
-
-function init_listeners() {
-    generateReportsBt.addEventListener("click", evt => {
-        evt.preventDefault();
-        runReports();
-    })
-
-    reportBt.addEventListener("click", evt => {
-        loadReportBox();
-    })
-
-    overlay.addEventListener("click", evt => {
-        unloadReportBox();
-    })
-
-    start_date.addEventListener("input", evt => {
-        format_birth_date(evt.target);
-    })
-
-    final_date.addEventListener("input", evt => {
-        format_birth_date(evt.target);
-    })
-}
-
-
-init_listeners();

@@ -1,29 +1,20 @@
 <div class="new-user-popup">
-
     <p class="side-msg"></p>
-
     <form class="popup__form" method="post" action="{{ url_for('admin.admin_new') }}">
+
         <div class="popup__input-container">
             <label class="popup__boldtext">Usuário:</label>
-            <input class="popup__username" name="popup__username">
+            <input class="popup__username" name="username">
         </div>
 
         <div class="popup__input-container">
             <label class="popup__boldtext">Senha:</label>
-            <input type="password" class="pass" name="first-pass">
-            <label class="popup__boldtext">Confirme sua senha:</label>
-            <input type="password" class="pass" name="second-pass">
-        </div>
+            <input type="password" class="pass" name="pass1">
 
-        <div class="popup__radio-container">
-            <p class="popup__boldtext">É admin?</p>
-            <input type="radio" name="is-admin" value="true">
-            <label>Sim</label>
-            <input type="radio" name="is-admin" value="false" checked>
-            <label>Não</label>
+            <label class="popup__boldtext">Confirme sua senha:</label>
+            <input type="password" class="pass" name="pass2">
         </div>
 
         <button type="button" class="new-user-popup__submit">Confirmar</button>
-
     </form>
 </div>

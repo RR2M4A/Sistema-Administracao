@@ -10,7 +10,7 @@
 {% block welcome_msg %}Faça seu login!{% endblock %}
 
 {% block form %}
-    <form method="post">
+    <form id="signin-form" method="post" action="/signin/">
 
         {% with messages = get_flashed_messages() %}
             {% if messages %}
@@ -37,5 +37,5 @@
 {% endblock %}
 
 {% block scripts %}
-    <script type="module" src="{{ url_for('static', filename='js/signin/signin_main.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/auth/auth_main.js') }}"></script>
 {% endblock %}

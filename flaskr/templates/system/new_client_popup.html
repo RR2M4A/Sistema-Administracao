@@ -4,24 +4,26 @@
     <h2 class="popup-msg">Registrar nova consulta</h2>
 
     <p class="popup-side-msg"></p>
-    <form class="popup-form" method="post" action="{{ url_for('system.system_add_client') }}">
+    <form class="popup-form" method="post" id="add-client-form">
 
-        <div class="input-container name-container">
-            <label for="add-name">Nome</label>
-            <input type="text" id="add-name" name="name">
-        </div>
 
         <div class="input-container">
+
+            <div class="inner-input-container">
+                <label for="add-cpf">CPF</label>
+                <input type="text" id="add-cpf" name="cpf">
+            </div>
 
             <div class="inner-input-container">
                 <label for="add-rg">RG</label>
                 <input type="text" id="add-rg" name="rg">
             </div>
 
-            <div class="inner-input-container">
-                <label for="add-cpf">CPF</label>
-                <input type="text" id="add-cpf" name="cpf">
-            </div>
+        </div>
+
+        <div class="input-container name-container">
+            <label for="add-name">Nome</label>
+            <input type="text" id="add-name" name="name">
         </div>
 
         <div class="input-container">
@@ -34,6 +36,19 @@
             <div class="inner-input-container">
                 <label for="add-birth-date">Data de Nascimento</label>
                 <input type="text" id="add-birth-date" name="birth-date">
+            </div>
+        </div>
+
+        <div class="input-container">
+
+            <div class="inner-input-container">
+                <label for="add-department">Departamento</label>
+                <select id="add-department" name="department">
+                    <option value="" selected>Selecione um departamento</option>
+                    {% for acronym in departments.keys() %}
+                        <option value="{{ acronym }}">{{ acronym }}</option>
+                    {% endfor %}
+                </select>
             </div>
         </div>
 

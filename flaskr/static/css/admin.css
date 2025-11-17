@@ -5,9 +5,6 @@
     font-family: Arial, sans-serif;
 }
 
-
-/* Testing 2 */
-
 .background {
     position: relative;
     display: flex;
@@ -247,4 +244,23 @@
     cursor: pointer0;
 }
 
-/* linha comentada */
+.side-msg,
+.popup-side-msg {
+    display: none;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.side-msg.successful-msg,
+.popup-side-msg.successful-msg {
+    display: block;
+    color: green;
+}
+
+.side-msg.failed-msg,
+.popup-side-msg.failed-msg {
+    display: block;
+    color: red;
+}

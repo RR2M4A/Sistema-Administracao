@@ -3,6 +3,7 @@ from functools import wraps
 from models.user import User
 from models.client import Client
 from flask_login import login_required, current_user
+from utils import sanitize_many
 
 
 def no_account(f):
@@ -46,6 +47,29 @@ def admin_required(f):
     def wrapper(*args, **kwargs):
         if not current_user.is_admin:
             return abort(403)
+        return f(*args, **kwargs)
+
+    return wrapper
+
+
+def sanitize_all(f):
+    """
+    Automatically sanitizes the data that comes from the FrontEnd.
+    """
+
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+
+        data = kwargs.get('data')
+
+        if isinstance(data, dict):
+            kwargs["data"] = sanitize_many(data)
+
+        elif args and len(args) > 1 and isinstance(args[1], dict):
+            new_args = list(args)
+            new_args[1] = sanitize_many(args[1])
+            args = tuple(new_args)
+
         return f(*args, **kwargs)
 
     return wrapper

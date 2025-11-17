@@ -3,6 +3,6 @@
 
 const adminBt = document.querySelector('.admin-bt');
 
-adminBt.addEventListener("click", evt => {
+adminBt?.addEventListener("click", evt => {
     window.location.assign(`${window.location.origin}/admin/`)
 })

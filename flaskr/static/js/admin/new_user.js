@@ -1,63 +1,69 @@
-'use strict'
+"use strict"
 
-import { fetchInfo } from "../utils/fetch_utils.js";
+import * as api from '../lib/api.js';
+import * as ui from '../lib/ui.js';
 
-const overlay = document.querySelector('.overlay');
-const popup = document.querySelector('.new-user-popup');
-const popupForm = document.querySelector(".new-user-popup .popup__form");
-const newUserBt = document.querySelector('.new-user-bt');
-const usernameInput = document.querySelector('.new-user-popup .popup__username');
-const sideMsg = document.querySelector('.side-msg');
-const submitBt = document.querySelector('.new-user-popup__submit');
-const inputs = [...document.querySelectorAll('.new-user-popup input')];
+import { activate_popup, deactivate_popup } from '../lib/popup_utils.js';
 
+const elements = {
+    overlay: document.querySelector('.overlay'),
+    popup: document.querySelector('.new-user-popup'),
+    popupForm: document.querySelector(".new-user-popup .popup__form"),
+    newUserBt: document.querySelector('.new-user-bt'),
+    usernameInput: document.querySelector('.new-user-popup .popup__username'),
+    sideMsg: document.querySelector('.side-msg'),
+    submitBt: document.querySelector('.new-user-popup__submit'),
+    allInputs: document.querySelectorAll('.new-user-popup input')
+};
 
-async function loadPopup() {
-    popup.style.display = "block";
-    overlay.style.display = "block";
-    popupForm.setAttribute("action", "/admin/new/");
-    usernameInput.focus();
-}
+const uiLogic = {
+    showPopup() {
+        if (elements.popupForm) {
+            elements.popupForm.setAttribute("action", "/admin/new/");
+        }
+        ui.clearFeedback(elements.sideMsg);
+        activate_popup(elements.popup, elements.overlay, elements.usernameInput);
+    },
 
-function unloadPopup() {
-    popup.style.display = 'none';
-    overlay.style.display = 'none';
-    popupForm.reset();
-    sideMsg.innerHTML = "";
-}
+    hidePopup() {
+        if (!elements.popup || elements.popup.style.display === 'none') return;
 
-export async function signup() {
-
-    let entry = {}
-
-    for (let input of inputs) {
-        entry[input.name] = input.value;
+        deactivate_popup(elements.popup, elements.overlay, true);
+        ui.clearFeedback(elements.sideMsg);
     }
+};
 
-    let url = `${window.location.origin}/admin/new/`
-    let ans = await fetchInfo(url, entry);
+const handlers = {
+    async handleSubmit(event) {
+        event.preventDefault();
+        ui.clearFeedback(elements.sideMsg);
+        const payload = {};
+        for (let input of elements.allInputs) {
+            payload[input.name] = input.value;
+        }
 
-    if (ans.status == 201) {
-        alert("Usuário criado com sucesso!")
-        window.location.reload();
+        try {
+            const data = await api.adminCreateNewUser(payload);
+            ui.showFeedback(elements.sideMsg, data.msg || "Usuário criado com sucesso!", false);
+
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+
+        } catch (error) {
+            ui.showFeedback(elements.sideMsg, error.message, true);
+        }
     }
+};
 
-    let data = await ans.json();
-    sideMsg.innerHTML = data.msg;
+export function initNewUser() {
+    if (elements.newUserBt) {
+        elements.newUserBt.addEventListener("click", uiLogic.showPopup);
+    }
+    if (elements.submitBt) {
+        elements.submitBt.addEventListener("click", handlers.handleSubmit);
+    }
+    if (elements.overlay) {
+        elements.overlay.addEventListener("click", uiLogic.hidePopup);
+    }
 }
-
-function init_listeners() {
-    newUserBt.addEventListener("click", evt => {
-        loadPopup();
-    })
-
-    submitBt.addEventListener("click", evt => {
-        evt.preventDefault();
-        signup();
-
-    })
-
-    overlay.addEventListener("click", unloadPopup);
-}
-
-init_listeners();

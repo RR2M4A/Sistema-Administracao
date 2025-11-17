@@ -1,6 +1,5 @@
 from utils import admin_required
 from services import AdminService
-from services import AuthService
 
 from flask import Blueprint, request
 
@@ -11,15 +10,15 @@ admin = Blueprint("admin", __name__)
 @admin.get("/admin/")
 @admin_required
 def admin_get():
-    """Lida com o carregamento dos usuários na página."""
+    """Treats GET requests to the /admin/ route."""
 
     return AdminService.handle_users_render()
 
 
-@admin.post("/admin/")
+@admin.post("/admin/get_info/")
 @admin_required
 def admin_view_info():
-    """Retorna as informações do usuário selecionado."""
+    """Treats POST requests to the /admin/get_info/ route to view user info."""
 
     req = request.get_json()
     return AdminService.handle_user_load(req)
@@ -28,30 +27,24 @@ def admin_view_info():
 @admin.post("/admin/edit/")
 @admin_required
 def admin_edit():
-    """Lida com as edições dos atributos de admin."""
-
-    req = request.form
+    """Treats POST requests to the /admin/edit/ route to edit user info."""
+    req = request.get_json()
     return AdminService.handle_user_update(req)
 
 
 @admin.post("/admin/new/")
 @admin_required
 def admin_new():
-    """Lida com a criação de novos usuários."""
+    """Treats POST requests to the /admin/new/ route to create a new user."""
 
     req = request.get_json()
-    username = req.get("popup__username")
-    pass1 = req.get("first-pass")
-    pass2 = req.get("second-pass")
-    is_admin = req.get("is-admin") == 'true'
-
-    return AuthService.signup(username, pass1, pass2, is_admin)
+    return AdminService.handle_user_creation(req)
 
 
 @admin.post("/admin/delete/")
 @admin_required
 def admin_delete():
-    "Lida com a remoção de um usuário."
+    "Treats POST requests to the /admin/delete/ route to remove a user."
 
     req = request.get_json()
     return AdminService.handle_user_removal(req)
@@ -60,7 +53,7 @@ def admin_delete():
 @admin.post("/admin/run_reports/")
 @admin_required
 def admin_reports():
-    "Responsável por gerar o relatório de clientes."
+    "Treats POST requests to the /admin/run_reports/ route to generate reports."""
 
     req = request.get_json()
     return AdminService.handle_report_generation(req)
