@@ -13,6 +13,7 @@ dependencies = [
     "contourpy==1.1.1",
     "cycler==0.12.1",
     "dill==0.3.9",
+    "django>=4.2.26",
     "et-xmlfile==2.0.0",
     "exceptiongroup==1.2.2",
     "faker>=35.2.2",
