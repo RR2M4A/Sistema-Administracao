@@ -40,7 +40,7 @@ class Client(models.Model):
     class Meta:
         verbose_name = "Cliente"
         verbose_name_plural = "Clientes"
-        pass
+
 
     def __str__(self):
         return f"{self.name} ({self.cpf})"
