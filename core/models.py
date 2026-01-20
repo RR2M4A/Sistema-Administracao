@@ -7,6 +7,13 @@ from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
+    '''Represents the User's table in the database.'''
+
+
+    class Meta:
+        verbose_name= 'Usuário'
+        verbose_name_plural= 'Usuários'
+
 
     def __str__(self):
         return self.username
@@ -14,14 +21,12 @@ class User(AbstractUser):
 
 class Client(models.Model):
     '''
-    Represents the clients table in the database.
+    Represents the Client's table in the database.
 
     Columns:
     - id: Unique primary key.
     - name: Client's name.
-    - rg: General Registry (RG) of the client.
     - cpf: Individual Taxpayer Registry (CPF) of the client.
-    - phone_number: Client's phone number.
     - birth_date: Client's date of birth.
     - created_at: The time the object was instantiated.
     - updated_at: The time the object was updated.
@@ -29,10 +34,6 @@ class Client(models.Model):
 
     name = models.CharField(_('Nome'), max_length=255)
     cpf = models.CharField(_('CPF'), max_length=14, unique=True)
-
-    # Rg is blank=null=True because in 2032 it won't be mandatory anymore
-    rg = models.CharField(_('RG'), max_length=20, blank=True, null=True)
-    phone_number = models.CharField(_('Telefone'), max_length=20, blank=True)
     birth_date = models.DateField(_('Data de Nascimento'))
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -48,7 +49,53 @@ class Client(models.Model):
         return f'{self.name} ({self.cpf})'
 
 
+class Phone(models.Model):
+    '''
+    Represents the Phone's table in the database.
+
+    Columns:
+    - id: Unique primary key.
+    - number: the phone number.
+    - client (FK): Reference to the client who owns a certain phone.
+    '''
+
+    number = models.CharField(
+        verbose_name=_('Número de Telefone'),
+        max_length=20,
+    )
+
+    client = models.ForeignKey(
+        Client,
+        on_delete=models.CASCADE,
+        related_name='phones',
+        verbose_name=_('Cliente')
+    )
+
+
+    class Meta:
+        verbose_name = _('Telefone')
+        verbose_name_plural = _("Telefones")
+        constraints = [
+            models.UniqueConstraint(
+                name='unique_phone',
+                fields=['client', 'number']
+            )
+        ]
+
+
+    def __str__(self):
+        return f'{self.client.name} ({self.number})'
+
+
 class Entrance(models.Model):
+
+    '''
+    Represents the Entrance's table in the database.
+
+    Columns:
+    - id: Unique primary key.
+    - client (FK): Reference to the client who visited a certain department.
+    '''
 
     class DepartmentChoices(models.TextChoices):
         # department = value, label
@@ -78,14 +125,21 @@ class Entrance(models.Model):
         JSM = 'JSM', 'Junta de Serviço Militar'
 
 
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name=_('Cliente'))
+    client = models.ForeignKey(
+        Client,
+        related_name='entrances',
+        on_delete=models.CASCADE,
+        verbose_name=_('Cliente')
+    )
+
+    department = models.CharField(_('Departamento'), choices=DepartmentChoices.choices, max_length=10)
     created_at = models.DateTimeField(_('Horário de Entrada'), auto_now_add=True)
-    department = models.CharField(_('Departamento'), choices=DepartmentChoices.choices)
 
 
     class Meta:
         verbose_name = _('Entrada')
         verbose_name_plural = _('Entradas')
+
 
     def __str__(self):
         return f'Entrada de {self.client.name} em {self.created_at}'
