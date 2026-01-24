@@ -32,9 +32,23 @@ class Client(models.Model):
     - updated_at: The time the object was updated.
     '''
 
+
+    class Status(models.TextChoices):
+        REGULAR = 'REGULAR', _('Regular')
+        CANCELLED = 'CANCELLED', _('Cancelado')
+
+
     name = models.CharField(_('Nome'), max_length=255)
-    cpf = models.CharField(_('CPF'), max_length=14, unique=True)
-    birth_date = models.DateField(_('Data de Nascimento'))
+    cpf = models.CharField(_('CPF'), max_length=11)
+    birth_date = models.DateField(_('Data de Nascimento'), blank=False)
+    phone_number = models.CharField(_('Telefone'), max_length=20, blank=True)
+
+    status = models.CharField(
+        _('Status'),
+        max_length=20,
+        choices=Status.choices,
+        default=Status.REGULAR,
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -44,47 +58,17 @@ class Client(models.Model):
         verbose_name = _('Cliente')
         verbose_name_plural = _('Clientes')
 
-
-    def __str__(self):
-        return f'{self.name} ({self.cpf})'
-
-
-class Phone(models.Model):
-    '''
-    Represents the Phone's table in the database.
-
-    Columns:
-    - id: Unique primary key.
-    - number: the phone number.
-    - client (FK): Reference to the client who owns a certain phone.
-    '''
-
-    number = models.CharField(
-        verbose_name=_('Número de Telefone'),
-        max_length=20,
-    )
-
-    client = models.ForeignKey(
-        Client,
-        on_delete=models.CASCADE,
-        related_name='phones',
-        verbose_name=_('Cliente')
-    )
-
-
-    class Meta:
-        verbose_name = _('Telefone')
-        verbose_name_plural = _("Telefones")
         constraints = [
             models.UniqueConstraint(
-                name='unique_phone',
-                fields=['client', 'number']
+                fields=['cpf'],
+                condition=models.Q(status='REGULAR'),
+                name='unique_active_cpf'
             )
         ]
 
 
     def __str__(self):
-        return f'{self.client.name} ({self.number})'
+        return f'{self.name} ({self.cpf})'
 
 
 class Entrance(models.Model):
@@ -96,6 +80,7 @@ class Entrance(models.Model):
     - id: Unique primary key.
     - client (FK): Reference to the client who visited a certain department.
     '''
+
 
     class DepartmentChoices(models.TextChoices):
         # department = value, label
@@ -125,11 +110,23 @@ class Entrance(models.Model):
         JSM = 'JSM', 'Junta de Serviço Militar'
 
 
+    class Status(models.TextChoices):
+        REGULAR = 'REGULAR', _('Regular')
+        CANCELLED = 'CANCELLED', _('Cancelado')
+
+
     client = models.ForeignKey(
         Client,
         related_name='entrances',
         on_delete=models.CASCADE,
         verbose_name=_('Cliente')
+    )
+
+    status = models.CharField(
+        _('Status'),
+        max_length=20,
+        choices=Status.choices,
+        default=Status.REGULAR,
     )
 
     department = models.CharField(_('Departamento'), choices=DepartmentChoices.choices, max_length=10)
