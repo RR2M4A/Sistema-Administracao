@@ -133,11 +133,12 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Login options
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/system/'
 LOGOUT_REDIRECT_URL = '/login/'
+LOGIN_URL = '/system/login/'
 
 # AXES Config
-AXES_FAILURE_LIMIT = 5          # Blocks on 5º attempt
+AXES_FAILURE_LIMIT = 5        # Blocks on 5º attempt
 AXES_COOLOFF_TIME = 1 / 60    # Block status lasts for 30 seconds
 AXES_RESET_ON_SUCCESS = True
 AXES_LOCKOUT_TEMPLATE = 'core/auth/locked_out.html'
