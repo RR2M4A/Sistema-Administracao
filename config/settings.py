@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'axes',
+    'import_export',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

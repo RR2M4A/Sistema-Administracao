@@ -7,9 +7,11 @@ click==8.1.8
 colorama==0.4.6
 contourpy==1.1.1
 cycler==0.12.1
+diff-match-patch==20241021
 dill==0.3.9
 django==4.2.27
 django-axes==7.0.2
+django-import-export==4.1.1
 et-xmlfile==2.0.0
 exceptiongroup==1.2.2
 faker==35.2.2
@@ -46,6 +48,7 @@ pytz==2025.2
 six==1.16.0
 sqlalchemy==2.0.37
 sqlparse==0.5.5
+tablib==3.5.0
 tomli==2.2.1
 tomlkit==0.13.2
 typing-extensions==4.12.2

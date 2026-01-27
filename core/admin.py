@@ -1,19 +1,21 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import Client, Entrance, User, Department
+from import_export.admin import ImportExportModelAdmin
+
 
 # Register your models here.
 admin.site.register(User, UserAdmin)
 
 
 @admin.register(Department)
-class DepartmentAdmin(admin.ModelAdmin):
+class DepartmentAdmin(ImportExportModelAdmin):
     list_display = ('name', 'acronym')
     search_fields = ('name', 'acronym')
 
 
 @admin.register(Client)
-class ClientAdmin(admin.ModelAdmin):
+class ClientAdmin(ImportExportModelAdmin):
     list_display = ('id', 'name', 'cpf', 'phone_number', 'birth_date', 'created_at', 'status')
     search_fields = ('name', 'cpf', 'phone_number')
     list_filter = ('created_at', 'status')
@@ -23,7 +25,7 @@ class ClientAdmin(admin.ModelAdmin):
 
 
 @admin.register(Entrance)
-class EntranceAdmin(admin.ModelAdmin):
+class EntranceAdmin(ImportExportModelAdmin):
     list_display = ('id', 'client', 'department', 'created_at', 'status')
     search_fields = ('client__cpf', 'client__name')
     list_filter = ('department', 'status', 'created_at')
