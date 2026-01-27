@@ -50,7 +50,7 @@
 
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
-                window.location.href = "{% url 'core:login' %}";
+                window.location.replace("{% url 'core:login' %}");
             }
 
         }, 1000);

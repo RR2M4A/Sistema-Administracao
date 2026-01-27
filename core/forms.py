@@ -1,12 +1,17 @@
-from datetime import date
+from datetime import date, datetime
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
-from .models import Client, Entrance
+from .models import Client, Department
 from .regex_patterns import RegexPatterns
 from validate_docbr import CPF
 import re
+
+
+class DepartmentChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return f"{obj.acronym} - {obj.name}"
 
 
 class LoginForm(AuthenticationForm):
@@ -48,50 +53,73 @@ class ClientEntryForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={
                 'id': 'add-name',
-                'autofocus': True,
                 'placeholder': 'Digite o nome completo',
-            }),
-            'cpf': forms.TextInput(attrs={
-                'id': 'add-cpf',
-                'placeholder': '000.000.000-00',
-            }),
-            'birth_date': forms.DateInput(attrs={
-                'id': 'add-birth-date',
-                'placeholder': 'dd/mm/aaaa',
-                'type': 'date'
+                'disabled': True,
             }),
             'phone_number': forms.TextInput(attrs={
                 'id': 'add-phone-number',
                 'placeholder': '(00) 00000-0000',
+                'disabled': True,
             }),
         }
 
         labels = {
             'name': _('Nome'),
-            'cpf': _('CPF'),
-            'birth_date': _('Data de Nascimento'),
             'phone_number': _('Telefone'),
         }
 
 
-    department = forms.ChoiceField(
-        label = _('Departamento'),
-        choices = Entrance.DepartmentChoices.choices,
+    cpf = forms.CharField(
+        label=_('CPF'),
+        max_length=14,
+        widget=forms.TextInput(attrs={
+            'id': 'add-cpf',
+            'placeholder': '000.000.000-00',
+            'autofocus': True,
+            'maxlength': '14'
+        })
+    )
+
+    birth_date = forms.CharField(
+        label=_('Data de Nascimento'),
+        widget=forms.TextInput(attrs={
+            'id': 'add-birth-date',
+            'placeholder': 'dd/mm/aaaa',
+            'maxlength': '10',
+            'disabled': True,
+        })
+    )
+
+    department = DepartmentChoiceField(
+        label=_('Departamento'),
+        queryset=Department.objects.all(),
+        empty_label="Selecione um departamento",
         widget=forms.Select(attrs={
             'id': 'add-department',
+            'disabled': True,
         })
     )
 
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['department'].choices = [('', 'Selecione um departamento')] + list(self.fields['department'].choices)
+    def clean_name(self):
+        '''Checks if a name was provided and returns it in lowercase.'''
+
+        data = self.cleaned_data.get('name', '').strip().title()
+
+        if not data:
+            raise ValidationError(
+                _('Nome é um campo obrigatório!')
+            )
+
+        return data
 
 
     def clean_phone_number(self):
         '''Checks if the phone number is valid.'''
 
         data = self.cleaned_data.get('phone_number', '')
+        data = re.sub(r'[^0-9 ]', '', data)
+
         pattern = RegexPatterns.PHONE_NUMBER.value
 
         if not data: return data
@@ -119,17 +147,25 @@ class ClientEntryForm(forms.ModelForm):
 
 
     def clean_birth_date(self):
-        '''Checks if the birth_date is valid. '''
+        '''Checks if the birth_date is valid.'''
 
-        birth_date = self.cleaned_data.get('birth_date')
+        data: str = self.cleaned_data.get('birth_date')
         today = date.today()
 
-        if not birth_date: return birth_date
+        if not data:
+            raise ValidationError(
+                _('A data de nascimento é obrigatória.')
+            )
 
-        if birth_date > today:
+        try:
+            data = datetime.strptime(data, '%d/%m/%Y').date()
+        except (ValueError, TypeError):
+            raise ValidationError('Data inválida. Use o formato dd/mm/aaaa.')
+
+        if data > today:
             raise ValidationError(_('A data de nascimento não pode estar no futuro.'))
 
-        return birth_date
+        return data
 
 
 class SearchClientForm(forms.Form):

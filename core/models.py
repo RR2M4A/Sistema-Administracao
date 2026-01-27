@@ -71,6 +71,19 @@ class Client(models.Model):
         return f'{self.name} ({self.cpf})'
 
 
+class Department(models.Model):
+    name = models.CharField(_('Nome'), max_length=100)
+    acronym = models.CharField(_('Sigla'), max_length=10)
+
+    class Meta:
+        verbose_name = 'Departamento'
+        verbose_name_plural = 'Departamentos'
+        ordering = ['name']
+
+    def __str__(self):
+        return f"{self.acronym}"
+
+
 class Entrance(models.Model):
 
     '''
@@ -80,34 +93,6 @@ class Entrance(models.Model):
     - id: Unique primary key.
     - client (FK): Reference to the client who visited a certain department.
     '''
-
-
-    class DepartmentChoices(models.TextChoices):
-        # department = value, label
-        COAG = 'COAG', 'Coordenação de Administração Geral'
-        GEAD = 'GEAD', 'Gerência de Administração'
-        NUINF = 'NUINF', 'Núcleo de Informática'
-        NUMAP = 'NUMAP', 'Núcleo de Material e Patrimônio'
-        GEOFIN = 'GEOFIN', 'Gerência de Orçamento e Finanças'
-        GEPES = 'GEPES', 'Gerência de Pessoas'
-        CODES = 'CODES', 'Coordenação de Desenvolvimento'
-        DIDOT = 'DIDOT', 'Diretoria de Desenvolvimento e Territorial'
-        GETEDEC = 'GETEDEC', 'Gerência de Gestão do Território e Desevolvimento Econômico'
-        DIART = 'DIART', 'Diretoria de Articulação'
-        GEPSCEL = 'GEPSCEL', 'Gerência de Políticas Sociais, Cultura, Esporte e Lazer'
-        COLOM = 'COLOM', 'Coordenação de Licenciamento, Obras e Manutenção'
-        DIALIC = 'DIALIC', 'Diretoria de Aprovação e Licenciamento'
-        GELOAE = 'GELOAE', 'Gerência de Licenciamento de Obras e Atividades Econômicas'
-        GEAPRO = 'GEAPRO', 'Gerência de Elaboração e Aprovação de Projetos'
-        DIROB = 'DIROB', 'Diretoria de Obras'
-        GEOB = 'GEOB', 'Gerência de Obras'
-        GEMAC = 'GEMAC', 'Gerência de Manutenção e Conservação'
-        ASCOM = 'ASCOM', 'Assessoria de comunicação'
-        ASTEC = 'ASTEC', 'Assessoria Técnica'
-        ASPLAN = 'ASPLAN', 'Assessoria de Planejamento'
-        GAB = 'GAB', 'Gabinete'
-        OUV = 'OUV', 'Ouvidoria'
-        JSM = 'JSM', 'Junta de Serviço Militar'
 
 
     class Status(models.TextChoices):
@@ -129,7 +114,13 @@ class Entrance(models.Model):
         default=Status.REGULAR,
     )
 
-    department = models.CharField(_('Departamento'), choices=DepartmentChoices.choices, max_length=10)
+    department = models.ForeignKey(
+        Department,
+        on_delete=models.PROTECT,
+        verbose_name='Departamento',
+        related_name='entrances'
+    )
+
     created_at = models.DateTimeField(_('Horário de Entrada'), auto_now_add=True)
 
 

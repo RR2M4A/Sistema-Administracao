@@ -1,4 +1,4 @@
-name: "Suggest PRs for other branches"
+rename: "Suggest PRs for other branches"
 
 on:
   pull_request:
@@ -48,10 +48,10 @@ jobs:
         run: |
           # Lista as branches remotas, exceto main. Ajuste filtros conforme convenção do seu repositório.
           branches=$(git ls-remote --heads origin | awk '{print $2}' | sed 's|refs/heads/||' | grep -v '^main$')
-          
+
           for branch in $branches; do
             echo "Verificando branch '$branch'..."
-            
+
             # Podemos primeiro garantir que origin/main e origin/branch estão atualizados localmente
             git fetch origin main:refs/remotes/origin/main
             git fetch origin $branch:refs/remotes/origin/$branch

@@ -1,0 +1,23 @@
+{% load static %}
+
+<form class="search-client-form" method="post" action="{% url 'core:search' %}">
+    {% csrf_token %}
+
+    <div class="input-container">
+        <div class="search-client-inner">
+            <label class="search-bar-label" for="{{ search_client_form.cpf.id_for_label }}">
+                {{ search_client_form.cpf.label }}
+            </label>
+
+            <p class="search-client-form-error-msg"></p>
+        </div>
+
+        {{ search_client_form.cpf }}
+    </div>
+
+    <div class="input-container">
+        <button class="reload-bt" type="button"><img src="{% static 'core/img/reload.png' %}"></button>
+        <button class="search-client-bt" type="submit"><img src="{% static 'core/img/lupe.png' %}"></button>
+        <button class="activate-popup-bt" type="button"><img src="{% static 'core/img/plus.png' %}"></button>
+    </div>
+</form>

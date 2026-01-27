@@ -13,6 +13,9 @@ django-axes==7.0.2
 et-xmlfile==2.0.0
 exceptiongroup==1.2.2
 faker==35.2.2
+flask==3.0.3
+flask-login==0.6.3
+flask-sqlalchemy==3.1.1
 fonttools==4.55.0
 greenlet==3.1.1
 importlib-metadata==8.5.0
@@ -41,6 +44,7 @@ pytest==8.3.5
 python-dateutil==2.9.0.post0
 pytz==2025.2
 six==1.16.0
+sqlalchemy==2.0.37
 sqlparse==0.5.5
 tomli==2.2.1
 tomlkit==0.13.2
@@ -49,4 +53,5 @@ tzdata==2025.2
 validate-docbr==1.10.0
 waitress==3.0.0
 werkzeug==3.0.6
+whitenoise==6.7.0
 zipp==3.20.2
