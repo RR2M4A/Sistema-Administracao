@@ -22,10 +22,12 @@ class EntranceSoftDeleteView(LoginRequiredMixin, View):
     def post(self, request, pk: int):
 
         entrance: Entrance = get_object_or_404(Entrance, pk=pk)
+        entrance_local = timezone.localtime(entrance.created_at)
         today = timezone.localdate()
+        print(entrance_local)
 
         # Checks if the deletion is happening at current date
-        if entrance.created_at.date() != today:
+        if entrance_local.date() != today:
             return JsonResponse({
                 'type': 'error',
                 'message': '''Só é possível excluir entradas na data atual. Contate o administrador do sistema para outros períodos.''',
