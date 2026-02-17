@@ -1,46 +1,59 @@
+# Sistema de Gestão de Atendimentos - Administração Regional do Gama
+
+![Status do Projeto](https://img.shields.io/badge/status-Finalizado-green)
+
 <div align="center" alt="imagem do readme">
     <img src="https://github.com/user-attachments/assets/1ab76b87-75c4-4fd2-8f5f-a38c6e3191fe" width="750px" height="300">
 </div>
 
-# Sistema de Gestão de Atendimentos - Administração Regional do Gama
+Este sistema foi desenvolvido para a **Administração Regional do Gama** (Distrito Federal) com o intuito de modernizar e centralizar o registro de atendimentos presenciais feitos à população local. A ferramenta permite um acompanhamento mais preciso das demandas da comunidade, facilitando a gestão pública e a transparência.
 
-Este é um sistema desenvolvido para a **Administração Regional do Gama**, com o objetivo de **gerenciar os atendimentos realizados à população local**. A ferramenta visa melhorar o controle, o registro e o acompanhamento das pessoas atendidas, contribuindo para uma gestão pública mais eficiente e transparente.
+## 🚀 Funcionalidades Principais
 
-## 📌 Objetivo
-
-O sistema tem como finalidade principal:
-
-- Registrar os dados de pessoas atendidas presencialmente na administração regional;
-- Organizar os atendimentos por data e dados cadastrais;
-- Gerar relatórios para análise e tomada de decisão;
-- Auxiliar na identificação de demandas recorrentes da população do Gama.
-
-## 🧑‍💼 Público-Alvo
-
-Servidores e colaboradores da Administração Regional do Gama que atuam diretamente com o atendimento ao público.
+- **Registro de Atendimento:** Cadastro detalhado de cidadãos e suas demandas específicas.
+- **Painel Administrativo:** Interface intuitiva para servidores gerenciarem os registros.
+- **Organização por Data:** Filtros e histórico para acompanhamento de fluxos.
 
 ## 🛠️ Tecnologias Utilizadas
 
-- Python / Flask (ou linguagem/framework que estiver usando)
-- Banco de Dados em Python
-- HTML / CSS / JavaScript
-- VS Code (ambiente de desenvolvimento)
+- **Linguagem:** Python
+- **Framework Web:** Django
+- **Banco de Dados:** SQLite
+- **Frontend:** HTML5, CSS3, JavaScript
 
-## 🚧 Status do Projeto
+## 📂 Estrutura do Projeto
 
-> Em desenvolvimento.
+- `core/`: Contém a lógica de negócio, modelos de banco de dados e as views do sistema.
+- `config/`: Configurações principais do Django (`settings.py`, `urls.py`).
 
-## 🗂️ Estrutura do Projeto
+## ⚙️ Como Executar o Projeto
 
-## 🤝 Colaboradores
+### Pré-requisitos
+- Python 3.8.6+ instalado
+- Pip (gerenciador de pacotes)
 
-- [Anderson Fernandes](https://github.com/code-silva)
-- [José Victor](https://github.com/RR2M4A)
+### Instalação
 
-## 📄 Licença
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/RR2M4A/Sistema-Administracao.git
+   cd Sistema-Administracao
 
-Este projeto está sob licença pública. Uso interno da Administração Regional do Gama.
-
-<div align="center">
- <strong>Administração Regional do Gama</strong>
-</div>
+2.  Ative um ambiente virtual, e faça o download das dependências:
+    ```bash
+    python3 -m venv .venv
+    source .venv/bin/activate  # No Windows: venv\Scripts\activate
+    pip install -r requirements.txt
+    ```
+3. Realize as migrações do banco de dados:
+    ```bash
+    python3 manage.py migrate
+    ```
+4. Crie um usuário admin:
+    ```bash
+    python3 manage.py createsuperuser
+    ```
+5. Inicie o servidor:
+    ```bash
+    python manage.py run server
+    ```
