@@ -6,13 +6,25 @@
     <img src="https://github.com/user-attachments/assets/1ab76b87-75c4-4fd2-8f5f-a38c6e3191fe" width="750px" height="300">
 </div>
 
-Este sistema foi desenvolvido para a **Administração Regional do Gama** (Distrito Federal) com o intuito de modernizar e centralizar o registro de atendimentos presenciais feitos à população local. A ferramenta permite um acompanhamento mais preciso das demandas da comunidade, facilitando a gestão pública e a transparência.
+<br>
+
+Este é um sistema de recepção desenvolvido para a **Administração Regional do Gama** (Distrito Federal) com o intuito de substituir o trabalho manuscrito por uma solução digital. Com este projeto, a recepção dos cidadãos é feita por computador, cadastrando informações pessoais e o setor em que o cidadão deseja visitar.
 
 ## 🚀 Funcionalidades Principais
 
 - **Registro de Atendimento:** Cadastro detalhado de cidadãos e suas demandas específicas.
 - **Painel Administrativo:** Interface intuitiva para servidores gerenciarem os registros.
 - **Organização por Data:** Filtros e histórico para acompanhamento de fluxos.
+
+## 📸 Demonstração
+- **Login**<br>
+![Login](assets/login.gif)
+
+- **Sistema**<br>
+![Sistema](assets/main.gif)
+
+- **Painel Administrativo**<br>
+![Painel Administrativo](assets/admin.gif)
 
 ## 🛠️ Tecnologias Utilizadas
 
