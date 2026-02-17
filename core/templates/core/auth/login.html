@@ -1,0 +1,63 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+
+{% block head_links %}
+    <link rel="stylesheet" href="{% static 'core/css/login.css' %}">
+{% endblock %}
+
+{% block content %}
+    <main class="blank-container">
+
+        <div class="logo-container">
+            <img class="logo" src="{% static 'core/img/logo-gdf-redondo.png' %}" alt="Logo">
+        </div>
+
+
+        <h1 class="welcome-msg">Faça seu login!</h1>
+
+
+        <form id="signin-form" method="post" action="{% url 'core:login' %}">
+            {% csrf_token %}
+
+
+            {% if request.GET.next or next %}
+                <p class="login-first">Por favor, faça login para acessar essa página.</p>
+                <input type="hidden" name="next" value="{{ request.GET.next|default:next }}">
+            {% endif %}
+
+
+            {% if form.errors %}
+                <p class="invalid-credentials" style="display: block; color: red;">
+                    Usuário ou senha incorretos.
+                </p>
+            {% endif %}
+
+
+            <div class="input-container">
+                <label for="{{ form.username.id_for_label }}">
+                    {{ form.username.label }}
+                </label>
+                {{ form.username }}
+            </div>
+
+            <div class="input-container">
+                <label for="{{ form.password.id_for_label }}">
+                    {{ form.password.label }}
+                </label>
+                {{ form.password }}
+            </div>
+
+            <button class="submit-bt" type="submit">Entrar</button>
+
+            <p class="no-acess-msg">
+                Não possui acesso?<br>Solicite ao administrador do sistema.
+            </p>
+
+
+            <input type="hidden" name="next" value="{{ next }}">
+        </form>
+
+    </main>
+{% endblock %}

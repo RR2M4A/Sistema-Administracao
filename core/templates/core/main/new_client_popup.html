@@ -1,0 +1,61 @@
+{% load static %}
+
+<div class="new-client-popup">
+
+    <button type="button" class="close-popup-bt">
+        <img src="{% static 'core/img/x.png' %}">
+    </button>
+
+    <h2 class="popup-title">Registrar nova consulta</h2>
+
+    <p class="popup-side-msg"></p>
+
+    <form class="popup-form" method="post" id="add-client-form">
+        {% csrf_token %}
+
+        <div class="column-container">
+            <label for="{{ client_entry_form.cpf.id_for_label }}">
+                {{ client_entry_form.cpf.label }}
+            </label>
+
+            {{ client_entry_form.cpf }}
+        </div>
+
+        <div class="column-container">
+            <label for="{{ client_entry_form.name.id_for_label }}">
+                {{ client_entry_form.name.label }}
+            </label>
+
+            {{ client_entry_form.name }}
+        </div>
+
+        <div class="row-container">
+            <div class="column-container">
+                <label for="{{ client_entry_form.phone_number.id_for_label }}">
+                    {{ client_entry_form.phone_number.label }}
+                </label>
+
+                {{ client_entry_form.phone_number }}
+            </div>
+
+            <div class="column-container">
+                <label for="{{ client_entry_form.birth_date.id_for_label }}">
+                    {{ client_entry_form.birth_date.label }}
+                </label>
+
+                {{ client_entry_form.birth_date }}
+            </div>
+        </div>
+
+        <div class="column-container">
+            <label for="{{ client_entry_form.department.id_for_label }}">
+                {{ client_entry_form.department.label }}
+            </label>
+
+            {{ client_entry_form.department }}
+        </div>
+
+        <button class="confirm-bt" type="button">OK</button>
+
+    </form>
+</div>

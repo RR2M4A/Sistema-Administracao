@@ -1,5 +1,7 @@
 .venv
-**/__pycache__
+**cache
+**__pycache__
 **/instance
 uv.lock
 .python-version
+db.sqlite3

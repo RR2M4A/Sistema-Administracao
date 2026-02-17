@@ -1,0 +1,77 @@
+.entrances-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.entrances-table th,
+.entrances-table td {
+    position: relative;
+    padding: 5px;
+    text-align: left;
+    border: 1px solid black;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.entrances-table th {
+    background-color: rgb(52, 58, 64);
+    font-weight: bold;
+    text-align: center;
+    color: white;
+}
+
+.entrances-table td {
+    background-color: white;
+}
+
+.name-col {
+    width: 100%;
+}
+
+.entrances-table tr:hover td {
+    background-color: #cfcfcf;
+}
+
+.page-form {
+    width: fit-content;
+    display: flex;
+    margin-left: auto;
+    margin-top: 5px;
+}
+
+.arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    cursor: pointer;
+    background: #333;
+    height: 25px;
+    width: 25px;
+    margin-left: 1px;
+    cursor: pointer;
+}
+
+.delete-bt {
+    position: absolute;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    top: 2px;
+    right: -23px;
+
+}
+
+
+.delete-bt img {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.2s;
+}
+
+
+.delete-bt:hover img {
+    transform: scale(1.2);
+    filter: invert(37%) sepia(93%) saturate(7471%) hue-rotate(356deg) brightness(91%) contrast(135%);
+}

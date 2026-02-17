@@ -1,0 +1,56 @@
+{% load static %}
+{% load formatting_filters %}
+
+<table class="entrances-table">
+    <thead>
+        <tr>
+            <th class="name-col">Nome</th>
+            <th class="cpf-col">CPF</th>
+            <th class="phone-col">Telefone</th>
+            <th class="birth-col">Data de<br>Nascimento</th>
+            <th class="department-col">Departamento</th>
+            <th class="date-col">Data</th>
+            <th class="time-col">Horário</th>
+        </tr>
+    </thead>
+
+    <tbody class="client-table-body">
+        {% for entrance in entrances %}
+            <tr>
+                <td>{{ entrance.client.name }}</td>
+                <td>{{ entrance.client.cpf|format_cpf }}</td>
+                <td>{{ entrance.client.phone_number|format_phone_number }}</td>
+                <td>{{ entrance.client.birth_date|date:"d/m/Y" }}</td>
+                <td>{{ entrance.department.acronym }}</td>
+
+                <td>{{ entrance.created_at|date:"d/m/Y" }}</td>
+                <td class="time-cell">
+                    <button class="delete-bt" data-id="{{ entrance.id }}" type="button">
+                        <img src="{% static 'core/img/trash_bin.png' %}" alt="Excluir">
+                    </button>
+
+                    <span>{{ entrance.created_at|date:"H:i:s" }}</span>
+                </td>
+            </tr>
+
+        {% empty %}
+            <tr>
+                <td colspan="7" style="text-align: center;">Nenhum registro encontrado.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="page-form">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&query={{ request.GET.query }}&search_type={{ request.GET.search_type }}" class="arrow right-arrow">
+            <img src="{% static 'core/img/left_arrow.png' %}">
+        </a>
+    {% endif %}
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&query={{ request.GET.query }}&search_type={{ request.GET.search_type }}" class="arrow left-arrow">
+            <img src="{% static 'core/img/right_arrow.png' %}">
+        </a>
+    {% endif %}
+</div>
