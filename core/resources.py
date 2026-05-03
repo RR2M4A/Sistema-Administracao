@@ -1,12 +1,12 @@
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget
-from .models import Client, Department, Entrance
+from .models import Citizen, Department, Entrance
 
 class EntranceResource(resources.ModelResource):
-    client = fields.Field(
+    citizen = fields.Field(
         column_name='CPF',
-        attribute='client',
-        widget=ForeignKeyWidget(Client, field='cpf')
+        attribute='citizen',
+        widget=ForeignKeyWidget(Citizen, field='cpf')
     )
 
     department = fields.Field(
@@ -19,7 +19,7 @@ class EntranceResource(resources.ModelResource):
 
     class Meta:
         model = Entrance
-        fields = ('id', 'client', 'department', 'created_at', 'status')
+        fields = ('id', 'citizen', 'department', 'created_at', 'status')
         export_order = fields
 
 
@@ -33,16 +33,17 @@ class DepartmentResource(resources.ModelResource):
     acronym = fields.Field(attribute='acronym', column_name='Sigla')
 
     class Meta:
-        model = Client
+        model = Citizen
         fields = (
             'id',
             'name',
             'acronym',
+            'is_available',
         )
         export_order = fields
 
 
-class ClientResource(resources.ModelResource):
+class CitizenResource(resources.ModelResource):
 
     name = fields.Field(attribute='name', column_name='Nome')
     cpf = fields.Field(attribute='cpf', column_name='CPF')
@@ -51,7 +52,7 @@ class ClientResource(resources.ModelResource):
     created_at = fields.Field(attribute='created_at', column_name='Data de Criação')
 
     class Meta:
-        model = Client
+        model = Citizen
         fields = (
             'id',
             'name',

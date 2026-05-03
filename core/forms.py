@@ -3,7 +3,7 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
-from .models import Client, Department
+from .models import Citizen, Department
 from .regex_patterns import RegexPatterns
 from validate_docbr import CPF
 import re
@@ -40,14 +40,14 @@ class LoginForm(AuthenticationForm):
     )
 
 
-class ClientEntryForm(forms.ModelForm):
+class CitizenEntryForm(forms.ModelForm):
     '''
-    Represents the Client Entry Form, used to register a client when
+    Represents the Citizen Entry Form, used to register a citizen when
     he arrives at the reception.
     '''
 
     class Meta:
-        model = Client
+        model = Citizen
         fields = ['name', 'cpf', 'birth_date', 'phone_number']
 
         widgets = {
@@ -92,7 +92,7 @@ class ClientEntryForm(forms.ModelForm):
 
     department = DepartmentChoiceField(
         label=_('Departamento'),
-        queryset=Department.objects.all(),
+        queryset=Department.objects.filter(is_available=True),
         empty_label="Selecione um departamento",
         widget=forms.Select(attrs={
             'id': 'add-department',
@@ -168,9 +168,9 @@ class ClientEntryForm(forms.ModelForm):
         return data
 
 
-class SearchClientForm(forms.Form):
+class SearchCitizenForm(forms.Form):
     '''
-    Represents the Search Client Form, used to look for a client
+    Represents the Search Citizen Form, used to look for a citizen
     by his CPF.
     '''
 

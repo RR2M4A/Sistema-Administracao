@@ -84,16 +84,16 @@ searchClientBt.addEventListener("click", async (evt) => {
     if (data.type == 'success') {
 
         errorParagraph.style.color = 'green';
-        let client = data.dict.client
+        let citizen = data.dict.citizen
         tableBody.innerHTML = '';
 
         data.dict.entrances.forEach(entrance => {
             const row = `
                 <tr>
-                    <td>${client.name}</td>
-                    <td>${client.cpf}</td>
-                    <td>${client.phone_number}</td>
-                    <td>${client.birth_date}</td>
+                    <td>${citizen.name}</td>
+                    <td>${citizen.cpf}</td>
+                    <td>${citizen.phone_number}</td>
+                    <td>${citizen.birth_date}</td>
                     <td>${entrance.department}</td>
                     <td>${entrance.entrance_date}</td>
                     <td>${entrance.entrance_time}</td>

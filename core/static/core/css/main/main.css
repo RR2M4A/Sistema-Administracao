@@ -37,6 +37,7 @@ main {
     height: 100vh;
     background: rgba(0, 0, 0, 0.5);
     display: none;
+    z-index: 2;
 }
 
 .admin-bt {
