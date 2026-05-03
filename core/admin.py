@@ -1,9 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import Client, Entrance, User, Department
+from .models import Citizen, Entrance, User, Department
 from import_export.admin import ExportActionModelAdmin
 from rangefilter.filters import DateRangeFilterBuilder
-from .resources import EntranceResource, ClientResource, DepartmentResource
+from .resources import EntranceResource, CitizenResource, DepartmentResource
+from simple_history.admin import SimpleHistoryAdmin
+import re
 
 
 # Register your models here.
@@ -11,16 +13,16 @@ admin.site.register(User, UserAdmin)
 
 
 @admin.register(Department)
-class DepartmentAdmin(ExportActionModelAdmin):
+class DepartmentAdmin(SimpleHistoryAdmin, ExportActionModelAdmin):
     resource_class = DepartmentResource
 
-    list_display = ('name', 'acronym')
+    list_display = ('name', 'acronym', 'is_available')
     search_fields = ('name', 'acronym')
 
 
-@admin.register(Client)
-class ClientAdmin(ExportActionModelAdmin):
-    resource_class = ClientResource
+@admin.register(Citizen)
+class CitizenAdmin(SimpleHistoryAdmin, ExportActionModelAdmin):
+    resource_class = CitizenResource
 
     list_display = ('id', 'name', 'cpf', 'phone_number', 'birth_date', 'created_at', 'status')
     search_fields = ('name', 'cpf', 'phone_number')
@@ -34,11 +36,11 @@ class ClientAdmin(ExportActionModelAdmin):
 
 
 @admin.register(Entrance)
-class EntranceAdmin(ExportActionModelAdmin):
+class EntranceAdmin(SimpleHistoryAdmin, ExportActionModelAdmin):
     resource_class = EntranceResource
 
-    list_display = ('id', 'client', 'department', 'created_at', 'status')
-    search_fields = ('client__cpf', 'client__name')
+    list_display = ('id', 'citizen', 'department', 'created_at', 'status')
+    search_fields = ()
     list_filter = (
         ('created_at', DateRangeFilterBuilder(title="Data de Criação")),
         'department',
@@ -46,12 +48,23 @@ class EntranceAdmin(ExportActionModelAdmin):
     )
     readonly_fields = ('id', 'created_at')
 
-    autocomplete_fields = ('client',)
+    autocomplete_fields = ('citizen',)
+
+    def get_search_results(self, request, queryset, search_term):
+        search_term = search_term.strip()
+        possible_cpf = re.sub(r'[\-\.]', '', search_term)
+
+        if possible_cpf.isdigit() and len(possible_cpf) == 11:
+            queryset = queryset.filter(citizen__cpf=possible_cpf)
+        else:
+            queryset = queryset.filter(citizen__name__icontains=search_term)
+
+        return queryset, False
 
     # Optimization
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.select_related('client', 'department')
+        return qs.select_related('citizen', 'department')
 
 
     # Makes readonly_objects not editable
@@ -60,5 +73,5 @@ class EntranceAdmin(ExportActionModelAdmin):
         base_readonly = super().get_readonly_fields(request, obj)
 
         if obj:
-            return base_readonly + ('client', 'department')
+            return base_readonly + ('citizen', 'department')
         return base_readonly

@@ -2,8 +2,8 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, JsonResponse
 from django.views.generic import ListView, View, FormView
-from .models import Entrance, Client
-from .forms import ClientEntryForm, SearchClientForm
+from .models import Entrance, Citizen, Status
+from .forms import CitizenEntryForm, SearchCitizenForm
 from django.utils import timezone
 import json
 from django.db import transaction
@@ -16,7 +16,7 @@ from .formatters import format_phone_number, format_cpf
 class EntranceSoftDeleteView(LoginRequiredMixin, View):
     '''
     View used to mark the Entrance as cancelled. If it's the 1st
-    entrance of a client, it also cancels the client to release the CPF.
+    entrance of a citizen, it also cancels the citizen to release the CPF.
     '''
 
     def post(self, request, pk: int):
@@ -37,19 +37,19 @@ class EntranceSoftDeleteView(LoginRequiredMixin, View):
         with transaction.atomic():
 
             # Cancels entrance
-            entrance.status = Entrance.Status.CANCELLED
+            entrance.status = Status.CANCELLED
             entrance.save()
 
-            # Cancels client if there's no regular entrances for this client
-            client = entrance.client
+            # Cancels citizen if there's no regular entrances for this citizen
+            citizen = entrance.citizen
             has_valid_entrances = Entrance.objects.filter(
-                    client=client,
-                    status=Entrance.Status.REGULAR
+                    citizen=citizen,
+                    status=Status.REGULAR
                 ).exists()
 
             if not has_valid_entrances:
-                client.status = Client.Status.CANCELLED
-                client.save()
+                citizen.status = Status.CANCELLED
+                citizen.save()
 
         return JsonResponse({
             'type': 'success',
@@ -70,26 +70,26 @@ class EntranceListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         today = timezone.localdate()
-        return Entrance.objects.select_related('client')\
-            .filter(created_at__date=today, status=Entrance.Status.REGULAR)\
+        return Entrance.objects.select_related('citizen')\
+            .filter(created_at__date=today, status=Status.REGULAR)\
             .order_by('-created_at')
 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['client_entry_form'] = ClientEntryForm()
-        context['search_client_form'] = SearchClientForm()
+        context['citizen_entry_form'] = CitizenEntryForm()
+        context['search_citizen_form'] = SearchCitizenForm()
 
         return context
 
 
 class EntranceCreateView(LoginRequiredMixin, FormView):
     '''
-    View used to add a new Entrance/Client.
+    View used to add a new Entrance/Citizen.
     '''
 
     template_name = 'core/main/main.html'
-    form_class = ClientEntryForm
+    form_class = CitizenEntryForm
     success_url = reverse_lazy('core:main')
 
 
@@ -107,7 +107,7 @@ class EntranceCreateView(LoginRequiredMixin, FormView):
         return kwargs
 
 
-    def form_valid(self, form: ClientEntryForm):
+    def form_valid(self, form: CitizenEntryForm):
 
         data = form.cleaned_data
 
@@ -119,19 +119,19 @@ class EntranceCreateView(LoginRequiredMixin, FormView):
 
         with transaction.atomic():
 
-            # Searchs for a regular client
-            client = Client.objects.filter(
+            # Searchs for a regular citizen
+            citizen = Citizen.objects.filter(
                 cpf=cpf,
-                status=Client.Status.REGULAR
+                status=Status.REGULAR
             ).first()
 
-            # If a regular client already exists, then we only have to
+            # If a regular citizen already exists, then we only have to
             # update his information. Otherwise, we create a new one.
-            if client:
-                client.phone_number = phone_number
-                client.save()
+            if citizen:
+                citizen.phone_number = phone_number
+                citizen.save()
             else:
-                client = Client.objects.create(
+                citizen = Citizen.objects.create(
                     name=name,
                     cpf=cpf,
                     birth_date=birth_date,
@@ -140,7 +140,7 @@ class EntranceCreateView(LoginRequiredMixin, FormView):
 
             # Registers entrance
             Entrance.objects.create(
-                client=client,
+                citizen=citizen,
                 department=department
             )
 
@@ -161,11 +161,11 @@ class EntranceCreateView(LoginRequiredMixin, FormView):
 
 class EntrancesByCPFView(LoginRequiredMixin, FormView):
     '''
-    Represents the view used to look for a client
+    Represents the view used to look for a citizen
     using his CPF.
     '''
 
-    form_class = SearchClientForm
+    form_class = SearchCitizenForm
 
     # Used to read JSON form
     def get_form_kwargs(self):
@@ -189,23 +189,23 @@ class EntrancesByCPFView(LoginRequiredMixin, FormView):
 
         entrances = (
             Entrance.objects
-            .select_related('client')
+            .select_related('citizen')
             .filter(
-                client__cpf=cpf,
+                citizen__cpf=cpf,
                 created_at__date=today,
-                status=Entrance.Status.REGULAR,
+                status=Status.REGULAR,
             )
             .order_by('-created_at')
         )
 
-        if not entrances:
+        if not entrances.exists():
             return JsonResponse({
                 'type': 'info',
-                'message': 'Cliente não encontrado!',
+                'message': 'Cidadão não encontrado!',
                 'dict': {}
             }, status=404)
 
-        client = entrances[0].client
+        citizen = entrances[0].citizen
 
         entrances_data = []
         for entrance in entrances:
@@ -214,20 +214,20 @@ class EntrancesByCPFView(LoginRequiredMixin, FormView):
 
             entrances_data.append({
                 'id': entrance.id,
-                'department': entrance.department,
+                'department': entrance.department.acronym,
                 'entrance_date': local_dt.strftime('%d/%m/%Y'),
                 'entrance_time': local_dt.strftime('%H:%M:%S'),
             })
 
         return JsonResponse({
             'type': 'success',
-            'message': 'Cliente encontrado!',
+            'message': 'Cidadão encontrado!',
             'dict': {
-                'client': {
-                'name': client.name,
-                'cpf': format_cpf(client.cpf),
-                'phone_number': format_phone_number(client.phone_number),
-                'birth_date': client.birth_date.strftime('%d/%m/%Y'),
+                'citizen': {
+                'name': citizen.name,
+                'cpf': format_cpf(citizen.cpf),
+                'phone_number': format_phone_number(citizen.phone_number),
+                'birth_date': citizen.birth_date.strftime('%d/%m/%Y'),
             },
 
             'entrances': entrances_data
@@ -243,9 +243,9 @@ class EntrancesByCPFView(LoginRequiredMixin, FormView):
         }, status=400)
 
 
-class ClientDetailView(LoginRequiredMixin, View):
+class CitizenDetailView(LoginRequiredMixin, View):
     '''
-    View dedicated to fetching client data for auto-filling
+    View dedicated to fetching citizen data for auto-filling
     the registration form.
     '''
 
@@ -277,29 +277,29 @@ class ClientDetailView(LoginRequiredMixin, View):
             }, status=400)
 
 
-        # Trying to find the client
-        client = Client.objects.filter(
+        # Trying to find the citizen
+        citizen = Citizen.objects.filter(
             cpf=cpf,
-            status=Client.Status.REGULAR
+            status=Status.REGULAR
         ).first()
 
 
-        # If client is not registered yet
-        if not client:
+        # If citizen is not registered yet
+        if not citizen:
             return JsonResponse({
                 'type': 'info',
-                'message': 'Cliente não encontrado, favor seguir com o cadastro.',
+                'message': 'Cidadão não encontrado, favor seguir com o cadastro.',
                 'dict': {}
             }, status=404)
 
 
         return JsonResponse({
             'type': 'success',
-            'message': 'Cliente encontrado!',
+            'message': 'Cidadão encontrado!',
             'dict': {
-                'name': client.name,
-                'birth_date': client.birth_date.strftime('%d/%m/%Y'),
-                'phone_number': format_phone_number(client.phone_number),
-                'status': client.status,
+                'name': citizen.name,
+                'birth_date': citizen.birth_date.strftime('%d/%m/%Y'),
+                'phone_number': format_phone_number(citizen.phone_number),
+                'status': citizen.status,
             }
         }, status=200)

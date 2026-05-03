@@ -1,6 +1,7 @@
 .entrances-table {
     width: 100%;
     border-collapse: collapse;
+    overlay: 1;
 }
 
 .entrances-table th,

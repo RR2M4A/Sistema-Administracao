@@ -17,10 +17,10 @@
     <tbody class="client-table-body">
         {% for entrance in entrances %}
             <tr>
-                <td>{{ entrance.client.name }}</td>
-                <td>{{ entrance.client.cpf|format_cpf }}</td>
-                <td>{{ entrance.client.phone_number|format_phone_number }}</td>
-                <td>{{ entrance.client.birth_date|date:"d/m/Y" }}</td>
+                <td>{{ entrance.citizen.name }}</td>
+                <td>{{ entrance.citizen.cpf|format_cpf }}</td>
+                <td>{{ entrance.citizen.phone_number|format_phone_number }}</td>
+                <td>{{ entrance.citizen.birth_date|date:"d/m/Y" }}</td>
                 <td>{{ entrance.department.acronym }}</td>
 
                 <td>{{ entrance.created_at|date:"d/m/Y" }}</td>

@@ -9,6 +9,7 @@
     border-radius: 10px;
     width: 480px;
     display: none;
+    z-index: 3;
 }
 
 .close-popup-bt {

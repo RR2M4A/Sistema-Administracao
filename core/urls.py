@@ -23,6 +23,6 @@ urlpatterns = [
     path('', views.EntranceListView.as_view(), name='main'),
     path('add/', views.EntranceCreateView.as_view(), name='add'),
     path('search/', views.EntrancesByCPFView.as_view(), name='search'),
-    path('client-detail/', views.ClientDetailView.as_view(), name='client-detail'),
+    path('client-detail/', views.CitizenDetailView.as_view(), name='client-detail'),
     path('cancel/<int:pk>/', views.EntranceSoftDeleteView.as_view(), name='entrance-cancellation')
 ]

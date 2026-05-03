@@ -3,6 +3,7 @@
     display: flex;
     margin-bottom: 5px;
     width: 100%;
+    overlay: 1;
 }
 
 .search-client-form .input-container {
