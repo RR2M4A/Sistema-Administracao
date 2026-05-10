@@ -1,6 +1,6 @@
 import re
 
-def format_phone_number(value):
+def format_phone_number(value)-> str:
     """
     Formats a phone number to (XX) XXXXX-XXXX or (XX) XXXX-XXXX.
     """
@@ -19,9 +19,9 @@ def format_phone_number(value):
     return value
 
 
-def format_cpf(value):
+def format_cpf(value) -> str:
     '''
-    Formats a cpf (numeric-only at the start) to 000.000.000-00
+    Formats a cpf (numeric-only at the start) to XXX.XXX.XXX-XX.
     '''
 
     value = re.sub(r'[^0-9]', '', str(value))
