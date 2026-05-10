@@ -10,7 +10,7 @@ from django.db import transaction
 from django.urls import reverse_lazy
 import re
 from validate_docbr import CPF
-from .formatters import format_phone_number, format_cpf
+from .utils.formatters import format_phone_number, format_cpf
 
 
 class EntranceSoftDeleteView(LoginRequiredMixin, View):

@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
 from .models import Citizen, Department
-from .regex_patterns import RegexPatterns
+from .utils.regex_patterns import RegexPatterns
 from validate_docbr import CPF
 import re
 
