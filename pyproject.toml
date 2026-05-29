@@ -3,7 +3,7 @@ name = "sistema-administracao"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = "==3.8.6"
+requires-python = "==3.11.13"
 dependencies = [
     "alembic==1.14.1",
     "asgiref==3.8.1",
