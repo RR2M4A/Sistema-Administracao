@@ -106,8 +106,14 @@ addCPFInput.addEventListener("input", async (evt) => {
             addPhoneNumberInput.value = data.dict.phone_number;
             addBirthDateInput.value = data.dict.birth_date;
 
-            addNameInput.disabled = true;
-            addBirthDateInput.disabled = true;
+            if (data.dict.can_edit) {
+                addNameInput.disabled = false;
+                addBirthDateInput.disabled = false;
+            } else {
+                addNameInput.disabled = true;
+                addBirthDateInput.disabled = true;
+            }
+
             addPhoneNumberInput.disabled = false;
             addDepartmentInput.disabled = false;
 

@@ -31,13 +31,9 @@ class CitizenAdmin(SimpleHistoryAdmin, ExportActionModelAdmin):
         "phone_number",
         "birth_date",
         "created_at",
-        "status",
     )
     search_fields = ("name", "cpf", "phone_number")
-    list_filter = (
-        ("created_at", DateRangeFilterBuilder(title="Data de Criação")),
-        "status",
-    )
+    list_filter = (("created_at", DateRangeFilterBuilder(title="Data de Criação")),)
     readonly_fields = ("id", "created_at", "updated_at")
 
     ordering = ("-created_at",)

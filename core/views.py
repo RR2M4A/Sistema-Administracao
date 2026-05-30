@@ -2,60 +2,61 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.views.generic import ListView, View, FormView
-from .models import Entrance, Citizen, Status
-from .forms import CitizenEntryForm, SearchCitizenForm
 from django.utils import timezone
-import json
 from django.db import transaction
 from django.urls import reverse_lazy
+import json
 import re
 from validate_docbr import CPF
+
+from .models import Entrance, Citizen, Status
+from .forms import CitizenEntryForm, SearchCitizenForm
 from .utils.formatters import format_phone_number, format_cpf
 
 
 class EntranceSoftDeleteView(LoginRequiredMixin, View):
     """
-    View used to mark the Entrance as cancelled. If it's the 1st
-    entrance of a citizen, it also cancels the citizen to release the CPF.
+    View used to mark the Entrance as cancelled or hard-delete
+    if it is the citizen's very first entrance (preventing locked typos).
     """
 
     def post(self, request, pk: int):
-
         entrance: Entrance = get_object_or_404(Entrance, pk=pk)
         entrance_local = timezone.localtime(entrance.created_at)
         today = timezone.localdate()
-        print(entrance_local)
 
         # Checks if the deletion is happening at current date
         if entrance_local.date() != today:
             return JsonResponse(
                 {
                     "type": "error",
-                    "message": """Só é possível excluir entradas na data atual. Contate o administrador do sistema para outros períodos.""",
+                    "message": "Só é possível excluir entradas na data atual. Contate o administrador do sistema para outros períodos.",
                     "dict": {},
                 },
                 status=403,
             )
 
         with transaction.atomic():
-            # Cancels entrance
-            entrance.status = Status.CANCELLED
-            entrance.save()
-
-            # Cancels citizen if there's no regular entrances for this citizen
             citizen = entrance.citizen
-            has_valid_entrances = Entrance.objects.filter(
-                citizen=citizen, status=Status.REGULAR
-            ).exists()
+            total_entrances = citizen.entrances.count()
 
-            if not has_valid_entrances:
-                citizen.status = Status.CANCELLED
-                citizen.save()
+            # Rule: Allows the receptionist to delete both the entrance/citizen if it's his first
+            # entrance. When it happens, we assume the citizen was registered
+            # with incorrect data.
+            if total_entrances == 1:
+                entrance.delete()
+                citizen.delete()
+
+            # Rule: If the citizen has visited the company some day in the past, the receptionist
+            # will only be allowed to cancel his entrance, but not erase the citizen.
+            elif total_entrances > 1:
+                entrance.status = Status.CANCELLED
+                entrance.save()
 
         return JsonResponse(
             {
                 "type": "success",
-                "message": """Entrada removida com sucesso!""",
+                "message": "Entrada removida com sucesso!",
                 "dict": {},
             },
             status=200,
@@ -105,13 +106,21 @@ class EntranceCreateView(LoginRequiredMixin, FormView):
             try:
                 data = json.loads(self.request.body)
                 kwargs["data"] = data
+
+                cpf = data.get("cpf", "")
+                cleaned_cpf = re.sub(r"\D", "", cpf)
+
+                if len(cleaned_cpf) == 11:
+                    citizen = Citizen.objects.filter(cpf=cleaned_cpf).first()
+                    if citizen:
+                        kwargs["instance"] = citizen
+
             except json.JSONDecodeError:
                 kwargs["data"] = {}
 
         return kwargs
 
     def form_valid(self, form: CitizenEntryForm):
-
         data = form.cleaned_data
 
         cpf = data.get("cpf")
@@ -121,13 +130,20 @@ class EntranceCreateView(LoginRequiredMixin, FormView):
         department = data.get("department")
 
         with transaction.atomic():
-            # Searchs for a regular citizen
-            citizen = Citizen.objects.filter(cpf=cpf, status=Status.REGULAR).first()
+            # Searches for the citizen by CPF
+            citizen = Citizen.objects.filter(cpf=cpf).first()
 
-            # If a regular citizen already exists, then we only have to
-            # update his information. Otherwise, we create a new one.
             if citizen:
+                # Always update the phone number
                 citizen.phone_number = phone_number
+
+                # Rule: allows the receptionist to fix name/birth date typos ONLY if
+                # the citizen was registered today.
+                citizen_creation_date = timezone.localtime(citizen.created_at).date()
+                if citizen_creation_date == timezone.localdate():
+                    citizen.name = name
+                    citizen.birth_date = birth_date
+
                 citizen.save()
             else:
                 citizen = Citizen.objects.create(
@@ -160,14 +176,13 @@ class EntranceCreateView(LoginRequiredMixin, FormView):
 class EntrancesByCPFView(LoginRequiredMixin, FormView):
     """
     Represents the view used to look for a citizen
-    using his CPF.
+    using his CPF and retrieve today's active entrances.
     """
 
     form_class = SearchCitizenForm
 
     # Used to read JSON form
     def get_form_kwargs(self):
-
         kwargs = super().get_form_kwargs()
 
         if self.request.content_type == "application/json":
@@ -180,7 +195,6 @@ class EntrancesByCPFView(LoginRequiredMixin, FormView):
         return kwargs
 
     def form_valid(self, form):
-
         cpf = form.cleaned_data["cpf"]
         today = timezone.localdate()
 
@@ -189,7 +203,7 @@ class EntrancesByCPFView(LoginRequiredMixin, FormView):
             .filter(
                 citizen__cpf=cpf,
                 created_at__date=today,
-                status=Status.REGULAR,
+                status=Status.REGULAR,  # Filtering active entrances only
             )
             .order_by("-created_at")
         )
@@ -234,7 +248,7 @@ class EntrancesByCPFView(LoginRequiredMixin, FormView):
 
     def form_invalid(self, form):
         return JsonResponse(
-            {"status": "error", "message": "Dados inválidos.", "data": form.errors},
+            {"type": "error", "message": "Dados inválidos.", "dict": form.errors},
             status=400,
         )
 
@@ -246,9 +260,7 @@ class CitizenDetailView(LoginRequiredMixin, View):
     """
 
     def post(self, request):
-
-        # Checks whether the request sent a JSON or not, since
-        # this view is made for assyncronous communication.
+        # Checks whether the request sent a JSON or not
         try:
             data = json.loads(request.body)
             cpf = data.get("cpf", "")
@@ -272,8 +284,8 @@ class CitizenDetailView(LoginRequiredMixin, View):
                 status=400,
             )
 
-        # Trying to find the citizen
-        citizen = Citizen.objects.filter(cpf=cpf, status=Status.REGULAR).first()
+        # Trying to find the citizen (No status filter needed anymore)
+        citizen = Citizen.objects.filter(cpf=cpf).first()
 
         # If citizen is not registered yet
         if not citizen:
@@ -286,6 +298,10 @@ class CitizenDetailView(LoginRequiredMixin, View):
                 status=404,
             )
 
+        # Determines if the frontend should unlock the name/birth_date fields
+        citizen_creation_date = timezone.localtime(citizen.created_at).date()
+        can_edit = citizen_creation_date == timezone.localdate()
+
         return JsonResponse(
             {
                 "type": "success",
@@ -294,7 +310,7 @@ class CitizenDetailView(LoginRequiredMixin, View):
                     "name": citizen.name,
                     "birth_date": citizen.birth_date.strftime("%d/%m/%Y"),
                     "phone_number": format_phone_number(citizen.phone_number),
-                    "status": citizen.status,
+                    "can_edit": can_edit,
                 },
             },
             status=200,
