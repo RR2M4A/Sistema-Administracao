@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpRequest, JsonResponse
+from django.http import JsonResponse
 from django.views.generic import ListView, View, FormView
 from .models import Entrance, Citizen, Status
 from .forms import CitizenEntryForm, SearchCitizenForm

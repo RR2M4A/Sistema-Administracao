@@ -1,5 +1,4 @@
 import pytest
-from datetime import date
 from model_bakery import baker
 from ..forms import CitizenEntryForm, SearchCitizenForm
 from faker import Faker
