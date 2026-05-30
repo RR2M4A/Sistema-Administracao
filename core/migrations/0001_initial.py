@@ -11,141 +11,411 @@ import simple_history.models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('auth', '0012_alter_user_first_name_max_length'),
+        ("auth", "0012_alter_user_first_name_max_length"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='User',
+            name="User",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('password', models.CharField(max_length=128, verbose_name='password')),
-                ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
-                ('is_superuser', models.BooleanField(default=False, help_text='Designates that this user has all permissions without explicitly assigning them.', verbose_name='superuser status')),
-                ('username', models.CharField(error_messages={'unique': 'A user with that username already exists.'}, help_text='Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.', max_length=150, unique=True, validators=[django.contrib.auth.validators.UnicodeUsernameValidator()], verbose_name='username')),
-                ('first_name', models.CharField(blank=True, max_length=150, verbose_name='first name')),
-                ('last_name', models.CharField(blank=True, max_length=150, verbose_name='last name')),
-                ('email', models.EmailField(blank=True, max_length=254, verbose_name='email address')),
-                ('is_staff', models.BooleanField(default=False, help_text='Designates whether the user can log into this admin site.', verbose_name='staff status')),
-                ('is_active', models.BooleanField(default=True, help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.', verbose_name='active')),
-                ('date_joined', models.DateTimeField(default=django.utils.timezone.now, verbose_name='date joined')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("password", models.CharField(max_length=128, verbose_name="password")),
+                (
+                    "last_login",
+                    models.DateTimeField(
+                        blank=True, null=True, verbose_name="last login"
+                    ),
+                ),
+                (
+                    "is_superuser",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Designates that this user has all permissions without explicitly assigning them.",
+                        verbose_name="superuser status",
+                    ),
+                ),
+                (
+                    "username",
+                    models.CharField(
+                        error_messages={
+                            "unique": "A user with that username already exists."
+                        },
+                        help_text="Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.",
+                        max_length=150,
+                        unique=True,
+                        validators=[
+                            django.contrib.auth.validators.UnicodeUsernameValidator()
+                        ],
+                        verbose_name="username",
+                    ),
+                ),
+                (
+                    "first_name",
+                    models.CharField(
+                        blank=True, max_length=150, verbose_name="first name"
+                    ),
+                ),
+                (
+                    "last_name",
+                    models.CharField(
+                        blank=True, max_length=150, verbose_name="last name"
+                    ),
+                ),
+                (
+                    "email",
+                    models.EmailField(
+                        blank=True, max_length=254, verbose_name="email address"
+                    ),
+                ),
+                (
+                    "is_staff",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Designates whether the user can log into this admin site.",
+                        verbose_name="staff status",
+                    ),
+                ),
+                (
+                    "is_active",
+                    models.BooleanField(
+                        default=True,
+                        help_text="Designates whether this user should be treated as active. Unselect this instead of deleting accounts.",
+                        verbose_name="active",
+                    ),
+                ),
+                (
+                    "date_joined",
+                    models.DateTimeField(
+                        default=django.utils.timezone.now, verbose_name="date joined"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Usuário',
-                'verbose_name_plural': 'Usuários',
+                "verbose_name": "Usuário",
+                "verbose_name_plural": "Usuários",
             },
             managers=[
-                ('objects', django.contrib.auth.models.UserManager()),
+                ("objects", django.contrib.auth.models.UserManager()),
             ],
         ),
         migrations.CreateModel(
-            name='Citizen',
+            name="Citizen",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, verbose_name='Nome')),
-                ('cpf', models.CharField(db_index=True, max_length=11, validators=[django.core.validators.RegexValidator('^\\d{11}$', 'CPF must have exactly 11 digits')], verbose_name='CPF')),
-                ('birth_date', models.DateField(verbose_name='Data de Nascimento')),
-                ('phone_number', models.CharField(blank=True, max_length=20, verbose_name='Telefone')),
-                ('status', models.CharField(choices=[('R', 'Regular'), ('C', 'Cancelado')], default='R', max_length=1, verbose_name='Status')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100, verbose_name="Nome")),
+                (
+                    "cpf",
+                    models.CharField(
+                        db_index=True,
+                        max_length=11,
+                        validators=[
+                            django.core.validators.RegexValidator(
+                                "^\\d{11}$", "CPF must have exactly 11 digits"
+                            )
+                        ],
+                        verbose_name="CPF",
+                    ),
+                ),
+                ("birth_date", models.DateField(verbose_name="Data de Nascimento")),
+                (
+                    "phone_number",
+                    models.CharField(
+                        blank=True, max_length=20, verbose_name="Telefone"
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("R", "Regular"), ("C", "Cancelado")],
+                        default="R",
+                        max_length=1,
+                        verbose_name="Status",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
             ],
             options={
-                'verbose_name': 'Cidadão',
-                'verbose_name_plural': 'Cidadãos',
+                "verbose_name": "Cidadão",
+                "verbose_name_plural": "Cidadãos",
             },
         ),
         migrations.CreateModel(
-            name='Department',
+            name="Department",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, unique=True, verbose_name='Nome')),
-                ('acronym', models.CharField(max_length=10, unique=True, verbose_name='Sigla')),
-                ('is_available', models.BooleanField(default=True, verbose_name='Disponível')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(max_length=100, unique=True, verbose_name="Nome"),
+                ),
+                (
+                    "acronym",
+                    models.CharField(max_length=10, unique=True, verbose_name="Sigla"),
+                ),
+                (
+                    "is_available",
+                    models.BooleanField(default=True, verbose_name="Disponível"),
+                ),
             ],
             options={
-                'verbose_name': 'Departamento',
-                'verbose_name_plural': 'Departamentos',
-                'ordering': ['name'],
+                "verbose_name": "Departamento",
+                "verbose_name_plural": "Departamentos",
+                "ordering": ["name"],
             },
         ),
         migrations.CreateModel(
-            name='HistoricalEntrance',
+            name="HistoricalEntrance",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('status', models.CharField(choices=[('R', 'Regular'), ('C', 'Cancelado')], default='R', max_length=1, verbose_name='Status')),
-                ('created_at', models.DateTimeField(blank=True, editable=False, verbose_name='Horário de Entrada')),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('citizen', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='core.citizen', verbose_name='Cidadão')),
-                ('department', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='core.department', verbose_name='Departamento')),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigIntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("R", "Regular"), ("C", "Cancelado")],
+                        default="R",
+                        max_length=1,
+                        verbose_name="Status",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        blank=True, editable=False, verbose_name="Horário de Entrada"
+                    ),
+                ),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "citizen",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="core.citizen",
+                        verbose_name="Cidadão",
+                    ),
+                ),
+                (
+                    "department",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="core.department",
+                        verbose_name="Departamento",
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical Entrada',
-                'verbose_name_plural': 'historical Entradas',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical Entrada",
+                "verbose_name_plural": "historical Entradas",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalCitizen',
+            name="HistoricalCitizen",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, verbose_name='Nome')),
-                ('cpf', models.CharField(db_index=True, max_length=11, validators=[django.core.validators.RegexValidator('^\\d{11}$', 'CPF must have exactly 11 digits')], verbose_name='CPF')),
-                ('birth_date', models.DateField(verbose_name='Data de Nascimento')),
-                ('phone_number', models.CharField(blank=True, max_length=20, verbose_name='Telefone')),
-                ('status', models.CharField(choices=[('R', 'Regular'), ('C', 'Cancelado')], default='R', max_length=1, verbose_name='Status')),
-                ('created_at', models.DateTimeField(blank=True, editable=False)),
-                ('updated_at', models.DateTimeField(blank=True, editable=False)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigIntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=100, verbose_name="Nome")),
+                (
+                    "cpf",
+                    models.CharField(
+                        db_index=True,
+                        max_length=11,
+                        validators=[
+                            django.core.validators.RegexValidator(
+                                "^\\d{11}$", "CPF must have exactly 11 digits"
+                            )
+                        ],
+                        verbose_name="CPF",
+                    ),
+                ),
+                ("birth_date", models.DateField(verbose_name="Data de Nascimento")),
+                (
+                    "phone_number",
+                    models.CharField(
+                        blank=True, max_length=20, verbose_name="Telefone"
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("R", "Regular"), ("C", "Cancelado")],
+                        default="R",
+                        max_length=1,
+                        verbose_name="Status",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(blank=True, editable=False)),
+                ("updated_at", models.DateTimeField(blank=True, editable=False)),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical Cidadão',
-                'verbose_name_plural': 'historical Cidadãos',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical Cidadão",
+                "verbose_name_plural": "historical Cidadãos",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='Entrance',
+            name="Entrance",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.CharField(choices=[('R', 'Regular'), ('C', 'Cancelado')], default='R', max_length=1, verbose_name='Status')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Horário de Entrada')),
-                ('citizen', models.ForeignKey(on_delete=django.db.models.deletion.RESTRICT, related_name='entrances', to='core.citizen', verbose_name='Cidadão')),
-                ('department', models.ForeignKey(on_delete=django.db.models.deletion.RESTRICT, related_name='entrances', to='core.department', verbose_name='Departamento')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("R", "Regular"), ("C", "Cancelado")],
+                        default="R",
+                        max_length=1,
+                        verbose_name="Status",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name="Horário de Entrada"
+                    ),
+                ),
+                (
+                    "citizen",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.RESTRICT,
+                        related_name="entrances",
+                        to="core.citizen",
+                        verbose_name="Cidadão",
+                    ),
+                ),
+                (
+                    "department",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.RESTRICT,
+                        related_name="entrances",
+                        to="core.department",
+                        verbose_name="Departamento",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Entrada',
-                'verbose_name_plural': 'Entradas',
+                "verbose_name": "Entrada",
+                "verbose_name_plural": "Entradas",
             },
         ),
         migrations.AddConstraint(
-            model_name='citizen',
-            constraint=models.UniqueConstraint(condition=models.Q(('status', 'R')), fields=('cpf',), name='unique_active_cpf'),
+            model_name="citizen",
+            constraint=models.UniqueConstraint(
+                condition=models.Q(("status", "R")),
+                fields=("cpf",),
+                name="unique_active_cpf",
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='groups',
-            field=models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.group', verbose_name='groups'),
+            model_name="user",
+            name="groups",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="The groups this user belongs to. A user will get all permissions granted to each of their groups.",
+                related_name="user_set",
+                related_query_name="user",
+                to="auth.group",
+                verbose_name="groups",
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='user_permissions',
-            field=models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.permission', verbose_name='user permissions'),
+            model_name="user",
+            name="user_permissions",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="Specific permissions for this user.",
+                related_name="user_set",
+                related_query_name="user",
+                to="auth.permission",
+                verbose_name="user permissions",
+            ),
         ),
     ]
