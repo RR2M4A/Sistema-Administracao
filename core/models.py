@@ -1,4 +1,4 @@
-from django.db import models, transaction
+from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import RegexValidator
@@ -57,47 +57,16 @@ class Citizen(models.Model):
         _("CPF"),
         max_length=11,
         validators=[RegexValidator(r"^\d{11}$", "CPF must have exactly 11 digits")],
-        db_index=True,
+        unique=True,
     )
     birth_date = models.DateField(_("Data de Nascimento"))
     phone_number = models.CharField(_("Telefone"), max_length=20, blank=True)
-
-    status = models.CharField(
-        _("Status"),
-        max_length=1,
-        choices=Status.choices,
-        default=Status.REGULAR,
-    )
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = _("Cidadão")
         verbose_name_plural = _("Cidadãos")
-
-        constraints = [
-            models.UniqueConstraint(
-                fields=["cpf"],
-                condition=models.Q(status=Status.REGULAR),
-                name="unique_active_cpf",
-            )
-        ]
-
-    def save(self, *args, **kwargs):
-        with transaction.atomic():
-            if self.pk:
-                old_status = Citizen.objects.get(pk=self.pk).status
-
-                # If status has changed from REGULAR to CANCELLED
-                if old_status != Status.CANCELLED and self.status == Status.CANCELLED:
-                    entrances = self.entrances.filter(status=Status.REGULAR)
-                    for entrance in entrances:
-                        entrance.status = Status.CANCELLED
-                        entrance.save()
-
-            # Saves as usual
-            super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.name}"
@@ -141,7 +110,7 @@ class Entrance(models.Model):
     citizen = models.ForeignKey(
         Citizen,
         related_name="entrances",
-        on_delete=models.RESTRICT,
+        on_delete=models.PROTECT,
         verbose_name=_("Cidadão"),
     )
 

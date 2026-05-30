@@ -6,3 +6,4 @@ uv.lock
 .python-version
 db.sqlite3
 .coverage
+htmlcov/

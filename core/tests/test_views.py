@@ -1,10 +1,12 @@
-import pytest
-from django.urls import reverse
-from model_bakery import baker
-from core.models import Status, Citizen, Entrance
-from django.utils import timezone
 import json
 from datetime import date
+import pytest
+from django.urls import reverse
+from django.utils import timezone
+
+from model_bakery import baker
+
+from core.models import Status, Citizen, Entrance
 
 
 @pytest.mark.django_db
@@ -20,7 +22,6 @@ class TestEntranceListView:
         Testing to access the view without an authenticated user.
         It should return an HTML page with status 302.
         """
-
         response = client.get(self.URL)
         assert response.status_code == 302
 
@@ -84,6 +85,7 @@ class TestEntranceListView:
             assert entrance not in response.context["entrances"]
 
 
+@pytest.mark.django_db
 class TestCitizenDetailView:
     """
     Class responsible for holding the 'CitizenDetailView' tests.
@@ -100,19 +102,19 @@ class TestCitizenDetailView:
         response = client.get(self.URL)
         assert response.status_code == 302
 
-    def test_with_valid_query(self, logged_in_client):
+    def test_with_valid_query_created_today_can_edit(self, logged_in_client):
         """
-        Testing for when a client exists, the payload is valid and the CPF is valid.
-        It should return a JSON response with status 200 and the client's information.
+        Testing a valid query for a citizen created TODAY.
+        It should return the client's information and 'can_edit' as True.
         """
 
         baker.make(
             "core.Citizen",
             name="John Doe Smith",
             cpf="13610361093",
-            birth_date="1985-12-25",
+            birth_date=date(1985, 12, 25),
             phone_number="61912345678",
-            status=Status.REGULAR,
+            created_at=timezone.now(),
         )
 
         json_response = logged_in_client.post(
@@ -123,11 +125,37 @@ class TestCitizenDetailView:
 
         response_content = json_response.json()
 
-        assert json_response.status_code == 200, json_response
+        assert json_response.status_code == 200
         assert response_content["type"] == "success"
         assert response_content["dict"]["name"] == "John Doe Smith"
-        assert response_content["dict"]["birth_date"] == "25/12/1985"
-        assert response_content["dict"]["phone_number"] == "(61) 91234-5678"
+        assert (
+            response_content["dict"]["can_edit"] is True
+        )  # Validation of Grace Period
+
+    def test_with_valid_query_created_past_cannot_edit(self, logged_in_client):
+        """
+        Testing a valid query for a citizen created in the PAST.
+        It should return the client's information and 'can_edit' as False.
+        """
+
+        past_date = timezone.now() - timezone.timedelta(days=5)
+
+        baker.make(
+            "core.Citizen",
+            name="John Doe",
+            cpf="13610361093",
+            created_at=past_date,
+        )
+
+        json_response = logged_in_client.post(
+            self.URL,
+            data=json.dumps({"cpf": "136.103.610-93"}),
+            content_type="application/json",
+        )
+
+        response_content = json_response.json()
+        assert json_response.status_code == 200
+        assert response_content["dict"]["can_edit"] is False
 
     def test_without_an_existing_client(self, logged_in_client):
         """
@@ -159,7 +187,7 @@ class TestCitizenDetailView:
 
     def test_with_an_invalid_payload(self, logged_in_client):
         """
-        Testing for when the client exists, the CPF is valid, but the payload is invalid.
+        Testing for when the payload is invalid (not JSON).
         It should return a JSON response with status 400.
         """
 
@@ -198,14 +226,13 @@ class TestEntranceSoftDeleteView:
         assert response.json()["type"] == "error"
         assert entrance.status == Status.REGULAR
 
-    def test_delete_entrance_today_with_other_valid_entrances(self, logged_in_client):
+    def test_hard_delete_if_is_first_entrance(self, logged_in_client):
         """
-        Date is today (True) + Citizen has other entrances (True).
-        The target entrance is cancelled, but the citizen MUST remain REGULAR.
+        If it's the citizen's ONLY entrance, deleting it should trigger a
+        hard delete of both the Entrance and the Citizen.
         """
 
-        citizen = baker.make("core.Citizen", status=Status.REGULAR)
-
+        citizen = baker.make("core.Citizen")
         target_entrance = baker.make(
             "core.Entrance",
             citizen=citizen,
@@ -213,33 +240,30 @@ class TestEntranceSoftDeleteView:
             created_at=timezone.now(),
         )
 
-        # Another existing valid entrance
+        response = logged_in_client.post(self.get_url(target_entrance.pk))
+        assert response.status_code == 200
+
+        # Assert records were physically removed from the DB
+        assert not Entrance.objects.filter(pk=target_entrance.pk).exists()
+        assert not Citizen.objects.filter(pk=citizen.pk).exists()
+
+    def test_soft_delete_if_citizen_has_multiple_entrances(self, logged_in_client):
+        """
+        If the citizen has > 1 entrances, deleting the current one should
+        only CANCEL the entrance, preserving the citizen and historical entrances.
+        """
+
+        citizen = baker.make("core.Citizen")
+
+        # Historical entrance
         baker.make(
             "core.Entrance",
             citizen=citizen,
             status=Status.REGULAR,
-            created_at=timezone.now(),
+            created_at=timezone.now() - timezone.timedelta(days=30),
         )
 
-        response = logged_in_client.post(self.get_url(target_entrance.pk))
-
-        target_entrance.refresh_from_db()
-        citizen.refresh_from_db()
-
-        assert response.status_code == 200
-        assert target_entrance.status == Status.CANCELLED
-        assert citizen.status == Status.REGULAR
-
-    def test_delete_entrance_today_with_no_other_valid_entrances(
-        self, logged_in_client
-    ):
-        """
-        Date is today (True) + Citizen has NO other entrances (False).
-        The target entrance is cancelled AND the citizen MUST be cancelled.
-        """
-
-        citizen = baker.make("core.Citizen", status=Status.REGULAR)
-
+        # Today's entrance (target)
         target_entrance = baker.make(
             "core.Entrance",
             citizen=citizen,
@@ -250,11 +274,10 @@ class TestEntranceSoftDeleteView:
         response = logged_in_client.post(self.get_url(target_entrance.pk))
 
         target_entrance.refresh_from_db()
-        citizen.refresh_from_db()
 
         assert response.status_code == 200
         assert target_entrance.status == Status.CANCELLED
-        assert citizen.status == Status.CANCELLED
+        assert Citizen.objects.filter(pk=citizen.pk).exists()
 
 
 @pytest.mark.django_db
@@ -270,6 +293,7 @@ class TestEntranceCreateView:
         Testing for when the citizen does not exist.
         The system must create both the Citizen and the Entrance.
         """
+
         department = baker.make("core.Department", is_available=True)
 
         payload = {
@@ -288,10 +312,9 @@ class TestEntranceCreateView:
         assert Citizen.objects.filter(cpf="13610361093").count() == 1
         assert Entrance.objects.count() == 1
 
-    def test_create_entrance_for_existing_citizen_updates_phone(self, logged_in_client):
+    def test_update_citizen_if_created_today_grace_period(self, logged_in_client):
         """
-        Testing for when the citizen already exists. The system must not duplicate
-        the citizen, but update their phone number and create a new entrance.
+        If the citizen was created TODAY, the system must update phone, name, and birth date.
         """
 
         existing_citizen = baker.make(
@@ -300,14 +323,14 @@ class TestEntranceCreateView:
             birth_date=date(1990, 5, 15),
             cpf="13610361093",
             phone_number="61 888888888",
-            status=Status.REGULAR,
+            created_at=timezone.now(),  # Created today
         )
         department = baker.make("core.Department", is_available=True)
 
         payload = {
             "cpf": "136.103.610-93",
-            "name": existing_citizen.name,
-            "birth_date": existing_citizen.birth_date.strftime("%d/%m/%Y"),
+            "name": "Jane Corrected",
+            "birth_date": "16/05/1990",
             "phone_number": "(61) 91111-2222",
             "department": department.pk,
         }
@@ -320,17 +343,58 @@ class TestEntranceCreateView:
 
         assert response.status_code == 200
         assert Citizen.objects.count() == 1
+
+        # Asserts ALL fields were updated
+        assert existing_citizen.name == "Jane Corrected"
+        assert existing_citizen.birth_date == date(1990, 5, 16)
         assert existing_citizen.phone_number != "61 888888888"
-        assert Entrance.objects.filter(
-            citizen=existing_citizen, department=department
-        ).exists()
+
+    def test_update_only_phone_if_created_past_grace_period_expired(
+        self, logged_in_client
+    ):
+        """
+        If the citizen was created in the PAST, the system must ONLY update the phone number,
+        ignoring name and birth date changes.
+        """
+
+        past_date = timezone.now() - timezone.timedelta(days=10)
+        existing_citizen = baker.make(
+            "core.Citizen",
+            name="Jane Original",
+            birth_date=date(1990, 5, 15),
+            cpf="13610361093",
+            phone_number="61 888888888",
+            created_at=past_date,  # Created in the past
+        )
+        department = baker.make("core.Department", is_available=True)
+
+        payload = {
+            "cpf": "136.103.610-93",
+            "name": "Hacker Trying to Change Name",
+            "birth_date": "01/01/2000",
+            "phone_number": "(61) 91111-2222",  # New phone
+            "department": department.pk,
+        }
+
+        response = logged_in_client.post(
+            self.URL, data=json.dumps(payload), content_type="application/json"
+        )
+
+        existing_citizen.refresh_from_db()
+
+        assert response.status_code == 200
+        assert Citizen.objects.count() == 1
+        assert existing_citizen.phone_number != "61 888888888"
+
+        # Name and Date are NOT updated (Period to edit expired)
+        assert existing_citizen.name == "Jane Original"
+        assert existing_citizen.birth_date == date(1990, 5, 15)
 
     def test_invalid_payload_returns_bad_request(self, logged_in_client):
         """
         Testing with invalid payload (missing mandatory birth_date).
         The system must return a 400 Bad Request status.
         """
-
         department = baker.make("core.Department", is_available=True)
 
         payload = {
@@ -361,7 +425,7 @@ class TestEntrancesByCPFView:
         Testing for when the citizen exists and has recorded entrances today.
         """
 
-        citizen = baker.make("core.Citizen", cpf="13610361093", status=Status.REGULAR)
+        citizen = baker.make("core.Citizen", cpf="13610361093")
         department = baker.make("core.Department", acronym="GAB")
         baker.make(
             "core.Entrance",
@@ -389,8 +453,7 @@ class TestEntrancesByCPFView:
         Testing for when the citizen exists but has NO entrances recorded today.
         The system must return a 404 status in the context of today's entrances.
         """
-
-        citizen = baker.make("core.Citizen", cpf="13610361093", status=Status.REGULAR)
+        citizen = baker.make("core.Citizen", cpf="13610361093")
 
         # Entrance created yesterday
         past_date = timezone.now() - timezone.timedelta(days=1)
