@@ -11,7 +11,7 @@ DEFAULT_FILE_STORAGE = "django.core.files.storage.InMemoryStorage"
 
 DATABASES = {
     "default": {
-        "ENGINE": 'django.db.backends.sqlite3',
+        "ENGINE": "django.db.backends.sqlite3",
         "NAME": ":memory:",
     }
 }

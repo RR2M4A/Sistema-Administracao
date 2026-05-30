@@ -16,43 +16,51 @@ admin.site.register(User, UserAdmin)
 class DepartmentAdmin(SimpleHistoryAdmin, ExportActionModelAdmin):
     resource_class = DepartmentResource
 
-    list_display = ('name', 'acronym', 'is_available')
-    search_fields = ('name', 'acronym')
+    list_display = ("name", "acronym", "is_available")
+    search_fields = ("name", "acronym")
 
 
 @admin.register(Citizen)
 class CitizenAdmin(SimpleHistoryAdmin, ExportActionModelAdmin):
     resource_class = CitizenResource
 
-    list_display = ('id', 'name', 'cpf', 'phone_number', 'birth_date', 'created_at', 'status')
-    search_fields = ('name', 'cpf', 'phone_number')
-    list_filter = (
-        ('created_at', DateRangeFilterBuilder(title="Data de Criação")),
-        'status'
+    list_display = (
+        "id",
+        "name",
+        "cpf",
+        "phone_number",
+        "birth_date",
+        "created_at",
+        "status",
     )
-    readonly_fields = ('id', 'created_at', 'updated_at')
+    search_fields = ("name", "cpf", "phone_number")
+    list_filter = (
+        ("created_at", DateRangeFilterBuilder(title="Data de Criação")),
+        "status",
+    )
+    readonly_fields = ("id", "created_at", "updated_at")
 
-    ordering = ('-created_at',)
+    ordering = ("-created_at",)
 
 
 @admin.register(Entrance)
 class EntranceAdmin(SimpleHistoryAdmin, ExportActionModelAdmin):
     resource_class = EntranceResource
 
-    list_display = ('id', 'citizen', 'department', 'created_at', 'status')
+    list_display = ("id", "citizen", "department", "created_at", "status")
     search_fields = ()
     list_filter = (
-        ('created_at', DateRangeFilterBuilder(title="Data de Criação")),
-        'department',
-        'status'
+        ("created_at", DateRangeFilterBuilder(title="Data de Criação")),
+        "department",
+        "status",
     )
-    readonly_fields = ('id', 'created_at')
+    readonly_fields = ("id", "created_at")
 
-    autocomplete_fields = ('citizen',)
+    autocomplete_fields = ("citizen",)
 
     def get_search_results(self, request, queryset, search_term):
         search_term = search_term.strip()
-        possible_cpf = re.sub(r'[\-\.]', '', search_term)
+        possible_cpf = re.sub(r"[\-\.]", "", search_term)
 
         if possible_cpf.isdigit() and len(possible_cpf) == 11:
             queryset = queryset.filter(citizen__cpf=possible_cpf)
@@ -64,8 +72,7 @@ class EntranceAdmin(SimpleHistoryAdmin, ExportActionModelAdmin):
     # Optimization
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.select_related('citizen', 'department')
-
+        return qs.select_related("citizen", "department")
 
     # Makes readonly_objects not editable
     def get_readonly_fields(self, request, obj=None):
@@ -73,5 +80,5 @@ class EntranceAdmin(SimpleHistoryAdmin, ExportActionModelAdmin):
         base_readonly = super().get_readonly_fields(request, obj)
 
         if obj:
-            return base_readonly + ('citizen', 'department')
+            return base_readonly + ("citizen", "department")
         return base_readonly
