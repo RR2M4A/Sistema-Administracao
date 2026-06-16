@@ -179,6 +179,52 @@ def setup_nssm_service(python_exe, port):
     run_command(f'"{nssm_path}" start {service_name}', "Iniciando o serviço no Windows")
 
 
+def setup_departments(python_exe):
+    """Creates initial departments if they don't exist."""
+    print("\n[+] Cadastrando departamentos no banco de dados...")
+
+    depts = [
+        ("COAG", "Coordenação de Administração Geral"),
+        ("GEAD", "Gerência de Administração"),
+        ("NUINF", "Núcleo de Informática"),
+        ("NUMAP", "Núcleo de Material e Patrimônio"),
+        ("GEOFIN", "Gerência de Orçamento e Finanças"),
+        ("GEPES", "Gerência de Pessoas"),
+        ("CODES", "Coordenação de Desenvolvimento"),
+        ("DIDOT", "Diretoria de Desenvolvimento e Territorial"),
+        ("GETEDEC", "Gerência de Gestão do Território e Desevolvimento Econômico"),
+        ("DIART", "Diretoria de Articulação"),
+        ("GEPSCEL", "Gerência de Políticas Sociais, Cultura, Esporte e Lazer"),
+        ("COLOM", "Coordenação de Licenciamento, Obras e Manutenção"),
+        ("DIALIC", "Diretoria de Aprovação e Licenciamento"),
+        ("GELOAE", "Gerência de Licenciamento de Obras e Atividades Econômicas"),
+        ("GEAPRO", "Gerência de Elaboração e Aprovação de Projetos"),
+        ("DIROB", "Diretoria de Obras"),
+        ("GEOB", "Gerência de Obras"),
+        ("GEMAC", "Gerência de Manutenção e Conservação"),
+        ("ASCOM", "Assessoria de comunicação"),
+        ("ASTEC", "Assessoria Técnica"),
+        ("ASPLAN", "Assessoria de Planejamento"),
+        ("GAB", "Gabinete"),
+        ("OUV", "Ouvidoria"),
+        ("JSM", "Junta de Serviço Militar"),
+    ]
+
+    # Código Python que será injetado dentro do ambiente do Django
+    script = ""
+    for sigla, nome in depts:
+        script += f"Department.objects.get_or_create(acronym='{sigla}', defaults={{'name': '{nome}'}});"
+
+    # Executa o comando via shell do Django
+    cmd = f'"{python_exe}" manage.py shell -c "from core.models import Department; {script}"'
+
+    try:
+        subprocess.run(cmd, shell=True, check=True, stdout=subprocess.DEVNULL)
+        print(f"{INDENTATION}-> Departamentos sincronizados com sucesso!")
+    except subprocess.CalledProcessError:
+        print(f"{INDENTATION}-> Aviso: Falha ao cadastrar departamentos.")
+
+
 def main():
     if not is_admin():
         print("=" * 60)
@@ -215,6 +261,7 @@ def main():
         f'"{python_exe}" manage.py migrate', "Aplicando migrações do banco de dados"
     )
 
+    setup_departments(python_exe)
     create_superuser(python_exe)
 
     run_command(
