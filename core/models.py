@@ -61,8 +61,8 @@ class Citizen(models.Model):
     )
     birth_date = models.DateField(_("Data de Nascimento"))
     phone_number = models.CharField(_("Telefone"), max_length=20, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(_("Criado em"), auto_now_add=True)
+    updated_at = models.DateTimeField(_("Atualizado em"), auto_now=True)
 
     class Meta:
         verbose_name = _("Cidadão")

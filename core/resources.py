@@ -4,10 +4,16 @@ from .models import Citizen, Department, Entrance
 
 
 class EntranceResource(resources.ModelResource):
-    citizen = fields.Field(
+    cpf = fields.Field(
         column_name="CPF",
         attribute="citizen",
         widget=ForeignKeyWidget(Citizen, field="cpf"),
+    )
+
+    name = fields.Field(
+        column_name="Nome",
+        attribute="citizen",
+        widget=ForeignKeyWidget(Citizen, field="name"),
     )
 
     department = fields.Field(
@@ -20,7 +26,7 @@ class EntranceResource(resources.ModelResource):
 
     class Meta:
         model = Entrance
-        fields = ("id", "citizen", "department", "created_at", "status")
+        fields = ("id", "name", "cpf", "department", "created_at", "status")
         export_order = fields
 
     def dehydrate_status(self, obj):
@@ -30,6 +36,7 @@ class EntranceResource(resources.ModelResource):
 class DepartmentResource(resources.ModelResource):
     name = fields.Field(attribute="name", column_name="Nome")
     acronym = fields.Field(attribute="acronym", column_name="Sigla")
+    is_available = fields.Field(attribute="is_available", column_name="Está disponível")
 
     class Meta:
         model = Citizen
@@ -47,7 +54,8 @@ class CitizenResource(resources.ModelResource):
     cpf = fields.Field(attribute="cpf", column_name="CPF")
     phone_number = fields.Field(attribute="phone_number", column_name="Telefone")
     birth_date = fields.Field(attribute="birth_date", column_name="Data de Nascimento")
-    created_at = fields.Field(attribute="created_at", column_name="Data de Criação")
+    created_at = fields.Field(attribute="created_at", column_name="Criado em")
+    updated_at = fields.Field(attribute="updated_at", column_name="Atualizado em")
 
     class Meta:
         model = Citizen
@@ -58,7 +66,7 @@ class CitizenResource(resources.ModelResource):
             "phone_number",
             "birth_date",
             "created_at",
-            "status",
+            "updated_at",
         )
         export_order = fields
 
